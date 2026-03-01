@@ -4,27 +4,23 @@ export default function ProcessSection() {
     const steps = [
         {
             number: "01",
-            title: "Discovery",
-            description:
-                "We begin with a deep conversation to understand your business, culture, and the specific talent needs that will drive your success.",
+            title: "Discovery Call",
+            description: "We learn your goals, gaps, and growth stage.",
         },
         {
             number: "02",
-            title: "Talent Matching",
-            description:
-                "Using our curated network and thorough vetting process, we identify candidates who align with both your technical requirements and values.",
+            title: "Custom Solution",
+            description: "We recommend the right mix of talent + services.",
         },
         {
             number: "03",
-            title: "Interview & Selection",
-            description:
-                "We guide you through a streamlined interview process, providing insights and support to help you make confident decisions.",
+            title: "Build & Launch",
+            description: "Your VA, systems, or digital assets go live, fast.",
         },
         {
             number: "04",
-            title: "Onboarding & Beyond",
-            description:
-                "Our partnership continues after placement. We ensure smooth onboarding and remain available for ongoing support.",
+            title: "Optimize & Scale",
+            description: "We refine, improve, and expand as your business grows.",
         },
     ];
 
@@ -32,11 +28,11 @@ export default function ProcessSection() {
         <Section id="process">
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
-                    <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-4">
-                        Our Process
+                    <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-4 font-semibold">
+                        How It Works
                     </p>
-                    <h2 className="mb-6">A thoughtful journey</h2>
-                    <p className="editorial-subheading">
+                    <h2 className="mb-6 text-4xl md:text-5xl">Simple. Strategic. Scalable.</h2>
+                    <p className="editorial-subheading max-w-2xl mx-auto">
                         Building great teams takes care and intention. Here's how we walk
                         that path together.
                     </p>

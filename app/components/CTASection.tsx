@@ -56,21 +56,18 @@ export default function CTASection() {
                 <div className="flex items-center justify-center gap-4 mb-12">
                     <div className="h-px w-24 md:w-32 bg-gradient-to-r from-transparent to-taupe-500/50"></div>
                     <span className="text-taupe-400 text-sm tracking-[0.2em] uppercase">
-                        Let&apos;s connect
+                        Call to Action
                     </span>
                     <div className="h-px w-24 md:w-32 bg-gradient-to-l from-transparent to-taupe-500/50"></div>
                 </div>
 
-                {/* Main Heading */}
                 <h2 className="text-beige-50 text-4xl md:text-5xl lg:text-6xl font-medium mb-6 leading-tight">
-                    Ready to build your global team?
-                    <br />
-                    <span className="text-beige-200/90">Let&apos;s talk today.</span>
+                    Ready to Scale Without the Stress?
                 </h2>
 
                 {/* Subtitle */}
                 <p className="text-lg text-beige-200/60 max-w-2xl mx-auto mb-12 leading-relaxed">
-                    Join forward thinking companies already leveraging our platform to scale their operations with world class talent.
+                    Let&apos;s build your team, your systems, and your online presence, properly.
                 </p>
 
                 {/* CTA Button with Glow */}
@@ -81,7 +78,7 @@ export default function CTASection() {
                         rel="noopener noreferrer"
                         className="relative z-10 inline-flex items-center justify-center gap-2 px-8 py-4 bg-beige-50 text-charcoal-900 font-medium text-base rounded-lg shadow-md transition-all duration-300 ease-out hover:bg-beige-100 hover:shadow-lg hover:-translate-y-0.5"
                     >
-                        Get Started Now
+                        Get a Custom Quote
                         <ArrowUpRight className="w-5 h-5" />
                     </a>
 
@@ -118,25 +115,37 @@ export default function CTASection() {
                     hello@talentmucho.com
                 </a>
 
-                {/* Logo & Copyright */}
-                <div className="mt-8 pt-6">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        {/* Logo */}
-                        <a href="#" className="flex items-center">
-                            <Image
-                                src="/tm-logo.png"
-                                alt="Talent Mucho"
-                                width={120}
-                                height={40}
-                                className="h-8 w-auto object-contain brightness-0 invert"
-                            />
-                        </a>
+                {/* Logo & Copyright & Locations */}
+                <div className="mt-8 pt-8 border-t border-beige-200/10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-8">
+                        {/* Locations */}
+                        <div className="text-left order-2 md:order-1">
+                            <p className="text-[10px] uppercase tracking-widest text-taupe-500 mb-2">Locations</p>
+                            <div className="space-y-1">
+                                <p className="text-sm text-beige-200/60">Granada, Spain</p>
+                                <p className="text-sm text-beige-200/60">Cagayan de Oro City, Philippines</p>
+                            </div>
+                        </div>
 
+                        {/* Logo */}
+                        <div className="flex justify-center order-1 md:order-2">
+                            <a href="#" className="flex items-center">
+                                <Image
+                                    src="/tm-logo.png"
+                                    alt="Talent Mucho"
+                                    width={140}
+                                    height={46}
+                                    className="h-10 w-auto object-contain brightness-0 invert"
+                                />
+                            </a>
+                        </div>
 
                         {/* Copyright */}
-                        <p className="text-sm text-beige-200/40">
-                            © {new Date().getFullYear()} Talent Mucho. All rights reserved.
-                        </p>
+                        <div className="text-right order-3">
+                            <p className="text-sm text-beige-200/30">
+                                © {new Date().getFullYear()} Talent Mucho.<br />All rights reserved.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

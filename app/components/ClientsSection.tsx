@@ -2,12 +2,12 @@ import Section from "./Section";
 
 export default function ClientsSection() {
     const clients = [
-        "Startups",
-        "Scale-ups",
-        "Digital Agencies",
-        "SaaS Companies",
-        "Founders",
-        "Growing Teams",
+        "Founders & CEOs",
+        "Coaches & Consultants",
+        "Agencies",
+        "E-commerce brands",
+        "Service-based businesses",
+        "Startups ready to scale",
     ];
 
     return (
@@ -29,10 +29,8 @@ export default function ClientsSection() {
                     ))}
                 </div>
 
-                <p className="mt-12 text-taupe-400 max-w-2xl mx-auto">
-                    Whether you're a solo founder scaling your first hire or an
-                    established company building a distributed team, we adapt our approach
-                    to meet you where you are.
+                <p className="mt-12 text-taupe-400 max-w-2xl mx-auto italic text-lg">
+                    If you’re tired of juggling everything yourself, we’re for you.
                 </p>
             </div>
         </Section>

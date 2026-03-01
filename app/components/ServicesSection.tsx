@@ -1,145 +1,184 @@
 import Section from "./Section";
-import { Users, Search, Briefcase, UserCheck, Layers } from "lucide-react";
+import { CheckCircle, LayoutTemplate, PenTool, Share2, Search, ArrowRight, UserCheck } from "lucide-react";
 
 export default function ServicesSection() {
-    const services = [
+    const vaRoles = [
+        "Executive & Admin VAs",
+        "Social Media Managers",
+        "Customer Support",
+        "CRM & Automation Assistants",
+        "Marketing & Sales Support",
+        "Operations & Back-Office VAs",
+    ];
+
+    const vaDifferences = [
+        "Skills-matched hiring",
+        "Onboarding support",
+        "Performance monitoring",
+        "Scalability as you grow",
+    ];
+
+    const digitalServices = [
         {
-            icon: Users,
-            title: "Remote Staffing Solutions",
-            description:
-                "Access a global talent pool of carefully vetted professionals ready to integrate seamlessly with your team.",
-            highlight: "500+ placements",
-            size: "large", // spans 2 columns
+            title: "Website Design & Development",
+            subtitle: "Conversion-focused websites that look good and work hard.",
+            bullets: [
+                "Business & personal brand websites",
+                "Landing pages",
+                "Optimized for speed, SEO & mobile"
+            ],
+            icon: LayoutTemplate,
+            sampleText: "Sample Websites (e.g. past projects with Jan)",
         },
         {
+            title: "Personal Branding",
+            subtitle: "Turn founders into authorities.",
+            bullets: [
+                "Brand positioning",
+                "Visual identity",
+                "Content strategy",
+                "Online presence setup"
+            ],
+            icon: PenTool,
+            sampleText: "Sample Personal Brand (e.g. Abby's Brand)",
+        },
+        {
+            title: "Social Media Management",
+            subtitle: "We don't chase trends, we build brands.",
+            bullets: [
+                "Content planning & posting",
+                "Captions & creatives",
+                "Engagement & growth strategy"
+            ],
+            icon: Share2,
+            sampleText: "Sample Social Contents (To be provided)",
+        },
+        {
+            title: "SEO & Visibility",
+            subtitle: "Because being invisible online is expensive.",
+            bullets: [
+                "On-page SEO",
+                "Content optimization",
+                "Local & service-based SEO"
+            ],
             icon: Search,
-            title: "Talent Sourcing & Vetting",
-            description:
-                "We go beyond resumes deep screening for skills, culture fit, and long-term potential.",
-            highlight: "98% retention",
-            size: "medium",
-        },
-        {
-            icon: Briefcase,
-            title: "Role-Based Placements",
-            description:
-                "From developers to designers, marketers to operations, we match the right talent to your specific needs.",
-            highlight: "50+ roles",
-            size: "medium",
-        },
-        {
-            icon: UserCheck,
-            title: "Dedicated Team Members",
-            description:
-                "Build your extended team with professionals who work exclusively for you, fully aligned with your mission.",
-            highlight: "Full-time focus",
-            size: "medium",
-        },
-        {
-            icon: Layers,
-            title: "Flexible Hiring Models",
-            description:
-                "Part-time, full-time, project-based, we adapt our approach to fit your business requirements.",
-            highlight: "Your terms",
-            size: "large", // spans 2 columns
-        },
+            sampleText: "",
+        }
     ];
 
     return (
         <Section id="services" variant="alt">
             <div className="text-center mb-16">
-                <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-4">
-                    What We Do
+                <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-4 font-semibold">
+                    Our Services
                 </p>
-                <h2 className="mb-6">Thoughtful talent solutions</h2>
-                <p className="editorial-subheading">
-                    We offer a range of services designed to help you build and scale your
-                    team with intention and care.
+                <h2 className="mb-6 text-4xl md:text-5xl lg:text-5xl">End-to-End Solutions</h2>
+                <p className="editorial-subheading mx-auto">
+                    We provide everything you need to scale. From skilled virtual professionals to comprehensive digital strategies.
                 </p>
             </div>
 
-            {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {/* Card 1 - Large (spans 2 cols) */}
-                <div className="card hover:bg-beige-100/80 group md:col-span-2 lg:col-span-2 lg:row-span-1 flex flex-col justify-between min-h-[280px] ">
-                    <div>
-                        <div className="w-14 h-14 bg-clay-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <Users className="w-7 h-7 text-beige-50" />
+            <div className="space-y-24">
+                {/* 1. Virtual Assistants */}
+                <div className="animate-fade-in-up">
+                    <div className="mb-10 text-center lg:text-left">
+                        <div className="inline-flex items-center justify-center p-4 bg-clay-500 rounded-2xl mb-6 shadow-sm">
+                            <UserCheck className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-2xl mb-3">{services[0].title}</h3>
-                        <p className="text-taupe-400 leading-relaxed text-base">
-                            {services[0].description}
+                        <h3 className="text-3xl md:text-4xl font-bold text-charcoal-900 mb-4">
+                            1. Virtual Assistants <span className="text-clay-500 italic font-medium">(Done Right)</span>
+                        </h3>
+                        <p className="text-xl text-espresso-800 max-w-3xl font-medium mx-auto lg:mx-0">
+                            Not just task-doers. We place trained, vetted, and managed VAs who understand business goals, not just to-do lists.
                         </p>
                     </div>
-                    <div className="mt-6 pt-4 border-t border-beige-300/50">
-                        <span className="text-clay-500 font-semibold text-lg">{services[0].highlight}</span>
-                        <span className="text-taupe-400 text-sm ml-2">globally</span>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="bg-white rounded-3xl p-8 lg:p-10 shadow-sm border border-beige-200">
+                            <h4 className="text-xl font-bold text-charcoal-900 mb-6 font-serif">
+                                Roles we offer:
+                            </h4>
+                            <div className="flex flex-wrap gap-3">
+                                {vaRoles.map((role, idx) => (
+                                    <span key={idx} className="bg-beige-50 text-espresso-800 px-4 py-2 rounded-full border border-beige-200 text-sm font-medium hover:bg-beige-100 hover:border-clay-300 transition-colors cursor-default">
+                                        {role}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="bg-clay-500 rounded-3xl p-8 lg:p-10 shadow-lg text-beige-50 border border-clay-600 relative overflow-hidden">
+                            {/* Decorative bg inside card */}
+                            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+
+                            <h4 className="text-xl font-bold text-white mb-6 relative z-10 font-serif">
+                                What&apos;s different?
+                            </h4>
+                            <ul className="space-y-5 relative z-10">
+                                {vaDifferences.map((diff, idx) => (
+                                    <li key={idx} className="flex items-center gap-4">
+                                        <CheckCircle className="w-6 h-6 text-beige-200 flex-shrink-0" />
+                                        <span className="text-lg font-medium">{diff}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
-                {/* Card 2 - Medium */}
-                <div className="card group flex flex-col justify-between min-h-[280px] hover:bg-beige-100/80">
-                    <div>
-                        <div className="w-12 h-12 bg-beige-200 rounded-lg flex items-center justify-center mb-5 group-hover:bg-clay-500 transition-colors duration-300">
-                            <Search className="w-6 h-6 text-clay-500 group-hover:text-beige-50 transition-colors duration-300" />
-                        </div>
-                        <h3 className="text-xl mb-3">{services[1].title}</h3>
-                        <p className="text-taupe-400 leading-relaxed text-sm">
-                            {services[1].description}
-                        </p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-beige-200">
-                        <span className="text-clay-500 font-medium">{services[1].highlight}</span>
-                    </div>
-                </div>
+                {/* Divider */}
+                <div className="w-full h-px bg-beige-300/50"></div>
 
-                {/* Card 3 - Medium */}
-                <div className="card group flex flex-col justify-between min-h-[280px] hover:bg-beige-100/80">
-                    <div>
-                        <div className="w-12 h-12 bg-beige-200 rounded-lg flex items-center justify-center mb-5 group-hover:bg-clay-500 transition-colors duration-300">
-                            <Briefcase className="w-6 h-6 text-clay-500 group-hover:text-beige-50 transition-colors duration-300" />
+                {/* 2. Digital Services */}
+                <div className="animate-fade-in-up animation-delay-200">
+                    <div className="mb-12 text-center lg:text-left">
+                        <div className="inline-flex items-center justify-center p-4 bg-charcoal-900 rounded-2xl mb-6 shadow-sm">
+                            <LayoutTemplate className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-xl mb-3">{services[2].title}</h3>
-                        <p className="text-taupe-400 leading-relaxed text-sm">
-                            {services[2].description}
+                        <h3 className="text-3xl md:text-4xl font-bold text-charcoal-900 mb-4">
+                            2. Digital Services <span className="text-taupe-400 italic font-medium">(Built for Growth)</span>
+                        </h3>
+                        <p className="text-xl text-espresso-800 max-w-2xl font-medium mx-auto lg:mx-0">
+                            Need results, not freelancers? We&apos;ve got you.
                         </p>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-beige-200">
-                        <span className="text-clay-500 font-medium">{services[2].highlight}</span>
-                    </div>
-                </div>
 
-                {/* Card 4 - Medium with accent bg */}
-                <div className="card group flex flex-col justify-between min-h-[280px] bg-clay-500 border-clay-600 hover:bg-clay-600 transition-colors duration-300">
-                    <div>
-                        <div className="w-12 h-12 bg-beige-50/20 rounded-lg flex items-center justify-center mb-5 group-hover:bg-beige-50/30 transition-colors duration-300">
-                            <UserCheck className="w-6 h-6 text-beige-50" />
-                        </div>
-                        <h3 className="text-xl mb-3 text-beige-50">{services[3].title}</h3>
-                        <p className="text-beige-100/80 leading-relaxed text-sm">
-                            {services[3].description}
-                        </p>
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-beige-50/20">
-                        <span className="text-beige-50 font-medium">{services[3].highlight}</span>
-                    </div>
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {digitalServices.map((service, idx) => (
+                            <div key={idx} className="bg-white rounded-3xl p-8 lg:p-10 border border-beige-200 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full group">
+                                <div className="mb-6 flex items-center gap-4">
+                                    <div className="w-14 h-14 bg-beige-50 rounded-2xl flex items-center justify-center shadow-sm border border-beige-100 group-hover:bg-clay-50 transition-colors">
+                                        <service.icon className="w-7 h-7 text-clay-500" />
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-charcoal-900">{service.title}</h4>
+                                </div>
 
-                {/* Card 5 - Large (spans 3 cols on lg) */}
-                <div className="card group md:col-span-2 lg:col-span-3 flex flex-col md:flex-row md:items-center gap-6 min-h-[180px] hover:bg-beige-100/80">
-                    <div className="w-14 h-14 bg-beige-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-clay-500 transition-colors duration-300">
-                        <Layers className="w-7 h-7 text-clay-500 group-hover:text-beige-50 transition-colors duration-300" />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-xl md:text-2xl mb-2">{services[4].title}</h3>
-                        <p className="text-taupe-400 leading-relaxed">
-                            {services[4].description}
-                        </p>
-                    </div>
-                    <div className="md:text-right shrink-0">
-                        <span className="inline-block px-4 py-2 bg-clay-500 text-beige-50 rounded-lg font-medium">
-                            {services[4].highlight}
-                        </span>
+                                <p className="text-espresso-800 italic mb-6 text-lg">&quot;{service.subtitle}&quot;</p>
+
+                                <ul className="space-y-4 mb-8 flex-grow">
+                                    {service.bullets.map((bullet, bIdx) => (
+                                        <li key={bIdx} className="flex items-start gap-3">
+                                            <div className="w-2 h-2 rounded-full bg-clay-500 mt-2 flex-shrink-0"></div>
+                                            <span className="text-charcoal-900 font-medium">{bullet}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {service.sampleText && (
+                                    <div className="mt-auto pt-6 border-t border-beige-100">
+                                        <div className="aspect-[16/9] w-full bg-beige-50 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-beige-300 hover:border-clay-300 text-taupe-400 p-6 text-center cursor-pointer transition-colors group/sample">
+                                            <span className="font-bold text-xs uppercase tracking-[0.15em] mb-2 text-charcoal-900/60 group-hover/sample:text-clay-500 transition-colors">
+                                                Placeholder Preview
+                                            </span>
+                                            <span className="text-sm font-medium">{service.sampleText}</span>
+                                            <div className="mt-6 w-10 h-10 rounded-full bg-white shadow-sm border border-beige-200 flex items-center justify-center group-hover/sample:scale-110 group-hover/sample:bg-clay-500 group-hover/sample:border-clay-500 transition-all">
+                                                <ArrowRight className="w-5 h-5 text-clay-500 group-hover/sample:text-white transition-colors" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

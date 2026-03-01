@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Target, Briefcase, Star } from "lucide-react";
+import { Target, Briefcase, Star, CheckCircle } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -38,18 +38,29 @@ export default function Hero() {
 
             {/* Main Headline */}
             <h1 className="mb-6 animate-fade-in-up">
-              People + AI + Systems to{" "}
-              <span className="text-clay-500 italic">Scale</span>
-              <br />
-              Your Business
+              Talent that works.<br />
+              Systems that <span className="text-clay-500 italic">scale.</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-10 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              We combine intelligent AI systems, skilled virtual assistants, and
-              expert digital marketing to automate, optimize, and accelerate
-              your business growth.
+            <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
+              Talent Mucho connects you with worldwide elite virtual talent + integrated digital services, so you're not just delegating tasks, you're building systems that grow.
             </p>
+
+            {/* Bullet Points */}
+            <ul className="space-y-3 mb-10 opacity-0 animate-fade-in-up animation-delay-300">
+              {[
+                "Virtual Assistants",
+                "Websites & Branding",
+                "Social Media & SEO",
+                "One partner. One strategy. Real results.",
+              ].map((item, index) => (
+                <li key={index} className="flex items-start gap-3 text-espresso-800">
+                  <CheckCircle className="w-6 h-6 text-clay-500 flex-shrink-0 mt-0.5" />
+                  <span className={`text-lg font-medium ${index === 3 ? "font-bold text-charcoal-900" : ""}`}>{item}</span>
+                </li>
+              ))}
+            </ul>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-start gap-4 opacity-0 animate-fade-in-up animation-delay-400">
@@ -59,10 +70,7 @@ export default function Hero() {
                 rel="noopener noreferrer"
                 className="btn-primary"
               >
-                Book a Free Discovery Call
-              </a>
-              <a href="#services" className="btn-secondary">
-                Learn More
+                Book a Free Strategy Call
               </a>
             </div>
           </div>
