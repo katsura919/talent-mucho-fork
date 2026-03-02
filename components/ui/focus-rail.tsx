@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence, PanInfo } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import type { PanInfo } from "motion/react";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -37,7 +38,7 @@ function wrap(min: number, max: number, v: number) {
  * Base spring for spatial movement (x/z)
  */
 const BASE_SPRING = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 300,
   damping: 30,
   mass: 1,
@@ -48,7 +49,7 @@ const BASE_SPRING = {
  * Bouncier spring specifically for the visual "Click/Tap" feedback on the center card
  */
 const TAP_SPRING = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 450,
   damping: 18, // Lower damping = subtle overshoot/wobble "tap"
   mass: 1,
@@ -59,7 +60,7 @@ export function FocusRail({
   initialIndex = 0,
   loop = true,
   autoPlay = false,
-  interval = 4000,
+  interval = 2000,
   className,
 }: FocusRailProps) {
   const [active, setActive] = React.useState(initialIndex);
@@ -138,10 +139,13 @@ export function FocusRail({
 
   const visibleIndices = [-2, -1, 0, 1, 2];
 
+  // Smaller set on mobile: only show 3 cards; JS media query not needed
+  // since we handle it purely through Tailwind responsive card widths & offsets
+
   return (
     <div
       className={cn(
-        "group relative flex h-[600px] w-full flex-col overflow-hidden bg-neutral-950 text-white outline-none select-none overflow-x-hidden",
+        "group relative flex h-[600px] w-full flex-col overflow-hidden bg-transparent text-white outline-none select-none overflow-x-hidden",
         className
       )}
       onMouseEnter={() => setIsHovering(true)}
@@ -166,7 +170,7 @@ export function FocusRail({
               alt=""
               className="h-full w-full object-cover blur-3xl saturate-200"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#2A2520] via-[#2A2520]/60 to-transparent" />
           </motion.div>
         </AnimatePresence>
       </div>
@@ -175,7 +179,7 @@ export function FocusRail({
       <div className="relative z-10 flex flex-1 flex-col justify-center px-4 md:px-8">
         {/* DRAGGABLE RAIL CONTAINER */}
         <motion.div
-          className="relative mx-auto flex h-[360px] w-full max-w-6xl items-center justify-center perspective-[1200px] cursor-grab active:cursor-grabbing"
+          className="relative mx-auto flex h-[380px] md:h-[520px] w-full max-w-6xl items-center justify-center perspective-[1200px] cursor-grab active:cursor-grabbing"
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.2}
@@ -191,11 +195,13 @@ export function FocusRail({
             const isCenter = offset === 0;
             const dist = Math.abs(offset);
 
-            // Dynamic transforms
-            const xOffset = offset * 320;
-            const zOffset = -dist * 180;
-            const scale = isCenter ? 1 : 0.85;
-            const rotateY = offset * -20;
+            // Dynamic transforms — tighter horizontal spacing on mobile
+            const xOffset = offset * 260;
+            const xOffsetMd = offset * 340; // we can't read window in SSR safely, so we rely on card CSS
+            // We use `xOffset` for a baseline that works on mobile
+            const zOffset = -dist * 160;
+            const scale = isCenter ? 1 : 0.82;
+            const rotateY = offset * -18;
 
             const opacity = isCenter ? 1 : Math.max(0.1, 1 - dist * 0.5);
             const blur = isCenter ? 0 : dist * 6;
@@ -205,8 +211,8 @@ export function FocusRail({
               <motion.div
                 key={absIndex}
                 className={cn(
-                  "absolute aspect-[3/4] w-[260px] md:w-[300px] rounded-2xl border-t border-white/20 bg-neutral-900 shadow-2xl transition-shadow duration-300",
-                  isCenter ? "z-20 shadow-white/10" : "z-10"
+                  "absolute aspect-[4/5] w-[300px] sm:w-[280px] md:w-[380px] lg:w-[440px] rounded-2xl border-t border-white/10 bg-[#3a342e] shadow-2xl transition-shadow duration-300",
+                  isCenter ? "z-20 shadow-black/30" : dist >= 2 ? "z-10 hidden sm:block" : "z-10"
                 )}
                 initial={false}
                 animate={{
@@ -243,8 +249,8 @@ export function FocusRail({
         </motion.div>
 
         {/* Info & Controls */}
-        <div className="mx-auto mt-12 flex w-full max-w-4xl flex-col items-center justify-between gap-6 md:flex-row pointer-events-auto">
-          <div className="flex flex-1 flex-col items-center text-center md:items-start md:text-left h-32 justify-center">
+        <div className="mx-auto mt-8 md:mt-10 flex w-full max-w-4xl flex-col items-center justify-between gap-4 md:flex-row pointer-events-auto px-2 md:px-0">
+          <div className="flex flex-1 flex-col items-center text-center md:items-start md:text-left min-h-[100px] md:h-32 justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeItem.id}
@@ -255,15 +261,15 @@ export function FocusRail({
                 className="space-y-2"
               >
                 {activeItem.meta && (
-                  <span className="text-xs font-medium uppercase tracking-wider text-emerald-400">
+                  <span className="text-xs font-medium uppercase tracking-wider text-clay-400">
                     {activeItem.meta}
                   </span>
                 )}
-                <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-white">
+                <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-beige-50" style={{ fontFamily: "var(--font-cormorant)" }}>
                   {activeItem.title}
                 </h2>
                 {activeItem.description && (
-                  <p className="max-w-md text-neutral-400">
+                  <p className="max-w-md text-beige-200/70">
                     {activeItem.description}
                   </p>
                 )}
@@ -272,30 +278,30 @@ export function FocusRail({
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1 rounded-full bg-neutral-900/80 p-1 ring-1 ring-white/10 backdrop-blur-md">
+            {/* <div className="flex items-center gap-1 rounded-full bg-white/5 p-1 ring-1 ring-white/10 backdrop-blur-md">
               <button
                 onClick={handlePrev}
-                className="rounded-full p-3 text-neutral-400 transition hover:bg-white/10 hover:text-white active:scale-95"
+                className="rounded-full p-3 text-beige-200/60 transition hover:bg-white/10 hover:text-white active:scale-95"
                 aria-label="Previous"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <span className="min-w-[40px] text-center text-xs font-mono text-neutral-500">
+              <span className="min-w-[40px] text-center text-xs font-mono text-beige-200/50">
                 {activeIndex + 1} / {count}
               </span>
               <button
                 onClick={handleNext}
-                className="rounded-full p-3 text-neutral-400 transition hover:bg-white/10 hover:text-white active:scale-95"
+                className="rounded-full p-3 text-beige-200/60 transition hover:bg-white/10 hover:text-white active:scale-95"
                 aria-label="Next"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
-            </div>
+            </div> */}
 
             {activeItem.href && (
               <Link
                 href={activeItem.href}
-                className="group flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition-transform hover:scale-105 active:scale-95"
+                className="group flex items-center gap-2 rounded-full bg-beige-50 px-5 py-3 text-sm font-semibold text-charcoal-900 transition-transform hover:scale-105 active:scale-95"
               >
                 Explore
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

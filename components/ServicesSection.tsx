@@ -34,27 +34,18 @@ const services = [
         details: "Skills-matched hiring — not guesswork."
     },
     {
-        id: "tech",
-        title: "Tech Staffing",
-        subtitle: "Systems Engineering",
-        description: "Specialized technical talent to build and scale your product with precision and speed.",
-        icon: Cpu,
+        id: "branding",
+        title: "Personal Branding",
+        subtitle: "Authority & Influence",
+        description: "Build a compelling personal brand that establishes authority and drives meaningful connections.",
+        icon: TrendingUp,
         className: "lg:col-span-4 lg:row-span-2 bg-charcoal-900 text-beige-50 border-charcoal-800",
         features: [
-            "Software Engineers",
-            "Product Managers",
-            "DevOps Engineers",
-            "Technical Leaders"
+            "Content Strategy",
+            "Profile Optimization",
+            "Thought Leadership",
+            "Audience Growth"
         ]
-    },
-    {
-        id: "ugc",
-        title: "UGC & Content",
-        subtitle: "Authority Creation",
-        description: "Authentic content that builds trust and drives conversion through genuine social proof.",
-        icon: Video,
-        className: "lg:col-span-4 bg-beige-50",
-        features: ["Video Testimonials", "Product Demos", "Founder Content"]
     },
     {
         id: "marketing",
@@ -62,7 +53,7 @@ const services = [
         subtitle: "Visibility & Growth",
         description: "Turn founders into authorities with targeted execution and strategic brand positioning.",
         icon: Share2,
-        className: "lg:col-span-4 bg-white",
+        className: "lg:col-span-6 bg-white",
         features: ["Brand Positioning", "SMM & Engagement", "SEO & Visibility"]
     },
     {
@@ -71,7 +62,7 @@ const services = [
         subtitle: "Digital Storefronts",
         description: "Conversion-focused designs that look good and work hard for your brand's growth.",
         icon: LayoutTemplate,
-        className: "lg:col-span-4 bg-taupe-50",
+        className: "lg:col-span-6 bg-white",
         features: ["Custom Web Design", "LP Optimization", "Speed & Mobile First"]
     }
 ];
@@ -119,12 +110,6 @@ export default function ServicesSection() {
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="mt-24 text-center"
                 >
-                    <div className="inline-block p-1 bg-white/50 backdrop-blur-sm rounded-2xl border border-beige-200 mb-10">
-                        <p className="px-6 py-2 text-sm text-espresso-800 font-medium lowercase tracking-wide">
-                            <span className="text-clay-500 font-bold uppercase tracking-normal">Flexible Delivery:</span> Task-based, Monthly Retainers, or Full-scale Recruiting.
-                        </p>
-                    </div>
-                    <br />
                     <a
                         href="https://calendly.com/talentmucho/30min"
                         target="_blank"
@@ -142,7 +127,7 @@ export default function ServicesSection() {
 
 function ServiceCard({ service, index }: { service: any; index: number }) {
     const Icon = service.icon;
-    const isDark = service.id === "tech";
+    const isDark = service.id === "branding";
 
     return (
         <motion.div
@@ -229,9 +214,9 @@ function ServiceCard({ service, index }: { service: any; index: number }) {
                 </div>
             )}
 
-            {service.id === "tech" && (
+            {service.id === "branding" && (
                 <div className="absolute bottom-6 right-8 opacity-10 group-hover:opacity-20 transition-opacity duration-700">
-                    <Cpu className="w-32 h-32" />
+                    <TrendingUp className="w-32 h-32" />
                 </div>
             )}
         </motion.div>
