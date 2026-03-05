@@ -236,7 +236,7 @@ export function Header() {
                     "rounded-full h-8 font-medium text-espresso-800 bg-transparent hover:bg-beige-100 px-4"
                   )}
                 >
-                  <Link href="/booking">Contact</Link>
+                  <Link href="/contact">Contact</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>

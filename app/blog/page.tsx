@@ -45,7 +45,6 @@ export default function BlogPage() {
 
   return (
     <>
-      <Header />
       <main className="pt-24">
         {/* Hero Section */}
         <section className="section-padding bg-beige-100">
@@ -203,9 +202,6 @@ export default function BlogPage() {
             </div>
           </div>
         </section>
-
-        {/* Newsletter CTA */}
-        <CTASection />
       </main>
     </>
   );

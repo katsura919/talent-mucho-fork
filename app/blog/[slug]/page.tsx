@@ -68,7 +68,6 @@ export default function BlogPostPage() {
 
   return (
     <>
-      <Header />
       <main className="pt-24">
         {/* Loading State */}
         {loading && (
@@ -299,8 +298,6 @@ export default function BlogPostPage() {
               </div>
             </section>
 
-            {/* CTA */}
-            <CTASection />
           </>
         )}
       </main>
