@@ -6,6 +6,7 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import JsonLd from "../components/JsonLd";
 import { Header } from "../components/navbar";
 import CTASection from "@/components/CTASection";
+import OffersBanner from "@/components/sticky-banner-demo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -132,7 +133,10 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body className={`${cormorant.variable} ${manrope.variable}`}>
-        <Header />
+        <div className="fixed top-0 inset-x-0 z-50 flex flex-col w-full">
+          <OffersBanner />
+          <Header />
+        </div>
         {children}
         {/* <CTASection /> */}
         <Analytics />
