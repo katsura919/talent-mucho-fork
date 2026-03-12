@@ -34,7 +34,7 @@ const vaTypes = [
         subtitle: "Always-on client care",
         description:
             "Dedicated support VAs who handle your customers with speed and empathy — managing tickets, live chat, social DMs, and satisfaction follow-ups across every channel.",
-        image: "/service-va.png",
+        image: "https://aristosourcing.com/wp-content/uploads/2021/09/Customer-Service.jpg",
         imageAlt: "VA providing customer support",
         features: [
             "Help desk & ticket management",
@@ -53,7 +53,7 @@ const vaTypes = [
         subtitle: "The engine behind your business",
         description:
             "Process-focused VAs who keep your internal operations running smoothly — from workflow coordination and vendor management to reporting and CRM automation.",
-        image: "/service-va.png",
+        image: "https://res.cloudinary.com/dg1i3ew9w/image/upload/v1773315738/Transportation-Body-1_bcb6oh.png",
         imageAlt: "VA managing operations and back-office",
         features: [
             "Workflow & SOP management",
