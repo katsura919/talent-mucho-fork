@@ -34,7 +34,7 @@ const websiteTypes = [
         subtitle: "Your digital first impression",
         description:
             "Elegant, memorable portfolio sites that position you as an authority in your field. Perfect for executives, consultants, coaches, and creative professionals.",
-        image: "/website-portfolio.png",
+        image: "https://res.cloudinary.com/dg1i3ew9w/image/upload/v1773324100/Screenshot_2026-03-12_220127_gklqjk.png",
         imageAlt: "Personal portfolio website example",
         features: [
             "Personal brand alignment",

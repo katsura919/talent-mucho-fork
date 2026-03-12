@@ -34,7 +34,7 @@ const marketingTypes = [
         subtitle: "Consistent presence, real engagement",
         description:
             "Our team manages your social channels end-to-end — from content creation and scheduling to community engagement and performance reporting — so you grow without the grind.",
-        image: "/service-marketing.png",
+        image: "https://res.cloudinary.com/dg1i3ew9w/image/upload/v1773323912/hero-social-media-management-01-1_hyofs2.png",
         imageAlt: "Social media management dashboard",
         features: [
             "Multi-platform content creation",
@@ -53,7 +53,7 @@ const marketingTypes = [
         subtitle: "Get found by the right people",
         description:
             "Technical and content SEO that drives qualified organic traffic — from on-page optimisation and keyword strategy to backlink building and local search domination.",
-        image: "/service-marketing.png",
+        image: "https://res.cloudinary.com/dg1i3ew9w/image/upload/v1773323832/SEO-Services_drhhcz.webp",
         imageAlt: "SEO analytics and visibility",
         features: [
             "Keyword research & mapping",

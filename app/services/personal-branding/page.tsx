@@ -34,7 +34,7 @@ const brandingTypes = [
         subtitle: "First impressions that convert",
         description:
             "Your LinkedIn, website bio, and social profiles are your digital handshake. We optimise every element — headline, summary, visuals — to attract the right opportunities.",
-        image: "/service-branding.png",
+        image: "https://res.cloudinary.com/dg1i3ew9w/image/upload/v1773323263/social-media-profiles_rayrme.jpg",
         imageAlt: "Professional profile optimisation",
         features: [
             "LinkedIn profile overhaul",
@@ -46,25 +46,6 @@ const brandingTypes = [
         ],
         accent: "bg-clay-500 text-beige-50",
         tag: "Quick Wins",
-    },
-    {
-        slug: "thought-leadership",
-        title: "Thought Leadership",
-        subtitle: "Become the go-to expert",
-        description:
-            "Ghost-written articles, LinkedIn newsletters, and speaking content that establish you as the definitive voice in your industry — driving inbound leads and partnership opportunities.",
-        image: "/service-branding.png",
-        imageAlt: "Thought leadership content creation",
-        features: [
-            "Ghost-written long-form articles",
-            "LinkedIn newsletter management",
-            "Speaking topic development",
-            "Podcast guest outreach support",
-            "PR & media placement prep",
-            "Audience growth campaigns",
-        ],
-        accent: "bg-espresso-800 text-beige-50",
-        tag: "Long-Term Authority",
     },
 ];
 
