@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle, Share2 } from "lucide-react";
 
 export const metadata = {
-    title: "Marketing & Strategy | Talent Mucho",
+    title: "Marketing Strategy & SEO Services",
     description:
         "Turn your brand into an authority with targeted marketing execution — brand positioning, social media management, and SEO strategies that drive real results.",
 };
@@ -84,12 +84,23 @@ export default function MarketingPage() {
                             className="text-5xl md:text-6xl lg:text-7xl leading-tight font-light tracking-tight text-charcoal-900 mb-6"
                             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                         >
-                            Marketing That Drives{" "}
-                            <em className="not-italic text-clay-500">Real Growth</em>
+                            Marketing Strategy & SEO Services for{" "}
+                            <em className="not-italic text-clay-500">Growing Businesses</em>
                         </h1>
 
                         <p className="text-lg text-espresso-800 leading-relaxed max-w-2xl">
                             We turn visibility into authority and authority into revenue — through strategic brand positioning, consistent social presence, and SEO that compounds over time.
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-4">
+                            Most clients start at $300/month —{" "}
+                            <Link href="/offers" className="text-clay-500 hover:underline">see our current offers →</Link>
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-3">
+                            Drive traffic to a site built to convert — explore our{" "}
+                            <Link href="/services/websites" className="text-clay-500 hover:underline">Website Design</Link>
+                            {" "}services, or add a{" "}
+                            <Link href="/services/virtual-assistants" className="text-clay-500 hover:underline">VA</Link>
+                            {" "}to execute your strategy.
                         </p>
                     </div>
                 </div>

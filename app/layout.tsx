@@ -32,11 +32,11 @@ export const metadata: Metadata = {
 
   // Primary Meta Tags
   title: {
-    default: "Talent Mucho | Build Your Dream Team. Anywhere in the World.",
+    default: "Remote Staffing Agency | Virtual Assistants | Talent Mucho",
     template: "%s | Talent Mucho",
   },
   description:
-    "Talent Mucho is a boutique global talent studio helping companies build meaningful, distributed teams. Curated remote staffing, talent sourcing, and dedicated team members.",
+    "Boutique remote staffing agency pairing elite Philippines VAs with web design, branding & marketing strategy. Get a free consultation today.",
   keywords: [
     "remote staffing",
     "global talent",

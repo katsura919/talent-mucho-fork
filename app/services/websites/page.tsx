@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle, LayoutTemplate } from "lucide-react";
 
 export const metadata = {
-    title: "Websites & Pages | Talent Mucho",
+    title: "Custom Website Design That Converts",
     description:
         "Conversion-focused websites built for your brand — landing pages, personal portfolios, and custom web systems designed to grow your business.",
 };
@@ -81,13 +81,24 @@ export default function WebsitesPage() {
                             className="text-5xl md:text-6xl lg:text-7xl leading-tight font-light tracking-tight text-charcoal-900 mb-6"
                             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                         >
-                            Digital Storefronts That{" "}
-                            <em className="not-italic text-clay-500">Work Hard</em> for Your Brand
+                            Custom Website Design That{" "}
+                            <em className="not-italic text-clay-500">Converts Visitors Into Clients</em>
                         </h1>
 
                         <p className="text-lg text-espresso-800 leading-relaxed max-w-2xl">
                             We build conversion-focused websites tailored to your business goals — from
                             one-page campaigns to full custom web systems. Every pixel has a purpose.
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-4">
+                            Most clients start at $300/month —{" "}
+                            <Link href="/offers" className="text-clay-500 hover:underline">see our current offers →</Link>
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-3">
+                            Drive traffic with our{" "}
+                            <Link href="/services/marketing" className="text-clay-500 hover:underline">Marketing & SEO services</Link>
+                            {" "}or add a{" "}
+                            <Link href="/services/virtual-assistants" className="text-clay-500 hover:underline">VA</Link>
+                            {" "}to manage your site after launch.
                         </p>
                     </div>
                 </div>

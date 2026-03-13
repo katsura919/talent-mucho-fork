@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle, UserCheck } from "lucide-react";
 
 export const metadata = {
-    title: "Virtual Assistants | Talent Mucho",
+    title: "Virtual Assistant Services | Remote Staffing",
     description:
         "Trained, vetted Virtual Assistants who understand business goals — not just to-do lists. Executive VAs, customer support, operations, and CRM automation.",
 };
@@ -84,12 +84,23 @@ export default function VirtualAssistantsPage() {
                             className="text-5xl md:text-6xl lg:text-7xl leading-tight font-light tracking-tight text-charcoal-900 mb-6"
                             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                         >
-                            Skilled VAs Who{" "}
-                            <em className="not-italic text-clay-500">Get It Done</em> — Right
+                            Virtual Assistant Services —{" "}
+                            <em className="not-italic text-clay-500">Skilled VAs Who Get It Done</em>
                         </h1>
 
                         <p className="text-lg text-espresso-800 leading-relaxed max-w-2xl">
                             We don&apos;t just fill a seat. We match you with trained, vetted Virtual Assistants who understand your business goals and operate like trusted extensions of your team.
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-4">
+                            Most clients start at $300/month —{" "}
+                            <Link href="/offers" className="text-clay-500 hover:underline">see our current offers →</Link>
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-3">
+                            Pair your VA with our{" "}
+                            <Link href="/services/personal-branding" className="text-clay-500 hover:underline">Personal Branding</Link>
+                            {" "}or{" "}
+                            <Link href="/services/websites" className="text-clay-500 hover:underline">Website Design</Link>
+                            {" "}services for a complete growth system.
                         </p>
                     </div>
                 </div>

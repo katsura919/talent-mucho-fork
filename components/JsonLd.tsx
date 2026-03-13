@@ -9,7 +9,12 @@ export default function JsonLd() {
             "A boutique global talent studio helping companies build meaningful, distributed teams through curated remote staffing and talent sourcing.",
         url: baseUrl,
         logo: `${baseUrl}/tm-logo.png`,
-        sameAs: [],
+        sameAs: [
+            "https://facebook.com/talentmucho",
+            "https://instagram.com/talentmucho",
+            "https://tiktok.com/@talentmucho",
+            "https://threads.net/@talentmucho",
+        ],
         contactPoint: {
             "@type": "ContactPoint",
             contactType: "customer service",
@@ -42,7 +47,27 @@ export default function JsonLd() {
             "Remote staffing agency providing curated talent sourcing, dedicated team members, and flexible hiring models for building distributed teams globally.",
         url: baseUrl,
         logo: `${baseUrl}/tm-logo.png`,
+        telephone: "+34657752940",
+        email: "hello@talentmucho.com",
         priceRange: "$$",
+        address: [
+            {
+                "@type": "PostalAddress",
+                addressLocality: "Madrid",
+                addressCountry: "ES",
+            },
+            {
+                "@type": "PostalAddress",
+                addressLocality: "Cagayan de Oro City",
+                addressCountry: "PH",
+            },
+        ],
+        sameAs: [
+            "https://facebook.com/talentmucho",
+            "https://instagram.com/talentmucho",
+            "https://tiktok.com/@talentmucho",
+            "https://threads.net/@talentmucho",
+        ],
         serviceType: [
             "Remote Staffing",
             "Talent Sourcing",

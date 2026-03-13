@@ -63,7 +63,7 @@ export default function CTASection() {
                         href="/booking"
                         className="inline-flex items-center gap-2 px-10 py-5 bg-beige-50 text-charcoal-900 font-semibold text-base rounded-xl shadow-xl hover:bg-beige-100 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 ease-out"
                     >
-                        Book a Free Strategy Call
+                        Book Your Free Call — Get a Custom Staffing Plan
                         <ArrowUpRight className="w-5 h-5" />
                     </a>
                     <p className="text-beige-200/40 text-xs mt-4">No commitment required · 30-minute session</p>

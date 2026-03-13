@@ -39,13 +39,13 @@ export default function Hero() {
 
             {/* Main Headline */}
             <h1 className="mb-6 animate-fade-in-up">
-              Talent that works.<br />
-              Systems that <span className="text-clay-500 italic">scale.</span>
+              Elite Remote Staffing + Digital Services
+            
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              Talent Mucho connects you with worldwide elite virtual talent + integrated digital services, so you're not just delegating tasks, you're building systems that grow.
+              Get elite remote talent and the systems to manage them — without the overhead.
             </p>
 
             {/* Bullet Points */}
@@ -69,7 +69,7 @@ export default function Hero() {
                 href="/booking"
                 className="btn-primary"
               >
-                Book a Free Strategy Call
+                Get Your Free VA Match
               </a>
             </div>
           </div>
@@ -121,13 +121,12 @@ export default function Hero() {
                     </div>
                     <div>
                       <p className="text-xs font-medium text-charcoal-900">
-                        Talent Placed
+                        Professionals Placed
                       </p>
-                      <p className="text-xs text-taupe-400">This Month</p>
                     </div>
                   </div>
                   <p className="text-xl font-bold text-clay-500 flex items-center">
-                    <NumberTicker value={250} className="text-clay-500" />
+                    <NumberTicker value={200} className="text-clay-500" />
                     <span>+</span>
                   </p>
                 </div>
@@ -136,7 +135,7 @@ export default function Hero() {
               {/* Floating Card - Growth Chart */}
               <div className="absolute bottom-20 -right-4 lg:-right-8 z-20 opacity-0 animate-fade-in-up animation-delay-500">
                 <div className="bg-beige-50 px-4 py-3 rounded-xl shadow-lg border border-beige-200">
-                  <p className="text-xs text-taupe-400 mb-1">Client Growth</p>
+                  <p className="text-xs text-taupe-400 mb-1">Client Retention</p>
                   <p className="text-lg font-bold text-charcoal-900 flex items-center">
                     <NumberTicker value={98} className="text-charcoal-900" />
                     <span>%</span>

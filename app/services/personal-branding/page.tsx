@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle, TrendingUp } from "lucide-react";
 
 export const metadata = {
-    title: "Personal Branding | Talent Mucho",
+    title: "Personal Branding Services for Founders",
     description:
         "Build a compelling personal brand that establishes authority and drives meaningful connections. Content strategy, profile optimisation, thought leadership, and audience growth.",
 };
@@ -65,12 +65,23 @@ export default function PersonalBrandingPage() {
                             className="text-5xl md:text-6xl lg:text-7xl leading-tight font-light tracking-tight text-charcoal-900 mb-6"
                             style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
                         >
-                            Build an Authority Brand That{" "}
-                            <em className="not-italic text-clay-500">Opens Doors</em>
+                            Personal Branding Services for{" "}
+                            <em className="not-italic text-clay-500">Founders & Consultants</em>
                         </h1>
 
                         <p className="text-lg text-espresso-800 leading-relaxed max-w-2xl">
                             We help founders, executives, and consultants build compelling personal brands that attract premium clients, speaking opportunities, and meaningful influence — consistently.
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-4">
+                            Most clients start at $300/month —{" "}
+                            <Link href="/offers" className="text-clay-500 hover:underline">see our current offers →</Link>
+                        </p>
+                        <p className="text-sm text-taupe-400 mt-3">
+                            Pair your new brand with a dedicated{" "}
+                            <Link href="/services/virtual-assistants" className="text-clay-500 hover:underline">VA</Link>
+                            {" "}or a{" "}
+                            <Link href="/services/websites" className="text-clay-500 hover:underline">conversion-focused website</Link>
+                            {" "}to amplify your reach.
                         </p>
                     </div>
                 </div>
