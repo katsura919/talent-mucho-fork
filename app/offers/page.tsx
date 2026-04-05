@@ -70,6 +70,8 @@ function OffersHero() {
 }
 
 function OffersPackages() {
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "one-time">("one-time");
+
   return (
     <section id="offers" className="section-padding bg-beige-100">
       <div className="section-container">
@@ -88,6 +90,36 @@ function OffersPackages() {
           </p>
         </div>
 
+        {/* Pricing Toggle */}
+        <div className="flex justify-center mb-16">
+          <div className="bg-beige-200/50 p-1 rounded-full flex items-center relative border border-beige-200">
+            <button
+              onClick={() => setBillingCycle("monthly")}
+              className={cn(
+                "px-6 py-2 rounded-full text-xs font-semibold uppercase tracking-widest transition-all duration-300 relative z-10",
+                billingCycle === "monthly" ? "text-white" : "text-taupe-400 hover:text-clay-600"
+              )}
+            >
+              Monthly Plan
+            </button>
+            <button
+              onClick={() => setBillingCycle("one-time")}
+              className={cn(
+                "px-6 py-2 rounded-full text-xs font-semibold uppercase tracking-widest transition-all duration-300 relative z-10",
+                billingCycle === "one-time" ? "text-white" : "text-taupe-400 hover:text-clay-600"
+              )}
+            >
+              One-Time
+            </button>
+            <div
+              className={cn(
+                "absolute h-[85%] w-[48%] bg-clay-500 rounded-full transition-all duration-500 ease-spring shadow-md",
+                billingCycle === "monthly" ? "left-[1%] translate-x-0" : "left-[51%] translate-x-0"
+              )}
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Offer 1 */}
           <div className="bg-charcoal-900 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group hover:-translate-y-2 transition-transform duration-500 border border-charcoal-800/50 shadow-2xl">
@@ -103,15 +135,28 @@ function OffersPackages() {
                 Website +<br />3 Months Free GHL
               </h3>
               <p className="text-beige-200/50 text-sm tracking-wide mb-8">
-                One-Time Investment · Delivered in Days
+                {billingCycle === "one-time" ? "One-Time Investment" : "Monthly Installment"} · Delivered in Days
               </p>
 
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-5xl md:text-6xl font-reg" style={{ fontFamily: "var(--font-cormorant)" }}>$789</span>
-                <span className="text-beige-200/50 text-sm">one-time</span>
+                {billingCycle === "one-time" ? (
+                  <>
+                    <span className="text-5xl md:text-6xl font-reg" style={{ fontFamily: "var(--font-cormorant)" }}>$789</span>
+                    <span className="text-beige-200/50 text-sm">one-time</span>
+                    <span className="ml-2 bg-clay-500/20 text-clay-400 text-[10px] font-bold px-2 py-0.5 rounded-full">Save 26%</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-5xl md:text-6xl font-reg" style={{ fontFamily: "var(--font-cormorant)" }}>$89</span>
+                    <span className="text-beige-200/50 text-sm">/month <span className="opacity-50">(12 mo)</span></span>
+                  </>
+                )}
               </div>
               <p className="text-sm text-beige-200/70 mb-10 pb-10 border-b border-beige-200/10">
-                Includes <strong className="text-clay-400">$297 value FREE</strong> 3 months GoHighLevel access ($99/mo)
+                {billingCycle === "one-time"
+                  ? <span>Includes <strong className="text-clay-400">$297 value FREE</strong> 3 months GoHighLevel access ($99/mo)</span>
+                  : <span>Pay over time for 12 months. Includes <strong className="text-clay-400">$297 value FREE</strong> 3 months GoHighLevel access.</span>
+                }
               </p>
 
               <ul className="space-y-4 mb-10">
