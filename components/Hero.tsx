@@ -39,13 +39,12 @@ export default function Hero() {
 
             {/* Main Headline */}
             <h1 className="mb-6 animate-fade-in-up">
-              Elite Remote Staffing + Digital Services
-            
+              Your Business Deserves a Team That Uses AI
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              Get AI-trained remote talent and the systems to manage them — without the overhead.
+              Elite VAs trained on Claude and automation, plus digital services to scale. One partner. Zero overhead.
             </p>
 
             {/* Bullet Points */}
