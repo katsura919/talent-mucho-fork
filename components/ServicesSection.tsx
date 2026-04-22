@@ -71,6 +71,17 @@ const services = [
         className: "bg-white",
         features: ["Custom Web Design", "LP Optimization", "Speed & Mobile First"],
         href: "/services/websites"
+    },
+    {
+        id: "ai-training",
+        title: "AI & Tech Training",
+        subtitle: "For Teams & VAs",
+        description: "We train your virtual assistants and teams to use AI tools properly like Claude, automation platforms, and productivity systems. Stop leaving 90% of your tools' power on the table.",
+        icon: Cpu,
+        spanClass: "lg:col-span-12",
+        className: "bg-white",
+        features: ["Claude AI Mastery", "Workflow Automation", "Live Coaching Sessions", "Productivity Systems"],
+        href: "/events/claude-for-business"
     }
 ];
 

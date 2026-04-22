@@ -4,9 +4,9 @@ import ChallengeSection from "../components/ChallengeSection";
 import WhoWeAreSection from "../components/WhoWeAreSection";
 import WebsiteServiceSection from "../components/WebsiteServiceSection";
 import ServicesSection from "../components/ServicesSection";
+import EventPromoStrip from "../components/EventPromoStrip";
 import BenefitsSection from "../components/BenefitsSection";
 import ProcessSection from "../components/ProcessSection";
-import PhilosophySection from "../components/PhilosophySection";
 import WhyUsSection from "../components/WhyUsSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import BlogSection from "../components/BlogSection";
@@ -17,13 +17,15 @@ export default function Home() {
       <main>
         <Hero />
         <ClientsSection />
+        <ChallengeSection />
         <WhoWeAreSection />
         <WebsiteServiceSection />
         <ServicesSection />
+        <EventPromoStrip />
         <BenefitsSection />
         <ProcessSection />
         <WhyUsSection />
-        {/* <TestimonialsSection /> */}
+        <TestimonialsSection />
         <BlogSection />
       </main>
     </>

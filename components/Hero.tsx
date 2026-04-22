@@ -45,20 +45,21 @@ export default function Hero() {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              Get elite remote talent and the systems to manage them — without the overhead.
+              Get AI-trained remote talent and the systems to manage them — without the overhead.
             </p>
 
             {/* Bullet Points */}
             <ul className="space-y-3 mb-10 opacity-0 animate-fade-in-up animation-delay-300">
               {[
-                "Virtual Assistants",
+                "AI-Trained Virtual Assistants",
                 "Websites & Branding",
                 "Social Media & SEO",
+                "AI & Tech Training for Teams",
                 "One partner. One strategy. Real results.",
               ].map((item, index) => (
                 <li key={index} className="flex items-start gap-3 text-espresso-800">
                   <CheckCircle className="w-6 h-6 text-clay-500 flex-shrink-0 mt-0.5" />
-                  <span className={`text-lg font-medium ${index === 3 ? "font-bold text-charcoal-900" : ""}`}>{item}</span>
+                  <span className={`text-lg font-medium ${index === 4 ? "font-bold text-charcoal-900" : ""}`}>{item}</span>
                 </li>
               ))}
             </ul>

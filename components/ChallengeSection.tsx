@@ -15,6 +15,11 @@ export default function ChallengeSection() {
             heading: "Agencies offer volume, not fit",
             body: "Big staffing agencies send you a pile of resumes. Nobody takes time to understand your culture, your workflow, or your actual goals.",
         },
+        {
+            number: "04",
+            heading: "AI tools exist. Adoption doesn't.",
+            body: "Your team has access to powerful AI. Without proper training, they use 5% of what's possible. Productivity stays flat. Your competitive edge stays locked.",
+        },
     ];
 
     return (
@@ -32,7 +37,7 @@ export default function ChallengeSection() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {pains.map((pain, i) => (
                         <div
                             key={i}
