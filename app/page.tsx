@@ -1,6 +1,7 @@
 import Hero from "../components/Hero";
 import ClientsSection from "../components/ClientsSection";
 import ChallengeSection from "../components/ChallengeSection";
+import EducateBuildOperate from "../components/EducateBuildOperate";
 import WhoWeAreSection from "../components/WhoWeAreSection";
 import WebsiteServiceSection from "../components/WebsiteServiceSection";
 import ServicesSection from "../components/ServicesSection";
@@ -18,6 +19,7 @@ export default function Home() {
         <Hero />
         <ClientsSection />
         <ChallengeSection />
+        <EducateBuildOperate />
         <WhoWeAreSection />
         <WebsiteServiceSection />
         <ServicesSection />

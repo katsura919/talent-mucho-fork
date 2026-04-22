@@ -28,13 +28,13 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="section-container relative z-10 pt-32 pb-20 w-full">
+      <div className="section-container relative z-10 pt-40 pb-20 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left Column - Text Content */}
           <div className="text-left order-2 lg:order-1">
             {/* Tagline */}
             <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-6 animate-fade-in">
-              Global Talent Studio
+              Educate. Build. Operate.
             </p>
 
             {/* Main Headline */}
@@ -44,16 +44,16 @@ export default function Hero() {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              Elite VAs trained on Claude and automation, plus digital services to scale. One partner. Zero overhead.
+              We educate your team, build your digital systems, and operate as your AI-powered talent layer — all under one roof.
             </p>
 
             {/* Bullet Points */}
             <ul className="space-y-3 mb-10 opacity-0 animate-fade-in-up animation-delay-300">
               {[
-                "AI-Trained Virtual Assistants",
-                "Websites & Branding",
-                "Social Media & SEO",
-                "AI & Tech Training for Teams",
+                "AI-Trained Virtual Assistants & Engineers",
+                "Websites, Systems & Automation",
+                "Social Media, SEO & GEO",
+                "AI & Tech Training for Teams & Companies",
                 "One partner. One strategy. Real results.",
               ].map((item, index) => (
                 <li key={index} className="flex items-start gap-3 text-espresso-800">
