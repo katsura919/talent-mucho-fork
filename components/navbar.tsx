@@ -263,7 +263,7 @@ export function Header() {
                   <Link href="/contact">Contact</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
-              <NavigationMenuItem>
+              {/* <NavigationMenuItem>
                 <NavigationMenuLink
                   asChild
                   className={cn(
@@ -274,7 +274,7 @@ export function Header() {
                 >
                   <Link href="/offers">Limited Offers</Link>
                 </NavigationMenuLink>
-              </NavigationMenuItem>
+              </NavigationMenuItem> */}
             </NavigationMenuList>
           </NavigationMenu>
         </div>

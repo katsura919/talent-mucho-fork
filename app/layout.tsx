@@ -134,7 +134,7 @@ export default function RootLayout({
       </head>
       <body className={`${cormorant.variable} ${manrope.variable}`}>
         <div className="fixed top-0 inset-x-0 z-50 flex flex-col w-full">
-          <OffersBanner />
+          {/* <OffersBanner /> */}
           <Header />
         </div>
         {children}
