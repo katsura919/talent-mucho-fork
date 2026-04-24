@@ -85,6 +85,12 @@ export default function Hero() {
               >
                 Get Your Free VA Match
               </a>
+              <a
+                href="/events/claude-for-business"
+                className="btn-secondary"
+              >
+                Join Live Event
+              </a>
             </div>
           </div>
 
