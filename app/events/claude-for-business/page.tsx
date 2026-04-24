@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import {
   Calendar, Clock, Video, Star, Mail, FileText, Share2,
   RefreshCw, BarChart2, Search, ArrowRight, MapPin, Users,
@@ -578,7 +579,9 @@ export default function ClaudeEventPage() {
               <p className="text-sm text-taupe-400 font-light mb-7">
                 Free · Takes 30 seconds.
               </p>
-              <RegisterForm />
+              <Suspense fallback={null}>
+                <RegisterForm />
+              </Suspense>
             </div>
 
           </div>
