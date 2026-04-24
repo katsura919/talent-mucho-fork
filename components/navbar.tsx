@@ -226,31 +226,7 @@ export function Header() {
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    "rounded-full h-8 font-medium text-espresso-800 bg-transparent hover:bg-beige-100"
-                  )}
-                >
-                  Insights
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-white border-beige-200 shadow-xl">
-                  <ul className="grid w-[400px] p-4 gap-3">
-                    {insights.map((component) => (
-                      <ListItem
-                        key={component.title}
-                        title={component.title}
-                        icon={component.icon}
-                        href={component.href}
-                        isActive={isActiveHref(component.href)}
-                      >
-                        {component.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+              {/* Insights hidden until ready */}
               <NavigationMenuItem>
                 <NavigationMenuLink
                   asChild
