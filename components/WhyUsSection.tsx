@@ -6,12 +6,12 @@ const points = [
   {
     title: "One Agency, No Revolving Doors",
     icon: Users2,
-    description: "Stop managing multiple freelancers with no accountability. We provide a cohesive, managed team under one roof.",
+    description: "One point of contact. One team that knows your business. No more chasing five different people to get one thing done.",
   },
   {
     title: "Strategy + Execution",
     icon: Zap,
-    description: "We don't just follow tasks, we help you plan the roadmap, then we build it. Expert advice paired with precision implementation.",
+    description: "We don&apos;t just take orders. We help you figure out what needs to happen, then we make it happen. Strategy and execution, together.",
   },
   {
     title: "Flexible & Scalable",
@@ -21,12 +21,12 @@ const points = [
   {
     title: "Global Talent, Real Accountability",
     icon: Globe,
-    description: "Elite professionals from across the globe, managed with strict quality and performance standards you can rely on.",
+    description: "Top talent from around the world, held to real standards. Not just available ~ actually good at what they do.",
   },
   {
     title: "Long-Term Partnership",
     icon: CheckCircle2,
-    description: "We're not just a vendor — we win when you win, fiercely focused on your sustainable, long-term success.",
+    description: "We're not just a vendor ~ we win when you win. Genuinely focused on your long-term growth, not just the contract.",
   },
 ];
 
@@ -50,10 +50,10 @@ export default function WhyUsSection() {
             </h2>
             <div className="mb-10 text-espresso-800 text-lg leading-relaxed">
               <p className="mb-4">
-                You don't need <em className="italic">more</em> people. You need the right <strong className="font-semibold text-charcoal-800">system</strong> + the right <strong className="font-semibold text-charcoal-800">talent</strong>.
+                You don&apos;t need to hire more people. You need the <strong className="font-semibold text-charcoal-800">right people</strong> doing the <strong className="font-semibold text-charcoal-800">right things</strong> inside a system that actually works.
               </p>
               <p>
-                We bridge the gap between human expertise and strategic systems to create growth that compounds.
+                That&apos;s the difference between a business that runs you and one you actually run.
               </p>
             </div>
 

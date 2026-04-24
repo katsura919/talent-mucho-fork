@@ -5,7 +5,10 @@ const GHL_BUSINESS_TYPE_FIELD_ID = "business_type";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, email, businessType } = body;
+    const { firstName, lastName, email, businessType, referralSource } = body;
+
+    const customFields = [];
+    if (businessType) customFields.push({ id: GHL_BUSINESS_TYPE_FIELD_ID, value: businessType });
 
     const contactData = {
       firstName,
@@ -14,15 +17,8 @@ export async function POST(request: NextRequest) {
       email,
       locationId: "0FS1VjeNDhjfvVfG4d4x",
       source: "TalentMucho",
-      tags: ["claude-for-business"],
-      ...(businessType && {
-        customFields: [
-          {
-            id: GHL_BUSINESS_TYPE_FIELD_ID,
-            value: businessType,
-          },
-        ],
-      }),
+      tags: ["claude-for-business", ...(referralSource ? [`source:${referralSource.toLowerCase().replace(/\s+/g, "-")}`] : [])],
+      ...(customFields.length > 0 && { customFields }),
     };
 
     const ghlResponse = await fetch(`${process.env.GHL_BASE_URL}contacts/`, {

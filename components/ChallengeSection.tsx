@@ -2,23 +2,23 @@ export default function ChallengeSection() {
     const pains = [
         {
             number: "01",
-            heading: "Hiring is expensive & slow",
-            body: "Local talent costs are soaring. Job boards waste your time. The average hire takes 3–6 months and still might not be the right fit.",
+            heading: "Hiring eats your time and your sanity",
+            body: "You post, you wait, you interview, you pray. Three months later you're starting over. There has to be a better way.",
         },
         {
             number: "02",
-            heading: "Freelancers disappear",
-            body: "You spend weeks onboarding someone, they deliver mediocre work, then vanish. No accountability, no continuity, no results.",
+            heading: "Freelancers who ghost you",
+            body: "You spend two weeks training someone, they deliver half the work, then disappear. Your time is gone. Your standards weren't too high ~ theirs were just too low.",
         },
         {
             number: "03",
-            heading: "Agencies offer volume, not fit",
-            body: "Big staffing agencies send you a pile of resumes. Nobody takes time to understand your culture, your workflow, or your actual goals.",
+            heading: "Agencies that don't actually get you",
+            body: "They send a stack of CVs and call it done. No one asks how you actually work, what you've built, or who you need right now.",
         },
         {
             number: "04",
-            heading: "AI tools exist. Adoption doesn't.",
-            body: "Your team has access to powerful AI. Without proper training, they use 5% of what's possible. Productivity stays flat. Your competitive edge stays locked.",
+            heading: "AI feels overwhelming to start",
+            body: "Everyone's talking about it. You know it matters. But between running your business and your life, who has time to figure it all out? That's where we come in.",
         },
     ];
 
@@ -30,10 +30,10 @@ export default function ChallengeSection() {
                         The Problem
                     </p>
                     <h2 className="mb-6" style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300 }}>
-                        Building a great team has never been harder
+                        You&apos;re running a business and a household. Something has to give.
                     </h2>
                     <p className="text-lg text-espresso-800 leading-relaxed mb-16 max-w-2xl">
-                        The modern workforce spans continents and time zones. Founders spend more time managing hiring than growing their business.
+                        Most women founders we talk to are doing too much, trusting the wrong people, and wondering if AI is even worth figuring out. We hear you.
                     </p>
                 </div>
 

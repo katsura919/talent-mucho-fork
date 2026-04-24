@@ -105,10 +105,10 @@ export default function WallOfLoveSection() {
                         className="text-charcoal-900 mb-6 leading-[1.1]"
                         style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(2.5rem, 5vw, 4.5rem)" }}
                     >
-                        Loved by the Community
+                        Real results from real founders.
                     </h2>
                     <p className="text-taupe-500 text-lg max-w-2xl mx-auto leading-relaxed">
-                        Hear from the professionals and companies we&apos;ve had the privilege to partner with on their journey.
+                        These are people who were exactly where you are ~ and decided to stop doing it all themselves.
                     </p>
                 </div>
 

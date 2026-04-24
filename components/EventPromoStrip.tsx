@@ -12,11 +12,11 @@ export default function EventPromoStrip() {
                         </div>
                         <div>
                             <p className="font-semibold text-white text-sm">
-                                Free Live Event: Claude AI for Business Owners
+                                10 spots · Free Live Training: Getting Started with AI
                             </p>
                             <p className="text-white/70 text-xs flex items-center gap-1.5 mt-0.5">
                                 <Calendar className="w-3 h-3" />
-                                Friday, May 1, 2026 · 6:00–8:00 PM EST · Live on Zoom
+                                May 1, 2026 · For women who want to learn AI but don&apos;t know where to start
                             </p>
                         </div>
                     </div>

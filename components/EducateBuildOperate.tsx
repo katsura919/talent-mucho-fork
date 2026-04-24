@@ -3,20 +3,20 @@ const pillars = [
         number: "01",
         title: "Educate",
         description:
-            "We teach people and organizations how to actually use AI — workshops, company-wide adoption programs, and hands-on training that turns AI from a buzzword into a competitive advantage.",
+            "You don't need to become a tech person. You just need to know how AI can work for your business. We run workshops, hands-on training, and team adoption programs that make it actually click.",
     },
     {
         number: "02",
         title: "Build",
         description:
-            "We design and build the digital systems, websites, marketing assets, and AI-powered automations your business needs to scale — without the overhead of a full in-house team.",
+            "We build the websites, automations, and digital systems your business runs on. No more duct-taping tools together at midnight. Just clean, functional systems that work while you sleep.",
     },
     {
         number: "03",
         title: "Operate",
         badge: "AI Specialist / Engineers",
         description:
-            "Not your ordinary virtual assistant. Our AI Specialists and Engineers run your operations with intelligence and precision — handling the work that used to require an entire department.",
+            "Not your average VA. Our AI-trained specialists handle the admin, operations, and execution that used to eat your whole week ~ so you can show up for your business as the CEO, not the assistant.",
     },
 ];
 
@@ -49,7 +49,7 @@ export default function EducateBuildOperate() {
                 </div>
 
                 <p className="text-beige-100/50 text-center text-lg mb-20 max-w-xl mx-auto leading-relaxed">
-                    Three commitments that define everything we do.
+                    This is how we show up for your business ~ and for you.
                 </p>
 
                 {/* Divider */}
