@@ -5,22 +5,22 @@ const steps = [
     {
         number: "01",
         title: "Discovery Call",
-        description: "We learn your goals, current gaps, and growth stage. No templates, just a real conversation about what you need.",
+        description: "We have a real conversation ~ your goals, where you're stuck, what would actually help. No scripts, no sales pressure.",
     },
     {
         number: "02",
         title: "Custom Solution",
-        description: "We recommend the right combination of talent + services, tailored precisely to your business model.",
+        description: "We come back with a plan that actually fits your business ~ not a generic package we sell everyone.",
     },
     {
         number: "03",
         title: "Build & Launch",
-        description: "Your VA, systems, or digital assets go live fast, without the chaos of managing it yourself.",
+        description: "Your VA, systems, or digital assets go live ~ fast, clean, and without you having to manage the whole process.",
     },
     {
         number: "04",
         title: "Optimize & Scale",
-        description: "We refine, improve, and expand as your business grows. This is a long-term partnership, not a one-off placement.",
+        description: "As your business grows, we grow with you. We&apos;re not here for a one-time placement ~ we&apos;re in it for the long haul.",
     },
 ];
 
@@ -43,7 +43,7 @@ export default function ProcessSection() {
                         Simple. Strategic. <em className="text-clay-400" style={{ fontStyle: "italic" }}>Scalable.</em>
                     </h2>
                     <p className="text-beige-200/70 text-lg max-w-2xl mx-auto leading-relaxed">
-                        Building great teams takes intention. Here&apos;s how we walk that path together, step by step.
+                        No guesswork. No fluff. Here&apos;s exactly how we get you set up and moving.
                     </p>
                 </div>
 

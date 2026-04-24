@@ -45,14 +45,17 @@ export default function WhoWeAreSection() {
 
                         <div className="space-y-5 text-beige-100/80 leading-relaxed mb-10">
                             <p className="text-lg border-l-2 border-clay-500 pl-5 text-white">
-                                Most agencies stop at &ldquo;here&apos;s your VA.&rdquo; We build around your outcomes.
+                                Most agencies drop a VA in your lap and disappear. We stay and build around what you actually need.
                             </p>
                             <p className="text-beige-100/70">
-                                Talent Mucho blends top-tier virtual professionals with strategic digital services — helping founders, startups, and growing businesses scale without the chaos.
+                                Talent Mucho is for founders who are done doing it all ~ women especially, who are running businesses, figuring out AI, and trying to breathe at the same time.
                             </p>
                             <p className="text-beige-100/70">
-                                Whether you need hands-on execution or strategic direction, we build teams and{" "}
-                                <span className="text-clay-400 font-medium">systems that drive real, sustainable results.</span>
+                                We bring the talent, build the systems, and{" "}
+                                <span className="text-clay-400 font-medium">make sure none of it falls apart the moment you step away.</span>
+                            </p>
+                            <p className="text-beige-100/50 text-sm italic">
+                                Built by two women who&apos;ve done this themselves, for founders who know what it takes.
                             </p>
                         </div>
 

@@ -171,7 +171,7 @@ function ServiceCard({ service }: { service: any }) {
                         <em className={cn(
                             "text-xl font-light",
                             isDark ? "text-clay-400" : "text-clay-500"
-                        )} style={{ fontStyle: "italic" }}>— {service.subtitle}</em>
+                        )} style={{ fontStyle: "italic" }}>~ {service.subtitle}</em>
                     </h3>
                     <p className={cn(
                         "text-lg leading-relaxed max-w-md",

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Target, Briefcase, Star, CheckCircle } from "lucide-react";
+import { Target, Briefcase, Star, CheckCircle, ArrowRight } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 
 export default function Hero() {
@@ -32,6 +32,20 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left Column - Text Content */}
           <div className="text-left order-2 lg:order-1">
+            {/* Event Callout */}
+            <a
+              href="/events/claude-for-business"
+              className="inline-flex items-center gap-3 bg-white border border-clay-200 rounded-full px-4 py-2 mb-6 shadow-sm hover:shadow-md hover:border-clay-400 transition-all duration-300 group animate-fade-in"
+            >
+              <span className="bg-clay-500 text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                Free Event
+              </span>
+              <span className="text-espresso-800 text-sm font-medium">
+                10 spots · AI Training for Women · May 1
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-clay-500 group-hover:translate-x-1 transition-transform" />
+            </a>
+
             {/* Tagline */}
             <p className="text-taupe-400 text-sm uppercase tracking-[0.2em] mb-6 animate-fade-in">
               Educate. Build. Operate.
@@ -39,12 +53,12 @@ export default function Hero() {
 
             {/* Main Headline */}
             <h1 className="mb-6 animate-fade-in-up">
-              Your Business Deserves a Team That Uses AI
+              You Didn&apos;t Start a Business to Do Everything Yourself.
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-espresso-800 max-w-lg mb-8 leading-relaxed opacity-0 animate-fade-in-up animation-delay-200">
-              We educate your team, build your digital systems, and operate as your AI-powered talent layer — all under one roof.
+              You built something real. Now let&apos;s make sure it doesn&apos;t run you into the ground. We bring in the right people, set up the systems, and actually teach you how AI fits into your business ~ not the jargon, the real stuff.
             </p>
 
             {/* Bullet Points */}
@@ -97,16 +111,11 @@ export default function Hero() {
 
               {/* Floating Card - Experience Badge */}
               <div className="absolute top-8 right-0 lg:-right-4 z-20 animate-fade-in-up animation-delay-300">
-                <div className="bg-clay-500 text-beige-50 px-4 py-3 rounded-lg shadow-lg">
-                  <span className="text-2xl font-bold flex items-center">
-                    <NumberTicker value={10} className="text-beige-50" />
-                    <span>+</span>
-                  </span>
-                  <p className="text-white text-xs opacity-90">
-                    Years
-                    <br />
-                    Experience
+                <div className="bg-clay-500 text-beige-50 px-4 py-3 rounded-lg shadow-lg max-w-[160px]">
+                  <p className="text-white text-xs font-bold leading-snug">
+                    Tech + Business + AI
                   </p>
+                  <p className="text-beige-200 text-xs opacity-80">= Superpowers</p>
                 </div>
               </div>
 

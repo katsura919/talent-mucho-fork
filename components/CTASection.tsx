@@ -50,12 +50,12 @@ export default function CTASection() {
                         fontSize: "clamp(2.8rem, 6vw, 5rem)",
                     }}
                 >
-                    Scale Without the{" "}
-                    <em className="text-clay-500" style={{ fontStyle: "italic" }}>Stress.</em>
+                    You&apos;ve worked too hard to{" "}
+                    <em className="text-clay-500" style={{ fontStyle: "italic" }}>keep doing it alone.</em>
                 </h2>
 
                 <p className="text-beige-200/60 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-                    Let&apos;s build your team, your systems, and your online presence properly.
+                    Let&apos;s get you the right people, the right systems, and finally figure out AI together ~ without the overwhelm.
                 </p>
 
                 <div className="pb-10">
@@ -63,7 +63,7 @@ export default function CTASection() {
                         href="/booking"
                         className="inline-flex items-center gap-2 px-10 py-5 bg-beige-50 text-charcoal-900 font-semibold text-base rounded-xl shadow-xl hover:bg-beige-100 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 ease-out"
                     >
-                        Book Your Free Call — Get a Custom Staffing Plan
+                        Book Your Free Call ~ Get a Custom Staffing Plan
                         <ArrowUpRight className="w-5 h-5" />
                     </a>
                     <p className="text-beige-200/40 text-xs mt-4">No commitment required · 30-minute session</p>
