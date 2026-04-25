@@ -55,7 +55,7 @@ const AI_LEVELS = [
 const VIP_PERKS = [
   { label: "Guaranteed seat", sub: "No waitlist risk" },
   { label: "Full replay + transcript", sub: "Rewatch anytime" },
-  { label: "Claude Vault", sub: "Private dashboard setups + Claude skills (done live)" },
+  { label: "Claude Vault", sub: "Private dashboard setups + Claude skills" },
   { label: "VIP-only group follow-up", sub: "30 min private session with Abie & Meri" },
   { label: "30-day Premium Skool access", sub: "€49 value ~ included free" },
 ];
@@ -231,7 +231,7 @@ export default function RegisterForm() {
             Get VIP Access ~ €47
             <ArrowRight className="w-4 h-4" />
           </a>
-          <p className="text-center text-xs text-taupe-400 font-light">Only 3 VIP spots. Secure yours now.</p>
+          <p className="text-center text-xs text-taupe-400 font-light">VIP spots are capped at 12 for the follow-up call. Secure yours now.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
