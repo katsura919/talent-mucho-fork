@@ -42,7 +42,7 @@ export default function AddToCalendar({ variant = "dark" }: { variant?: "dark" |
       </button>
 
       {open && (
-        <div className="absolute left-0 mt-2 w-52 bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5 z-50">
+        <div className="absolute left-0 mt-2 w-48 bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5 z-50">
           <a
             href={GOOGLE_URL}
             target="_blank"
@@ -51,15 +51,6 @@ export default function AddToCalendar({ variant = "dark" }: { variant?: "dark" |
             className="flex items-center gap-3 px-4 py-2.5 text-sm text-espresso-800 rounded-xl hover:bg-beige-100 transition-colors"
           >
             Google Calendar
-          </a>
-          <a
-            href={GOOGLE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-espresso-800 rounded-xl hover:bg-beige-100 transition-colors"
-          >
-            Gmail
           </a>
           <a
             href={ICS_URL}
