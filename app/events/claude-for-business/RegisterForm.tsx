@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, Check, Loader2 } from "lucide-react";
+import { ChevronDown, Check, Loader2, ArrowRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+const STRIPE_VIP_URL = "https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04";
 
 const REFERRAL_SOURCES = [
   { label: "Skool", value: "Skool" },
@@ -42,8 +44,17 @@ const BUSINESS_TYPES = [
   "Other",
 ];
 
+const VIP_PERKS = [
+  { label: "Guaranteed seat", sub: "No waitlist risk" },
+  { label: "Full replay + transcript", sub: "Rewatch anytime" },
+  { label: "Claude Vault", sub: "Private dashboard setups + Claude skills (done live)" },
+  { label: "VIP-only group follow-up", sub: "30 min private session with Abie & Meri" },
+  { label: "30-day Premium Skool access", sub: "€49 value ~ included free" },
+];
+
 export default function RegisterForm() {
   const searchParams = useSearchParams();
+  const [ticket, setTicket] = useState<"free" | "vip">("free");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -138,121 +149,199 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <div className="flex gap-3 flex-wrap">
-        <input
-          type="text"
-          placeholder="First name"
-          value={fname}
-          onChange={(e) => setFname(e.target.value)}
-          required
-          disabled={loading}
-          className="flex-1 min-w-40 bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
-        />
-        <input
-          type="text"
-          placeholder="Last name"
-          value={lname}
-          onChange={(e) => setLname(e.target.value)}
-          disabled={loading}
-          className="flex-1 min-w-40 bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
-        />
+    <div className="flex flex-col gap-5">
+
+      {/* Ticket selector */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => setTicket("free")}
+          className={`rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer ${
+            ticket === "free"
+              ? "border-clay-500 bg-clay-500/5"
+              : "border-beige-200 hover:border-beige-300"
+          }`}
+        >
+          <p className="font-semibold text-charcoal-900 text-sm mb-0.5">Free</p>
+          <p className="text-xs text-taupe-400 font-light">120+ registered · waitlist risk</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setTicket("vip")}
+          className={`rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer relative ${
+            ticket === "vip"
+              ? "border-clay-500 bg-clay-500/5"
+              : "border-beige-200 hover:border-clay-500/50"
+          }`}
+        >
+          <div className="absolute -top-2.5 right-3 bg-clay-500 text-beige-50 text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full">
+            Best value
+          </div>
+          <p className="font-semibold text-charcoal-900 text-sm mb-0.5">VIP ~ €47</p>
+          <p className="text-xs text-taupe-400 font-light">Guaranteed seat · limited slots</p>
+        </button>
       </div>
 
-      <input
-        type="email"
-        placeholder="Your best email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        disabled={loading}
-        className="w-full bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
-      />
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            disabled={loading}
-            className="w-full flex items-center justify-between bg-beige-100 border border-beige-300 text-sm px-5 py-3 rounded-full outline-none hover:border-clay-500 focus:border-clay-500 transition-colors cursor-pointer data-[state=open]:border-clay-500 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <span className={btype ? "text-charcoal-900" : "text-taupe-400"}>
-              {btype || "What best describes you?"}
-            </span>
-            <ChevronDown className="w-4 h-4 text-taupe-400 shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5"
+      <p className="text-xs text-taupe-400 font-light text-center -mt-2">
+        Can&apos;t make May 1?{" "}
+        <a
+          href="https://www.skool.com/future-proof-with-ai-4339"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-clay-500 hover:underline"
         >
-          {BUSINESS_TYPES.map((type) => (
-            <DropdownMenuItem
-              key={type}
-              onSelect={() => setBtype(type)}
-              className="flex items-center justify-between px-4 py-2.5 text-sm text-espresso-800 rounded-xl cursor-pointer hover:bg-beige-100 focus:bg-beige-100 focus:text-charcoal-900"
-            >
-              {type}
-              {btype === type && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          Join our free community
+        </a>
+        {" "}~ or grab VIP for the replay.
+      </p>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            disabled={loading || sourceFromParam}
-            className="w-full flex items-center justify-between bg-beige-100 border border-beige-300 text-sm px-5 py-3 rounded-full outline-none hover:border-clay-500 focus:border-clay-500 transition-colors cursor-pointer data-[state=open]:border-clay-500 disabled:opacity-60 disabled:cursor-not-allowed"
+      {ticket === "vip" ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
+            {VIP_PERKS.map(({ label, sub }) => (
+              <div key={label} className="flex items-start gap-3">
+                <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-charcoal-900">{label}</p>
+                  <p className="text-xs text-taupe-400 font-light">{sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <a
+            href={STRIPE_VIP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm py-4 rounded-full transition-colors duration-200"
           >
-            <span className={referralSource ? "text-charcoal-900" : "text-taupe-400"}>
-              {referralSource || "Where did you find us?"}
-            </span>
-            {sourceFromParam ? (
-              <Check className="w-4 h-4 text-clay-500 shrink-0" />
+            Get VIP Access ~ €47
+            <ArrowRight className="w-4 h-4" />
+          </a>
+          <p className="text-center text-xs text-taupe-400 font-light">Only 3 VIP spots. Secure yours now.</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <div className="flex gap-3 flex-wrap">
+            <input
+              type="text"
+              placeholder="First name"
+              value={fname}
+              onChange={(e) => setFname(e.target.value)}
+              required
+              disabled={loading}
+              className="flex-1 min-w-40 bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
+            />
+            <input
+              type="text"
+              placeholder="Last name"
+              value={lname}
+              onChange={(e) => setLname(e.target.value)}
+              disabled={loading}
+              className="flex-1 min-w-40 bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
+            />
+          </div>
+
+          <input
+            type="email"
+            placeholder="Your best email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            className="w-full bg-beige-100 border border-beige-300 text-charcoal-900 placeholder:text-taupe-400 text-sm px-5 py-3 rounded-full outline-none focus:border-clay-500 transition-colors disabled:opacity-60"
+          />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={loading}
+                className="w-full flex items-center justify-between bg-beige-100 border border-beige-300 text-sm px-5 py-3 rounded-full outline-none hover:border-clay-500 focus:border-clay-500 transition-colors cursor-pointer data-[state=open]:border-clay-500 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <span className={btype ? "text-charcoal-900" : "text-taupe-400"}>
+                  {btype || "What best describes you?"}
+                </span>
+                <ChevronDown className="w-4 h-4 text-taupe-400 shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-[var(--radix-dropdown-menu-trigger-width)] bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5"
+            >
+              {BUSINESS_TYPES.map((type) => (
+                <DropdownMenuItem
+                  key={type}
+                  onSelect={() => setBtype(type)}
+                  className="flex items-center justify-between px-4 py-2.5 text-sm text-espresso-800 rounded-xl cursor-pointer hover:bg-beige-100 focus:bg-beige-100 focus:text-charcoal-900"
+                >
+                  {type}
+                  {btype === type && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={loading || sourceFromParam}
+                className="w-full flex items-center justify-between bg-beige-100 border border-beige-300 text-sm px-5 py-3 rounded-full outline-none hover:border-clay-500 focus:border-clay-500 transition-colors cursor-pointer data-[state=open]:border-clay-500 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <span className={referralSource ? "text-charcoal-900" : "text-taupe-400"}>
+                  {referralSource || "Where did you find us?"}
+                </span>
+                {sourceFromParam ? (
+                  <Check className="w-4 h-4 text-clay-500 shrink-0" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-taupe-400 shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-[var(--radix-dropdown-menu-trigger-width)] bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5"
+            >
+              {REFERRAL_SOURCES.map(({ label, value }) => (
+                <DropdownMenuItem
+                  key={value}
+                  onSelect={() => setReferralSource(value)}
+                  className="flex items-center justify-between px-4 py-2.5 text-sm text-espresso-800 rounded-xl cursor-pointer hover:bg-beige-100 focus:bg-beige-100 focus:text-charcoal-900"
+                >
+                  {label}
+                  {referralSource === value && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {error && (
+            <p className="text-xs text-red-500 text-center">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm py-4 rounded-full transition-colors duration-200 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving your spot...
+              </>
             ) : (
-              <ChevronDown className="w-4 h-4 text-taupe-400 shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+              "Save My Spot"
             )}
           </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="w-[var(--radix-dropdown-menu-trigger-width)] bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5"
-        >
-          {REFERRAL_SOURCES.map(({ label, value }) => (
-            <DropdownMenuItem
-              key={value}
-              onSelect={() => setReferralSource(value)}
-              className="flex items-center justify-between px-4 py-2.5 text-sm text-espresso-800 rounded-xl cursor-pointer hover:bg-beige-100 focus:bg-beige-100 focus:text-charcoal-900"
-            >
-              {label}
-              {referralSource === value && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      {error && (
-        <p className="text-xs text-red-500 text-center">{error}</p>
+          <p className="text-center text-xs text-taupe-400 font-light">Zoom link will be sent to you via email ~ check spam if it&apos;s not in your inbox.</p>
+        </form>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm py-4 rounded-full transition-colors duration-200 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Saving your spot...
-          </>
-        ) : (
-          "Save My Spot"
-        )}
-      </button>
-
-      <p className="text-center text-xs text-taupe-400 font-light">Zoom link will be sent to you via email ~ check spam if it&apos;s not in your inbox.</p>
-    </form>
+    </div>
   );
 }
