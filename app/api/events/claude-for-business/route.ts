@@ -5,7 +5,7 @@ const GHL_BUSINESS_TYPE_FIELD_ID = "business_type";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, email, businessType, referralSource, aiLevel } = body;
+    const { firstName, lastName, email, businessType, referralSource, aiLevel, isVip } = body;
 
     const customFields = [];
     if (businessType) customFields.push({ id: GHL_BUSINESS_TYPE_FIELD_ID, value: businessType });
@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       source: "TalentMucho",
       tags: [
         "claude-for-business",
+        ...(isVip ? ["vip"] : []),
         ...(referralSource ? [`source:${referralSource.toLowerCase().replace(/\s+/g, "-")}`] : []),
         ...(aiLevel ? [`ai-level:${aiLevel.toLowerCase().replace(/[~\s]+/g, "-").replace(/[^a-z0-9-]/g, "")}`] : []),
       ],

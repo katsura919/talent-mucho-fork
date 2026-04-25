@@ -7,7 +7,6 @@ import {
   RefreshCw, BarChart2, Search, ArrowRight, MapPin, Users,
 } from "lucide-react";
 import RegisterForm from "./RegisterForm";
-import AddToCalendar from "@/components/AddToCalendar";
 
 export const metadata: Metadata = {
   title: "Claude AI for Business Owners | Talent Mucho",
@@ -449,9 +448,6 @@ export default function ClaudeEventPage() {
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="mt-8">
-                <AddToCalendar variant="dark" />
               </div>
             </div>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronDown, Check, Loader2, ArrowRight } from "lucide-react";
+import AddToCalendar from "@/components/AddToCalendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -134,9 +135,12 @@ export default function RegisterForm() {
         <p className="text-espresso-800 text-base font-light mb-1 leading-relaxed">
           So excited to meet you! 🥹
         </p>
-        <p className="text-taupe-400 text-sm font-light mb-6 leading-relaxed">
+        <p className="text-taupe-400 text-sm font-light mb-4 leading-relaxed">
           Check your email for confirmation ~ and if you don&apos;t see it, check your spam and mark us as safe so you don&apos;t miss the Zoom link.
         </p>
+        <div className="flex justify-center mb-6">
+          <AddToCalendar variant="light" />
+        </div>
 
         <div className="bg-beige-100 border border-beige-200 rounded-2xl p-6 text-left">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-clay-500 mb-2">While you wait</p>
