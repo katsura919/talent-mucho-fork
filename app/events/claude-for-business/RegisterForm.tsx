@@ -231,7 +231,7 @@ export default function RegisterForm() {
             Get VIP Access ~ €47
             <ArrowRight className="w-4 h-4" />
           </a>
-          <p className="text-center text-xs text-taupe-400 font-light">VIP spots are capped at 12 for the follow-up call. Secure yours now.</p>
+          <p className="text-center text-xs text-clay-500 font-light italic">VIP attendees get exclusive early access to our 3-day bootcamp ~ before it opens to the public.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
