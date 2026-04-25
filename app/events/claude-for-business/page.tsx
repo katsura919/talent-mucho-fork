@@ -7,6 +7,7 @@ import {
   RefreshCw, BarChart2, Search, ArrowRight, MapPin, Users,
 } from "lucide-react";
 import RegisterForm from "./RegisterForm";
+import AddToCalendar from "@/components/AddToCalendar";
 
 export const metadata: Metadata = {
   title: "Claude AI for Business Owners | Talent Mucho",
@@ -436,6 +437,7 @@ export default function ClaudeEventPage() {
                   { icon: <Video className="w-4 h-4" />, key: "Format", val: "Live online via Zoom", sub: "Link sent to your email after registration" },
                   { icon: <MapPin className="w-4 h-4" />, key: "Organizer", val: "Talent Mucho ~ Abie Maxey and Meri" },
                 ].map(({ icon, key, val, sub }) => (
+
                   <div key={key} className="flex gap-4 items-start">
                     <div className="w-8 h-8 rounded-lg bg-clay-500/20 flex items-center justify-center shrink-0 mt-0.5 text-clay-500">
                       {icon}
@@ -447,6 +449,9 @@ export default function ClaudeEventPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="mt-8">
+                <AddToCalendar variant="dark" />
               </div>
             </div>
 

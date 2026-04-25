@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Talent Mucho//Claude AI for Business//EN
+BEGIN:VEVENT
+DTSTART:20260501T230000Z
+DTEND:20260502T010000Z
+SUMMARY:Claude AI for Business Owners
+DESCRIPTION:Join us on Zoom: https://us06web.zoom.us/j/7797385586?pwd=cUZ2SE1xOXdXNW1kay9IcDJVS3FyZz09\n\nHosted by Abie Maxey and Meri Gee.\n\nNo experience needed. Just show up.
+LOCATION:https://us06web.zoom.us/j/7797385586?pwd=cUZ2SE1xOXdXNW1kay9IcDJVS3FyZz09
+URL:https://talentmucho.com/events/claude-for-business
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
