@@ -44,6 +44,14 @@ const BUSINESS_TYPES = [
   "Other",
 ];
 
+const AI_LEVELS = [
+  "Complete beginner ~ never used AI",
+  "I've tried it a couple of times",
+  "I use it occasionally",
+  "I use it regularly",
+  "Pretty advanced",
+];
+
 const VIP_PERKS = [
   { label: "Guaranteed seat", sub: "No waitlist risk" },
   { label: "Full replay + transcript", sub: "Rewatch anytime" },
@@ -64,6 +72,7 @@ export default function RegisterForm() {
   const [btype, setBtype] = useState("");
   const [referralSource, setReferralSource] = useState("");
   const [sourceFromParam, setSourceFromParam] = useState(false);
+  const [aiLevel, setAiLevel] = useState("");
 
   useEffect(() => {
     const param = searchParams.get("source")?.toLowerCase();
@@ -90,6 +99,7 @@ export default function RegisterForm() {
           email: email.trim(),
           businessType: btype || undefined,
           referralSource: referralSource || undefined,
+          aiLevel: aiLevel || undefined,
         }),
       });
 
@@ -280,6 +290,36 @@ export default function RegisterForm() {
                 >
                   {type}
                   {btype === type && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={loading}
+                className="w-full flex items-center justify-between bg-beige-100 border border-beige-300 text-sm px-5 py-3 rounded-full outline-none hover:border-clay-500 focus:border-clay-500 transition-colors cursor-pointer data-[state=open]:border-clay-500 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <span className={aiLevel ? "text-charcoal-900" : "text-taupe-400"}>
+                  {aiLevel || "Your current level with AI?"}
+                </span>
+                <ChevronDown className="w-4 h-4 text-taupe-400 shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-[var(--radix-dropdown-menu-trigger-width)] bg-beige-50 border border-beige-200 rounded-2xl shadow-elegant p-1.5"
+            >
+              {AI_LEVELS.map((level) => (
+                <DropdownMenuItem
+                  key={level}
+                  onSelect={() => setAiLevel(level)}
+                  className="flex items-center justify-between px-4 py-2.5 text-sm text-espresso-800 rounded-xl cursor-pointer hover:bg-beige-100 focus:bg-beige-100 focus:text-charcoal-900"
+                >
+                  {level}
+                  {aiLevel === level && <Check className="w-3.5 h-3.5 text-clay-500 shrink-0" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
