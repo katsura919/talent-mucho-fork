@@ -56,7 +56,7 @@ const VIP_PERKS = [
   { label: "Guaranteed seat", sub: "No waitlist risk" },
   { label: "Full replay + transcript", sub: "Rewatch anytime" },
   { label: "Claude Vault", sub: "Private dashboard setups + Claude skills" },
-  { label: "VIP-only group follow-up", sub: "30 min private session with Abie & Meri" },
+  { label: "VIP-only group follow-up", sub: "45 min private session with Abie & Meri (max 12 per call)" },
   { label: "30-day Premium Skool access", sub: "€49 value ~ included free" },
 ];
 
