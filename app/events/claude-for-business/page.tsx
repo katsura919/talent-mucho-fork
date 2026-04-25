@@ -142,7 +142,7 @@ export default function ClaudeEventPage() {
             </p>
 
             <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              This is where you start. A small group of women, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
+              A small group of women, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
             </p>
 
             {/* Walk-away bullets */}
