@@ -56,7 +56,7 @@ const VIP_PERKS = [
   { label: "Guaranteed seat", sub: "No waitlist risk" },
   { label: "Full replay + transcript", sub: "Rewatch anytime" },
   { label: "Claude Vault", sub: "Private dashboard setups + Claude skills" },
-  { label: "VIP-only group follow-up", sub: "45 min private session with Abie & Meri (max 12 per call)" },
+  { label: "VIP-only group follow-up", sub: "45 min private session with Abie & Meri" },
   { label: "30-day Premium Skool access", sub: "€49 value ~ included free" },
 ];
 
@@ -188,7 +188,7 @@ export default function RegisterForm() {
             Best value
           </div>
           <p className="font-semibold text-charcoal-900 text-sm mb-0.5">VIP ~ €47</p>
-          <p className="text-xs text-taupe-400 font-light">Guaranteed seat · limited slots</p>
+          <p className="text-xs text-taupe-400 font-light">Guaranteed seat · join the inner circle</p>
         </button>
       </div>
 
