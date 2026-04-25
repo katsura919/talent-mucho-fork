@@ -394,9 +394,9 @@ export default function ClaudeEventPage() {
                 <Users className="w-5 h-5 text-beige-50" />
               </div>
               <div>
-                <p className="font-semibold text-charcoal-900 text-base">Only 10 spots available</p>
+                <p className="font-semibold text-charcoal-900 text-base">120+ women registered in 22 hours</p>
                 <p className="text-sm text-taupe-400 font-light">
-                  Intentionally small so everyone actually gets help, not just watches.
+                  The demand is real ~ grab your spot before it fills up.
                 </p>
               </div>
             </div>
@@ -545,7 +545,8 @@ export default function ClaudeEventPage() {
                 {[
                   { label: "Friday, May 1, 2026", sub: "6:00 to 8:00 PM EST" },
                   { label: "Zoom link sent before the event", sub: "We'll email it to you ~ check your inbox closer to the date" },
-                  { label: "100% Free", sub: "No upsell, no catch" },
+                  { label: "120+ already registered", sub: "Join the wave ~ free to attend" },
+                  { label: "VIP ~ €47", sub: "Guaranteed seat, replay, Claude Vault + Premium Skool access" },
                 ].map(({ label, sub }) => (
                   <div key={label} className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
@@ -577,7 +578,7 @@ export default function ClaudeEventPage() {
                 Save your spot
               </p>
               <p className="text-sm text-taupe-400 font-light mb-7">
-                Free · Takes 30 seconds.
+                Due to high demand, we added a VIP option to keep delivering value after the call.
               </p>
               <Suspense fallback={null}>
                 <RegisterForm />
