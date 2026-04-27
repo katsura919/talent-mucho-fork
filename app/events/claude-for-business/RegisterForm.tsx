@@ -74,6 +74,7 @@ export default function RegisterForm() {
   const [referralSource, setReferralSource] = useState("");
   const [sourceFromParam, setSourceFromParam] = useState(false);
   const [aiLevel, setAiLevel] = useState("");
+  const [ref, setRef] = useState("");
 
   useEffect(() => {
     const param = searchParams.get("source")?.toLowerCase();
@@ -81,6 +82,8 @@ export default function RegisterForm() {
       setReferralSource(SOURCE_PARAM_MAP[param]);
       setSourceFromParam(true);
     }
+    const refParam = searchParams.get("ref")?.toLowerCase().replace(/[^a-z0-9-_]/g, "");
+    if (refParam) setRef(refParam);
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -101,6 +104,7 @@ export default function RegisterForm() {
           businessType: btype || undefined,
           referralSource: referralSource || undefined,
           aiLevel: aiLevel || undefined,
+          ref: ref || undefined,
         }),
       });
 
