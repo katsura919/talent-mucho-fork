@@ -177,7 +177,7 @@ export default function RegisterForm() {
           }`}
         >
           <p className="font-semibold text-charcoal-900 text-sm mb-0.5">Free</p>
-          <p className="text-xs text-taupe-400 font-light">120+ registered · waitlist risk</p>
+          <p className="text-xs text-taupe-400 font-light">222+ registered · waitlist risk</p>
         </button>
         <button
           type="button"

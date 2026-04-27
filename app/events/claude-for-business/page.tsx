@@ -142,7 +142,7 @@ export default function ClaudeEventPage() {
             </p>
 
             <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              A small group of people, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
+              A growing community of business owners, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
             </p>
 
             {/* Walk-away bullets */}
@@ -394,7 +394,7 @@ export default function ClaudeEventPage() {
                 <Users className="w-5 h-5 text-beige-50" />
               </div>
               <div>
-                <p className="font-semibold text-charcoal-900 text-base">120+ people registered in 22 hours</p>
+                <p className="font-semibold text-charcoal-900 text-base">222+ registered and counting</p>
                 <p className="text-sm text-taupe-400 font-light">
                   The demand is real ~ grab your spot before it fills up.
                 </p>
@@ -540,7 +540,7 @@ export default function ClaudeEventPage() {
                 Two hours. Real tools. A plan you can use tonight.
               </h2>
               <p className="text-espresso-800 font-light leading-relaxed mb-8">
-                Save your spot now and we&apos;ll send you the Zoom link by email before the event. Small group, free, and built for anyone who is ready to finally get into AI.
+                Join 222+ already registered ~ free, live, and built for anyone who is ready to finally get into AI.
               </p>
               <div className="flex flex-col gap-4 mb-8">
                 {[
