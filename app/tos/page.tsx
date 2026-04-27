@@ -46,7 +46,7 @@ export default function TosPage() {
                 <li>All payments are processed securely via Stripe. By completing a purchase, you agree to Stripe&apos;s terms of service.</li>
                 <li>VIP event access includes the benefits listed at the time of purchase.</li>
                 <li>Prices are shown in euros (€) and are inclusive of any applicable taxes unless stated otherwise.</li>
-                <li>All sales are final unless otherwise stated. If you have an issue with your purchase, contact us at <a href="mailto:hello@abiemaxey.com" className="text-clay-500 hover:underline">hello@abiemaxey.com</a> and we will do our best to resolve it.</li>
+                <li>All sales are final unless otherwise stated. If you have an issue with your purchase, contact us at <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a> and we will do our best to resolve it.</li>
               </ul>
             </div>
 
@@ -99,7 +99,7 @@ export default function TosPage() {
             <div>
               <h2 className="text-xl font-semibold text-charcoal-900 mb-3">10. Contact</h2>
               <p>
-                For any questions about these Terms of Service, contact us at <a href="mailto:hello@abiemaxey.com" className="text-clay-500 hover:underline">hello@abiemaxey.com</a>.
+                For any questions about these Terms of Service, contact us at <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>.
               </p>
             </div>
 
