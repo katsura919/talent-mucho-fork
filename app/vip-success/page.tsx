@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Calendar, Video, Star } from "lucide-react";
+import AddToCalendar from "@/components/AddToCalendar";
+import VipRegisterForm from "./VipRegisterForm";
 
 export const metadata: Metadata = {
   title: "You're VIP ~ Claude AI for Business | Talent Mucho",
@@ -12,16 +14,10 @@ const PAID_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
 
 const whatNext = [
   {
-    step: "01",
-    title: "Join the Community",
-    body: "Join via the link below. We'll manually upgrade your account to Premium within 24 hours ~ you'll get a notification once it's done.",
-    cta: { label: "Join the Community", href: PAID_SKOOL_URL },
-  },
-  {
     step: "02",
     title: "Save the date for May 1",
     body: "You're guaranteed a seat on the live Zoom. We'll send the link to your email a few days before ~ check your inbox and mark us as safe.",
-    cta: null,
+    cta: { type: "calendar" },
   },
   {
     step: "03",
@@ -111,6 +107,23 @@ export default function VipSuccessPage() {
             </h2>
 
             <div className="flex flex-col gap-6">
+              {/* Step 01 ~ VIP registration */}
+              <div className="bg-white border border-clay-500/30 rounded-2xl p-7 flex gap-6 items-start">
+                <span
+                  className="text-5xl font-light leading-none text-beige-300 shrink-0"
+                  style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                >
+                  01
+                </span>
+                <div className="flex flex-col gap-3 flex-1">
+                  <p className="font-semibold text-charcoal-900 text-base">Confirm your details</p>
+                  <p className="text-sm text-taupe-400 font-light leading-relaxed">
+                    So we can tag you as VIP in our system and upgrade your Skool account within 24 hours.
+                  </p>
+                  <VipRegisterForm />
+                </div>
+              </div>
+
               {whatNext.map(({ step, title, body, cta }) => (
                 <div
                   key={step}
@@ -125,7 +138,7 @@ export default function VipSuccessPage() {
                   <div className="flex flex-col gap-3">
                     <p className="font-semibold text-charcoal-900 text-base">{title}</p>
                     <p className="text-sm text-taupe-400 font-light leading-relaxed">{body}</p>
-                    {cta && (
+                    {cta?.type === "link" && (
                       <a
                         href={cta.href}
                         target="_blank"
@@ -135,6 +148,9 @@ export default function VipSuccessPage() {
                         {cta.label}
                         <ArrowRight className="w-4 h-4" />
                       </a>
+                    )}
+                    {cta?.type === "calendar" && (
+                      <AddToCalendar variant="light" />
                     )}
                   </div>
                 </div>

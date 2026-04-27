@@ -7,6 +7,7 @@ import JsonLd from "../components/JsonLd";
 import { Header } from "../components/navbar";
 import CTASection from "@/components/CTASection";
 import OffersBanner from "@/components/sticky-banner-demo";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -138,7 +139,8 @@ export default function RootLayout({
           <Header />
         </div>
         {children}
-        <CTASection /> 
+        <CTASection />
+        <CookieBanner />
         <Analytics />
         <SpeedInsights />
       </body>
