@@ -81,9 +81,9 @@ export default function CTASection() {
                         {/* Copyright & Legal */}
                         <div className="text-center md:text-right">
                             <div className="flex items-center justify-center md:justify-end gap-3 text-xm text-beige-200/50">
-                                <a href="/terms-of-service" className="hover:text-beige-50 transition-colors">Terms of Service</a>
+                                <a href="/tos" className="hover:text-beige-50 transition-colors">Terms of Service</a>
                                 <span className="text-beige-200/20">•</span>
-                                <a href="/privacy-policy" className="hover:text-beige-50 transition-colors">Privacy Policy</a>
+                                <a href="/privacy" className="hover:text-beige-50 transition-colors">Privacy Policy</a>
                             </div>
                             <p className="text-sm text-beige-200/30 ">
                                 © {new Date().getFullYear()} Talent Mucho. All rights reserved.
