@@ -75,6 +75,7 @@ export default function RegisterForm() {
   const [sourceFromParam, setSourceFromParam] = useState(false);
   const [aiLevel, setAiLevel] = useState("");
   const [ref, setRef] = useState("");
+  const [consent, setConsent] = useState(false);
 
   useEffect(() => {
     const param = searchParams.get("source")?.toLowerCase();
@@ -88,7 +89,7 @@ export default function RegisterForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!fname.trim() || !email.trim()) return;
+    if (!fname.trim() || !email.trim() || !consent) return;
 
     setLoading(true);
     setError("");
@@ -367,13 +368,27 @@ export default function RegisterForm() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              disabled={loading}
+              className="mt-0.5 shrink-0 accent-clay-500 w-4 h-4 cursor-pointer"
+            />
+            <span className="text-xs text-taupe-400 font-light leading-relaxed">
+              I agree that Talent Mucho may collect and use my personal data to process my registration and send event-related communications. See our{" "}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-clay-500 hover:underline">Privacy Policy</a>.
+            </span>
+          </label>
+
           {error && (
             <p className="text-xs text-red-500 text-center">{error}</p>
           )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !consent}
             className="w-full flex items-center justify-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-sm py-4 rounded-full transition-colors duration-200 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
