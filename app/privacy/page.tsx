@@ -26,10 +26,10 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-xl font-semibold text-charcoal-900 mb-3">1. Who we are</h2>
               <p>
-                This Privacy Policy applies to <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey), a freelancer (autónoma) registered in Spain. Our website is <a href="https://talentmucho.com" className="text-clay-500 hover:underline">talentmucho.com</a>.
+                This Privacy Policy applies to <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey) and Mary Kris Gebe, freelancers registered in Spain. Our website is <a href="https://talentmucho.com" className="text-clay-500 hover:underline">talentmucho.com</a>.
               </p>
               <p className="mt-3">
-                For any privacy-related questions, contact us at: <a href="mailto:hello@abiemaxey.com" className="text-clay-500 hover:underline">hello@abiemaxey.com</a>
+                For any privacy-related questions, contact us at: <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>
               </p>
             </div>
 
@@ -101,7 +101,7 @@ export default function PrivacyPage() {
                 <li><strong>Withdraw consent</strong> ~ at any time, without affecting prior processing</li>
               </ul>
               <p className="mt-3">
-                To exercise any of these rights, email us at <a href="mailto:hello@abiemaxey.com" className="text-clay-500 hover:underline">hello@abiemaxey.com</a>. We will respond within 30 days.
+                To exercise any of these rights, email us at <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>. We will respond within 30 days.
               </p>
             </div>
 
@@ -122,7 +122,7 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-xl font-semibold text-charcoal-900 mb-3">10. Contact</h2>
               <p>
-                If you have any questions about this Privacy Policy or how we handle your data, contact us at <a href="mailto:hello@abiemaxey.com" className="text-clay-500 hover:underline">hello@abiemaxey.com</a>.
+                If you have any questions about this Privacy Policy or how we handle your data, contact us at <a href="mailto:hello@talentmucho.com" className="text-clay-500 hover:underline">hello@talentmucho.com</a>.
               </p>
               <p className="mt-3">
                 You also have the right to lodge a complaint with the Spanish data protection authority: <a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" className="text-clay-500 hover:underline">Agencia Española de Protección de Datos (AEPD)</a>.
