@@ -5,7 +5,7 @@ const GHL_BUSINESS_TYPE_FIELD_ID = "business_type";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, email, businessType, referralSource, aiLevel, isVip, ref } = body;
+    const { firstName, lastName, email, businessType, referralSource, aiLevel, isVip, ref, consentTimestamp, consentText } = body;
 
     const customFields = [];
     if (businessType) customFields.push({ id: GHL_BUSINESS_TYPE_FIELD_ID, value: businessType });
@@ -61,6 +61,23 @@ export async function POST(request: NextRequest) {
         { error: "Failed to create contact", details: responseData },
         { status: ghlResponse.status },
       );
+    }
+
+    // Log consent as a GHL note for GDPR audit trail
+    const contactId = responseData?.contact?.id;
+    if (contactId && consentTimestamp && consentText) {
+      await fetch(`${process.env.GHL_BASE_URL}contacts/${contactId}/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Version: "2021-07-28",
+          Authorization: `Bearer ${process.env.GHL_TOKEN}`,
+        },
+        body: JSON.stringify({
+          body: `GDPR Consent Record\nTimestamp: ${consentTimestamp}\nConsent text: "${consentText}"\nSource: talentmucho.com`,
+        }),
+      });
     }
 
     return NextResponse.json({ success: true, data: responseData });

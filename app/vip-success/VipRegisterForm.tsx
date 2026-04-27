@@ -71,6 +71,8 @@ export default function VipRegisterForm() {
           aiLevel: aiLevel || undefined,
           referralSource: referralSource || undefined,
           isVip: true,
+          consentTimestamp: new Date().toISOString(),
+          consentText: "I agree that Talent Mucho may collect and use my personal data to process my registration and send event-related communications.",
         }),
       });
 

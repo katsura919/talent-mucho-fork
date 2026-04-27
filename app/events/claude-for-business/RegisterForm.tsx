@@ -106,6 +106,8 @@ export default function RegisterForm() {
           referralSource: referralSource || undefined,
           aiLevel: aiLevel || undefined,
           ref: ref || undefined,
+          consentTimestamp: new Date().toISOString(),
+          consentText: "I agree that Talent Mucho may collect and use my personal data to process my registration and send event-related communications.",
         }),
       });
 
