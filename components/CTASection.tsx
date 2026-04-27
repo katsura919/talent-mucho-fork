@@ -84,6 +84,12 @@ export default function CTASection() {
                                 <a href="/tos" className="hover:text-beige-50 transition-colors">Terms of Service</a>
                                 <span className="text-beige-200/20">•</span>
                                 <a href="/privacy" className="hover:text-beige-50 transition-colors">Privacy Policy</a>
+                                <span className="text-beige-200/20">•</span>
+                                <a href="/cookies" className="hover:text-beige-50 transition-colors">Cookies</a>
+                                <span className="text-beige-200/20">•</span>
+                                <a href="/aviso-legal" className="hover:text-beige-50 transition-colors">Aviso Legal</a>
+                                <span className="text-beige-200/20">•</span>
+                                <a href="/refunds" className="hover:text-beige-50 transition-colors">Refunds</a>
                             </div>
                             <p className="text-sm text-beige-200/30 ">
                                 © {new Date().getFullYear()} Talent Mucho. All rights reserved.

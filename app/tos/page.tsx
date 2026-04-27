@@ -26,7 +26,7 @@ export default function TosPage() {
             <div>
               <h2 className="text-xl font-semibold text-charcoal-900 mb-3">1. About us</h2>
               <p>
-                These Terms of Service govern your use of <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey), a freelancer (autónoma) registered in Spain. By accessing our website or registering for any of our events or services, you agree to these terms.
+                These Terms of Service govern your use of <strong>Talent Mucho</strong>, operated by Joenabie Gamao (Abie Maxey) and Mary Kris Gebe, freelancers registered in Spain. By accessing our website or registering for any of our events or services, you agree to these terms.
               </p>
             </div>
 
