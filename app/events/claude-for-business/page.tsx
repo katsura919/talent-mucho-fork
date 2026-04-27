@@ -123,7 +123,7 @@ export default function ClaudeEventPage() {
               </span>
             </div>
 
-            <p className="text-espresso-800/60 font-light text-lg mb-3 italic">Hey girl,</p>
+            <p className="text-espresso-800/60 font-light text-lg mb-3 italic">Hey you,</p>
             <h1
               className="font-light tracking-tight text-charcoal-900 mb-6"
               style={{
@@ -142,7 +142,7 @@ export default function ClaudeEventPage() {
             </p>
 
             <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              A small group of women, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
+              A small group of people, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
             </p>
 
             {/* Walk-away bullets */}
@@ -394,7 +394,7 @@ export default function ClaudeEventPage() {
                 <Users className="w-5 h-5 text-beige-50" />
               </div>
               <div>
-                <p className="font-semibold text-charcoal-900 text-base">120+ women registered in 22 hours</p>
+                <p className="font-semibold text-charcoal-900 text-base">120+ people registered in 22 hours</p>
                 <p className="text-sm text-taupe-400 font-light">
                   The demand is real ~ grab your spot before it fills up.
                 </p>
@@ -495,7 +495,7 @@ export default function ClaudeEventPage() {
                   Tech + Business + AI = Superpowers.
                 </p>
                 <p className="text-beige-200/70 text-sm font-light leading-relaxed">
-                  We built this event for women who are just getting started and want to maximise AI in their lives ~ not just at work, but everywhere. No gatekeeping. No overwhelm. Just real tools, real talk, and two women who genuinely want to see you win.
+                  We built this event for people who are just getting started and want to maximise AI in their lives ~ not just at work, but everywhere. No gatekeeping. No overwhelm. Just real tools, real talk, and two people who genuinely want to see you win.
                 </p>
               </div>
 
@@ -540,7 +540,7 @@ export default function ClaudeEventPage() {
                 Two hours. Real tools. A plan you can use tonight.
               </h2>
               <p className="text-espresso-800 font-light leading-relaxed mb-8">
-                Save your spot now and we&apos;ll send you the Zoom link by email before the event. Small group, free, and built for women who are ready to finally get into AI.
+                Save your spot now and we&apos;ll send you the Zoom link by email before the event. Small group, free, and built for anyone who is ready to finally get into AI.
               </p>
               <div className="flex flex-col gap-4 mb-8">
                 {[
