@@ -117,6 +117,60 @@ function PinGate({ onUnlock, theme }: { onUnlock: () => void; theme: ThemeKey })
   );
 }
 
+// ── Edit helpers ~ deep get/set for path-based field editing ─────────────────
+type AnyRecord = Record<string, unknown>;
+function getByPath(obj: unknown, path: string): unknown {
+  return path.split('.').reduce<unknown>((o, k) => {
+    if (o == null) return undefined;
+    if (Array.isArray(o)) return o[Number(k)];
+    return (o as AnyRecord)[k];
+  }, obj);
+}
+function setByPath(obj: unknown, path: string, value: unknown): void {
+  const keys = path.split('.');
+  const last = keys.pop()!;
+  const target = keys.reduce<unknown>((o, k) => {
+    if (o == null) return undefined;
+    if (Array.isArray(o)) return o[Number(k)];
+    return (o as AnyRecord)[k];
+  }, obj);
+  if (target == null) return;
+  if (Array.isArray(target)) (target as unknown[])[Number(last)] = value;
+  else (target as AnyRecord)[last] = value;
+}
+
+// ── Editable ~ contentEditable wrapper that fires onSave on blur ─────────────
+function Editable({ value, editMode, onSave, style, tagName = 'span' }: {
+  value: string;
+  editMode: boolean;
+  onSave: (next: string) => void;
+  style?: React.CSSProperties;
+  tagName?: 'span' | 'div';
+}) {
+  const editClass = editMode ? 'os-editable' : undefined;
+  const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
+    const next = e.currentTarget.innerHTML;
+    if (next !== value) onSave(next);
+  };
+  const handleKey = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && tagName === 'span') {
+      e.preventDefault();
+      (e.currentTarget as HTMLElement).blur();
+    }
+  };
+  const props = {
+    className: editClass,
+    contentEditable: editMode,
+    suppressContentEditableWarning: true,
+    onBlur: handleBlur,
+    onKeyDown: handleKey,
+    dangerouslySetInnerHTML: { __html: value },
+    style,
+  };
+  if (tagName === 'div') return <div {...props} />;
+  return <span {...props} />;
+}
+
 // ── Typewriter helper ~ fakes streaming for pre-written answers ──────────────
 async function typeOut(
   text: string,
@@ -181,13 +235,91 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
   const [activePreset, setActivePreset] = useState<ComparePreset | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [segments, setSegments] = useState<Segment[]>(SEGMENTS);
+  const [editStatus, setEditStatus] = useState('');
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prompterRef = useRef<HTMLDivElement>(null);
   const qaInputRef = useRef<HTMLInputElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
-  const seg = SEGMENTS[segIdx];
+  const seg = segments[segIdx];
   const beat = seg.beats[beatIdx];
+
+  // ── Edit persistence ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const saved = localStorage.getItem('os-edits');
+    if (!saved) return;
+    try {
+      const edits: Record<string, string> = JSON.parse(saved);
+      const copy: Segment[] = JSON.parse(JSON.stringify(SEGMENTS));
+      Object.entries(edits).forEach(([path, val]) => setByPath(copy, path, val));
+      setSegments(copy);
+    } catch { /* ignore */ }
+  }, []);
+
+  function flashStatus(msg: string) {
+    setEditStatus(msg);
+    setTimeout(() => setEditStatus(''), 1800);
+  }
+
+  function saveEdit(path: string, value: string) {
+    const copy: Segment[] = JSON.parse(JSON.stringify(segments));
+    setByPath(copy, path, value);
+    setSegments(copy);
+
+    const original = String(getByPath(SEGMENTS, path) ?? '');
+    const stored = JSON.parse(localStorage.getItem('os-edits') || '{}') as Record<string, string>;
+    if (value !== original) stored[path] = value;
+    else delete stored[path];
+    localStorage.setItem('os-edits', JSON.stringify(stored));
+    flashStatus('Saved ✓');
+  }
+
+  function resetEdits() {
+    if (!confirm('Reset all edits? Original script will be restored.')) return;
+    localStorage.removeItem('os-edits');
+    setSegments(SEGMENTS);
+    flashStatus('Reset ✓');
+  }
+
+  function exportConfig() {
+    const blob = new Blob([JSON.stringify(segments, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `event-config-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    flashStatus('Downloaded ✓');
+  }
+
+  function importConfig(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = JSON.parse(String(ev.target?.result)) as Segment[];
+        if (!Array.isArray(parsed)) throw new Error('not an array');
+        setSegments(parsed);
+        // Save full snapshot as edits
+        const edits: Record<string, string> = {};
+        parsed.forEach((s, i) => {
+          ['title', 'titleItalic', 'subtitle', 'duration', 'audWhatTitle', 'audWhatBody', 'audTakeaway'].forEach(field => {
+            const orig = String(getByPath(SEGMENTS, `${i}.${field}`) ?? '');
+            const newVal = String(getByPath(parsed, `${i}.${field}`) ?? '');
+            if (orig !== newVal) edits[`${i}.${field}`] = newVal;
+          });
+        });
+        localStorage.setItem('os-edits', JSON.stringify(edits));
+        flashStatus('Imported ✓');
+      } catch {
+        flashStatus('Invalid file');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
 
   // ── Persist notes ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -230,7 +362,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   // ── Navigation ────────────────────────────────────────────────────────────
   const goToSeg = useCallback((idx: number) => {
     setSegIdx(idx); setBeatIdx(0);
-    const s = SEGMENTS[idx];
+    const s = segments[idx];
     const newMode = s.panel as Mode;
     setMode(newMode);
     if (newMode === 'compare' && s.panelData) {
@@ -244,7 +376,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
 
   const goToBeat = useCallback((idx: number) => {
     setBeatIdx(idx);
-    const b = SEGMENTS[segIdx].beats[idx];
+    const b = segments[segIdx].beats[idx];
     if (mode === 'showcase') {
       if (b.speaker === 'MERI') setShowTab('meri');
       else if (b.speaker === 'ABIE') setShowTab('abie');
@@ -258,11 +390,13 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     function onKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      const s = SEGMENTS[segIdx];
+      // Don't intercept while editing contentEditable text
+      if ((e.target as HTMLElement).isContentEditable) return;
+      const s = segments[segIdx];
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (beatIdx < s.beats.length - 1) goToBeat(beatIdx + 1);
-        else if (segIdx < SEGMENTS.length - 1) goToSeg(segIdx + 1);
+        else if (segIdx < segments.length - 1) goToSeg(segIdx + 1);
       }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
@@ -270,7 +404,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
         else if (segIdx > 0) {
           const prevSeg = segIdx - 1;
           setSegIdx(prevSeg);
-          const lastBeat = SEGMENTS[prevSeg].beats.length - 1;
+          const lastBeat = segments[prevSeg].beats.length - 1;
           setBeatIdx(lastBeat);
           goToSeg(prevSeg);
           setTimeout(() => goToBeat(lastBeat), 50);
@@ -329,7 +463,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
 
   // ── Export notes ──────────────────────────────────────────────────────────
   function exportNotes() {
-    const lines = SEGMENTS.map(s => {
+    const lines = segments.map(s => {
       const note = notes[s.id];
       return note ? `## Segment ${s.num} ~ ${s.title}${s.titleItalic ? ' ' + s.titleItalic : ''}\n${note}` : null;
     }).filter(Boolean);
@@ -380,7 +514,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
 
         {/* Segment tabs */}
         <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
-          {SEGMENTS.map((s, i) => (
+          {segments.map((s, i) => (
             <button key={s.id} onClick={() => goToSeg(i)} style={{
               padding: '3px 9px', borderRadius: 100, fontSize: 9, ...mono,
               cursor: 'pointer', letterSpacing: '0.05em', textTransform: 'uppercase',
@@ -415,6 +549,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
+          <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
+            {editMode ? '✓ DONE' : '✎ EDIT'}
+          </Btn>
 
           {/* Theme toggle ~ TM / AM */}
           <div style={{ display: 'flex', gap: 0, border: `1px solid ${C.border}`, borderRadius: 100, overflow: 'hidden', marginLeft: 4 }}>
@@ -443,6 +580,39 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </div>
         </div>
       </div>
+
+      {/* ── EDIT MODE TOOLBAR ── */}
+      {editMode && (
+        <div style={{
+          padding: '10px 16px',
+          background: '#fff8d6', borderBottom: '2px solid #d4a92a',
+          flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+          ...mono,
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#7a5e10' }}>
+            ✎ Edit mode
+          </span>
+          <span style={{ fontSize: 10, color: '#7a5e10', opacity: 0.7 }}>
+            ~ Click any text to edit ~ saves automatically
+          </span>
+          <span style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+            {editStatus && <span style={{ fontSize: 9, color: '#7a5e10', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{editStatus}</span>}
+            <button onClick={exportConfig} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: '#3a3a3a', color: '#fff', border: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↓ Export</button>
+            <button onClick={() => importInputRef.current?.click()} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: 'transparent', color: '#7a5e10', border: '1px solid #7a5e10', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↑ Import</button>
+            <input type="file" ref={importInputRef} accept=".json" style={{ display: 'none' }} onChange={importConfig} />
+            <button onClick={resetEdits} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: 'transparent', color: '#b03a2e', border: '1px solid #b03a2e', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↺ Reset</button>
+          </span>
+        </div>
+      )}
+
+      {/* Edit-mode highlighting */}
+      {editMode && (
+        <style>{`
+          .os-editable { outline: none; cursor: text; transition: background 0.15s, box-shadow 0.15s; border-radius: 3px; padding: 0 2px; margin: 0 -2px; box-shadow: 0 1px 0 rgba(212,169,42,0.5); }
+          .os-editable:hover { background: rgba(255,243,189,0.5); }
+          .os-editable:focus { background: rgba(255,243,189,0.85); box-shadow: 0 2px 0 #d4a92a; }
+        `}</style>
+      )}
 
       {/* ── HANDOFF BANNER ── */}
       {beat && (
@@ -526,9 +696,14 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   SEGMENT {seg.num}
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: C.text, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
-                  {seg.title}{seg.titleItalic && <> <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>{seg.titleItalic}</em></>}
+                  <Editable key={`title-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.title`, v)} />
+                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+                    <Editable key={`titleI-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => saveEdit(`${segIdx}.titleItalic`, v)} />
+                  </em></>}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginTop: 3 }}>{seg.subtitle}</div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginTop: 3 }}>
+                  <Editable key={`sub-${segIdx}`} value={seg.subtitle} editMode={editMode} onSave={v => saveEdit(`${segIdx}.subtitle`, v)} />
+                </div>
                 <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
                   {seg.speakers.map(sk => (
                     <div key={sk} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 9px', borderRadius: 100, border: `1px solid ${spkColor(sk)}`, ...mono, fontSize: 9, fontWeight: 500, color: spkColor(sk), letterSpacing: '0.07em', textTransform: 'uppercase' }}>
@@ -548,25 +723,33 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
               {seg.beats.map((b, bi) => (
                 <div key={b.id} id={`beat-${bi}`} style={{ marginBottom: bi < seg.beats.length - 1 ? 0 : 0 }}>
                   <div style={{ ...mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, marginBottom: 14, paddingBottom: 7, borderBottom: `1px solid ${C.border}` }}>
-                    {seg.num}.{String(bi + 1).padStart(2, '0')} ~ {b.title}
+                    {seg.num}.{String(bi + 1).padStart(2, '0')} ~{' '}
+                    <Editable key={`bt-${segIdx}-${bi}`} value={b.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.beats.${bi}.title`, v)} />
                   </div>
-                  {b.blocks.map((bl, bli) => (
+                  {b.blocks.map((bl, bli) => {
+                    const blPath = `${segIdx}.beats.${bi}.blocks.${bli}`;
+                    return (
                     <div key={bli} style={{ marginBottom: 16, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                       {bl.type === 'stage' && (
                         <div style={{ ...mono, fontSize: 11, color: C.muted, background: C.surface2, border: `1px dashed rgba(156,139,122,0.3)`, borderRadius: 6, padding: '8px 12px', letterSpacing: '0.03em', width: '100%' }}>
-                          🎬 {bl.text}
+                          🎬{' '}
+                          <Editable key={`stage-${segIdx}-${bi}-${bli}`} value={bl.text ?? ''} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v)} />
                         </div>
                       )}
                       {bl.type === 'poll' && (
                         <div style={{ background: 'rgba(125,107,90,0.12)', border: `1px solid rgba(125,107,90,0.3)`, borderRadius: 8, padding: '10px 14px', width: '100%' }}>
                           <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: 6 }}>~ Audience moment</div>
-                          <div style={{ ...mono, fontSize: 11, color: C.text }}>{bl.text?.replace(/\n/g, ' · ')}</div>
+                          <div style={{ ...mono, fontSize: 11, color: C.text }}>
+                            <Editable key={`poll-${segIdx}-${bi}-${bli}`} value={(bl.text ?? '').replace(/\n/g, ' · ')} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v.replace(/ · /g, '\n'))} />
+                          </div>
                         </div>
                       )}
                       {bl.type === 'workbook' && (
                         <div style={{ background: 'rgba(156,139,122,0.12)', border: `1px solid rgba(156,139,122,0.3)`, borderRadius: 8, padding: '10px 14px', width: '100%' }}>
                           <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8bab9a', marginBottom: 6 }}>~ Workbook moment</div>
-                          <div style={{ ...mono, fontSize: 11, color: C.text }}>{bl.text}</div>
+                          <div style={{ ...mono, fontSize: 11, color: C.text }}>
+                            <Editable key={`wb-${segIdx}-${bi}-${bli}`} value={bl.text ?? ''} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v)} />
+                          </div>
                         </div>
                       )}
                       {(bl.type === 'scripted' || bl.type === 'bullets') && (
@@ -583,17 +766,26 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                               {bl.type === 'scripted' ? '✦ scripted' : '~ bullets'}
                             </div>
                             {bl.type === 'scripted' ? (
-                              <div
+                              <Editable
+                                key={`scr-${segIdx}-${bi}-${bli}`}
+                                tagName="div"
+                                value={(bl.text ?? '').replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                editMode={editMode}
+                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em [^>]*>/g, '<em>'))}
                                 style={{ ...serif, fontSize, lineHeight: 1.75, fontWeight: 400, color: C.text }}
-                                dangerouslySetInnerHTML={{ __html: bl.text?.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`) ?? '' }}
                               />
                             ) : (
                               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
                                 {bl.items?.map((item, ii) => (
                                   <li key={ii} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                                     <span style={{ ...mono, fontSize: 12, color: C.primary, flexShrink: 0, paddingTop: 3 }}>~</span>
-                                    <span style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
-                                      dangerouslySetInnerHTML={{ __html: item.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`) }} />
+                                    <Editable
+                                      key={`b-${segIdx}-${bi}-${bli}-${ii}`}
+                                      value={item.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                      editMode={editMode}
+                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em [^>]*>/g, '<em>'))}
+                                      style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
+                                    />
                                   </li>
                                 ))}
                               </ul>
@@ -602,7 +794,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                         </>
                       )}
                     </div>
-                  ))}
+                  );})}
                   {bi < seg.beats.length - 1 && (
                     <div style={{ height: 1, background: C.border, margin: '16px 0 20px' }} />
                   )}
@@ -698,11 +890,14 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
       {view === 'audience' && (
         <AudienceView
           seg={seg} segIdx={segIdx} beat={beatIdx}
+          totalSegs={segments.length}
           wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
           C={C} mono={mono} serif={serif} sans={sans}
           spkColor={spkColor}
           theme={theme}
+          editMode={editMode}
+          onSaveEdit={saveEdit}
         />
       )}
     </div>
@@ -960,14 +1155,17 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor, theme }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
+  totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
   C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
+  editMode: boolean;
+  onSaveEdit: (path: string, value: string) => void;
 }) {
   const fmtEvent = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
@@ -1011,11 +1209,15 @@ function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, ser
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ display: 'inline-block', width: 28, height: 1, background: C.primary }} />
-            Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(SEGMENTS.length).padStart(2, '0')}</span>
+            Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
           <h1 style={{ fontSize: 'clamp(48px, 7vw, 88px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.98, color: C.text, margin: 0, ...sans }}>
-            <span style={{ textTransform: 'uppercase' }}>{seg.title}</span>
-            {seg.titleItalic && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>{seg.titleItalic}</em></>}
+            <span style={{ textTransform: 'uppercase' }}>
+              <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
+            </span>
+            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+              <Editable key={`av-ti-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.titleItalic`, v)} />
+            </em></>}
           </h1>
 
           {/* Speakers + progress on same row */}
@@ -1030,7 +1232,7 @@ function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, ser
               ))}
             </div>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              {SEGMENTS.map((_, i) => (
+              {Array.from({ length: totalSegs }).map((_, i) => (
                 <div key={i} style={{
                   height: 4,
                   width: i === segIdx ? 32 : 14,
@@ -1055,10 +1257,22 @@ function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, ser
                 <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
                 What we&apos;re covering
               </div>
-              <h2 style={{ ...sans, fontSize: 30, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, margin: 0, marginBottom: 18 }}
-                dangerouslySetInnerHTML={{ __html: emRender(seg.audWhatTitle) }} />
-              <div style={{ ...serif, fontSize: 19, lineHeight: 1.7, color: C.text, opacity: 0.9 }}
-                dangerouslySetInnerHTML={{ __html: emRender(seg.audWhatBody) }} />
+              <Editable
+                key={`awt-${segIdx}`}
+                tagName="div"
+                value={emRender(seg.audWhatTitle)}
+                editMode={editMode}
+                onSave={v => onSaveEdit(`${segIdx}.audWhatTitle`, v.replace(/<em [^>]*>/g, '<em>'))}
+                style={{ ...sans, fontSize: 30, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 18 }}
+              />
+              <Editable
+                key={`awb-${segIdx}`}
+                tagName="div"
+                value={emRender(seg.audWhatBody)}
+                editMode={editMode}
+                onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
+                style={{ ...serif, fontSize: 19, lineHeight: 1.7, color: C.text, opacity: 0.9 }}
+              />
             </div>
           </div>
 
@@ -1079,8 +1293,14 @@ function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, ser
                 <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
                 Take this with you
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, lineHeight: 1.5, color: onDark, position: 'relative' }}
-                dangerouslySetInnerHTML={{ __html: emOnDark(seg.audTakeaway) }} />
+              <Editable
+                key={`atk-${segIdx}`}
+                tagName="div"
+                value={emOnDark(seg.audTakeaway)}
+                editMode={editMode}
+                onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
+                style={{ ...serif, fontStyle: 'italic', fontSize: 22, lineHeight: 1.5, color: onDark, position: 'relative' }}
+              />
             </div>
 
             {/* Workbook prompt */}
