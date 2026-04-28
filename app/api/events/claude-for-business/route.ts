@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const GHL_BUSINESS_TYPE_FIELD_ID = "business_type";
+const GHL_CONSENT_TIMESTAMP_FIELD_ID = "consenttimestamp";
+const GHL_CONSENT_TEXT_FIELD_ID = "consenttext";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +11,8 @@ export async function POST(request: NextRequest) {
 
     const customFields = [];
     if (businessType) customFields.push({ id: GHL_BUSINESS_TYPE_FIELD_ID, value: businessType });
+    if (consentTimestamp) customFields.push({ id: GHL_CONSENT_TIMESTAMP_FIELD_ID, value: consentTimestamp });
+    if (consentText) customFields.push({ id: GHL_CONSENT_TEXT_FIELD_ID, value: consentText });
 
     const contactData = {
       firstName,
