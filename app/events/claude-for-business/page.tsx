@@ -540,13 +540,13 @@ export default function ClaudeEventPage() {
                 Two hours. Real tools. A plan you can use tonight.
               </h2>
               <p className="text-espresso-800 font-light leading-relaxed mb-8">
-                Join 222+ already registered ~ free, live, and built for anyone who is ready to finally get into AI.
+                Join 272+ already registered ~ free, live, and built for anyone who is ready to finally get into AI.
               </p>
               <div className="flex flex-col gap-4 mb-8">
                 {[
                   { label: "Friday, May 1, 2026", sub: "6:00 to 8:00 PM EST" },
                   { label: "Zoom link sent before the event", sub: "We'll email it to you ~ check your inbox closer to the date" },
-                  { label: "120+ already registered", sub: "Join the wave ~ free to attend" },
+                  { label: "272+ already registered", sub: "Join the wave ~ free to attend" },
                   { label: "VIP ~ €47", sub: "Guaranteed seat, replay, Claude Vault + Premium Skool access" },
                 ].map(({ label, sub }) => (
                   <div key={label} className="flex items-start gap-3">
