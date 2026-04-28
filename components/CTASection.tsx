@@ -80,7 +80,7 @@ export default function CTASection() {
 
                         {/* Copyright & Legal */}
                         <div className="text-center md:text-right">
-                            <div className="flex items-center justify-center md:justify-end gap-3 text-xm text-beige-200/50">
+                            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-3 gap-y-1 text-xm text-beige-200/50">
                                 <a href="/tos" className="hover:text-beige-50 transition-colors">Terms of Service</a>
                                 <span className="text-beige-200/20">•</span>
                                 <a href="/privacy" className="hover:text-beige-50 transition-colors">Privacy Policy</a>
