@@ -12,11 +12,14 @@ export async function GET() {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json({ edits: {}, note: 'BLOB_READ_WRITE_TOKEN not configured' }, { status: 200 });
     }
-    // List blobs and find the latest under our prefix
     const { blobs } = await list({ prefix: BLOB_KEY });
     if (!blobs.length) return NextResponse.json({ edits: {} });
     const latest = blobs.sort((a, b) => (b.uploadedAt > a.uploadedAt ? 1 : -1))[0];
-    const res = await fetch(latest.url, { cache: 'no-store' });
+    // Private blobs need the bearer token to read
+    const res = await fetch(latest.url, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    });
     if (!res.ok) return NextResponse.json({ edits: {} });
     const data = await res.json();
     return NextResponse.json(data);
@@ -40,8 +43,9 @@ export async function PUT(req: NextRequest) {
       edits,
       updatedAt: new Date().toISOString(),
     });
+    // Match the store's access mode (the store was provisioned as private).
     const blob = await put(BLOB_KEY, payload, {
-      access: 'public',
+      access: 'private',
       contentType: 'application/json',
       addRandomSuffix: false,
       allowOverwrite: true,

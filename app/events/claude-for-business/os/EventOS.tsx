@@ -1215,10 +1215,9 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
 
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
   const onDark = '#FAF8F5';
-  const brand = theme === 'tm' ? 'TALENT MUCHO' : 'ABIE MAXEY';
+  const brand = 'TALENT MUCHO';
   const brandSub = 'CLAUDE FOR BUSINESS';
-  const footerLink = theme === 'tm' ? 'talentmucho.com' : 'abiemaxey.com';
-  const footerSecond = theme === 'tm' ? 'abiemaxey.com' : 'talentmucho.com';
+  const footerLink = 'talentmucho.com';
 
   // Themed em rendering for body copy
   const emRender = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
@@ -1401,8 +1400,6 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
         <div>Workshop hosted by <span style={{ color: onDark }}>Abie Maxey</span> + <span style={{ color: onDark }}>Meri Gee</span></div>
         <div>
           <a href={`https://${footerLink}`} style={{ color: C.primary, textDecoration: 'none', fontWeight: 700 }}>{footerLink}</a>
-          <span style={{ opacity: 0.4, margin: '0 8px' }}>~</span>
-          <a href={`https://${footerSecond}`} style={{ color: 'rgba(250,248,245,0.55)', textDecoration: 'none' }}>{footerSecond}</a>
         </div>
       </div>
 
