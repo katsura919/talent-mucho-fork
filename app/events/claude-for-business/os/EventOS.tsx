@@ -3,23 +3,41 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset } from './config';
 
-// ── Palette ──────────────────────────────────────────────────────────────────
-const C = {
-  bg:       '#1a1613',
-  surface:  '#2A2520',
-  surface2: '#3D352E',
-  border:   'rgba(156,139,122,0.18)',
-  primary:  '#7D6B5A',
-  primaryHover: '#9C8B7A',
-  text:     '#FAF8F5',
-  muted:    'rgba(250,248,245,0.5)',
-  peach:    'rgba(125,107,90,0.12)',
-  sage:     'rgba(156,139,122,0.25)',
-  abie:     '#FAF8F5',
-  meri:     '#9C8B7A',
-  both:     'rgba(250,248,245,0.45)',
-  good:     '#4a7c59',
-  bad:      '#8b3a3a',
+// ── Palettes ─────────────────────────────────────────────────────────────────
+type ThemeKey = 'tm' | 'am';
+type Palette = Record<string, string>;
+
+const THEMES: Record<ThemeKey, { label: string; sub: string; isDark: boolean; C: Palette }> = {
+  // Talent Mucho ~ dark, earthy, professional
+  tm: {
+    label: 'TM',
+    sub: 'Talent Mucho',
+    isDark: true,
+    C: {
+      bg: '#1a1613', surface: '#2A2520', surface2: '#3D352E',
+      border: 'rgba(156,139,122,0.18)',
+      primary: '#7D6B5A', primaryHover: '#9C8B7A',
+      text: '#FAF8F5', muted: 'rgba(250,248,245,0.5)',
+      peach: 'rgba(125,107,90,0.12)', sage: 'rgba(156,139,122,0.25)',
+      abie: '#FAF8F5', meri: '#9C8B7A', both: 'rgba(250,248,245,0.45)',
+      good: '#4a7c59', bad: '#8b3a3a',
+    },
+  },
+  // Abie Maxey ~ light, peach, sage ~ creator personal brand
+  am: {
+    label: 'AM',
+    sub: 'Abie Maxey',
+    isDark: false,
+    C: {
+      bg: '#f9f5f2', surface: '#ffffff', surface2: '#e7ddd3',
+      border: 'rgba(58,58,58,0.12)',
+      primary: '#e3a99c', primaryHover: '#d49283',
+      text: '#3a3a3a', muted: '#6b6b6b',
+      peach: '#f2d6c9', sage: '#bbcccd',
+      abie: '#3a3a3a', meri: '#e3a99c', both: '#bbcccd',
+      good: '#1e8449', bad: '#b03a2e',
+    },
+  },
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -40,7 +58,8 @@ interface CompareState {
 // ── Pin gate ───────────────────────────────────────────────────────────────────
 const PIN = '1234'; // change this or set via NEXT_PUBLIC_EVENT_OS_PIN
 
-function PinGate({ onUnlock }: { onUnlock: () => void }) {
+function PinGate({ onUnlock, theme }: { onUnlock: () => void; theme: ThemeKey }) {
+  const C = THEMES[theme].C;
   const [val, setVal] = useState('');
   const [shake, setShake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +77,7 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
 
   return (
     <div style={{ background: C.bg, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 24, fontFamily: 'var(--font-manrope, sans-serif)' }}>
-      <div style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, fontWeight: 700 }}>TALENT MUCHO ~ EVENT OS</div>
+      <div style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, fontWeight: 700 }}>{THEMES[theme].sub.toUpperCase()} ~ EVENT OS</div>
       <div style={{ fontSize: 13, color: C.muted, letterSpacing: '0.08em' }}>Enter access PIN to continue</div>
       <input
         ref={inputRef}
@@ -81,43 +100,32 @@ function PinGate({ onUnlock }: { onUnlock: () => void }) {
   );
 }
 
-// ── Streaming helper ──────────────────────────────────────────────────────────
-async function streamFromApi(
-  prompt: string,
-  onChunk: (text: string) => void,
+// ── Typewriter helper ~ fakes streaming for pre-written answers ──────────────
+async function typeOut(
+  text: string,
+  onChunk: (chunk: string) => void,
+  signal: { cancelled: boolean },
 ): Promise<void> {
-  const res = await fetch('/api/events/claude-for-business/compare', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
-  });
-  if (!res.ok || !res.body) throw new Error(`API error ${res.status}`);
-  const reader = res.body.getReader();
-  const dec = new TextDecoder();
-  let buf = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    const lines = buf.split('\n'); buf = lines.pop() ?? '';
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const data = line.slice(6).trim();
-      if (data === '[DONE]') continue;
-      try {
-        const p = JSON.parse(data);
-        if (p.type === 'content_block_delta' && p.delta?.text) onChunk(p.delta.text);
-      } catch { /* skip malformed */ }
-    }
+  // Stream word-by-word with small randomized delays (feels like a real model)
+  const tokens = text.match(/\S+\s*/g) ?? [text];
+  for (const tok of tokens) {
+    if (signal.cancelled) return;
+    onChunk(tok);
+    // 20ms~55ms per token, slightly longer on punctuation
+    const delay = /[.!?]\s*$/.test(tok) ? 90 : 22 + Math.random() * 30;
+    await new Promise(r => setTimeout(r, delay));
   }
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function EventOS() {
   const [unlocked, setUnlocked] = useState(false);
+  const [theme, setTheme] = useState<ThemeKey>('tm');
 
   useEffect(() => {
     if (sessionStorage.getItem('os-unlocked') === '1') setUnlocked(true);
+    const saved = localStorage.getItem('os-theme') as ThemeKey | null;
+    if (saved && THEMES[saved]) setTheme(saved);
   }, []);
 
   function unlock() {
@@ -125,12 +133,19 @@ export default function EventOS() {
     setUnlocked(true);
   }
 
-  if (!unlocked) return <PinGate onUnlock={unlock} />;
-  return <OSApp />;
+  function changeTheme(t: ThemeKey) {
+    setTheme(t);
+    localStorage.setItem('os-theme', t);
+  }
+
+  if (!unlocked) return <PinGate onUnlock={unlock} theme={theme} />;
+  return <OSApp theme={theme} onThemeChange={changeTheme} />;
 }
 
 // ── The actual OS ──────────────────────────────────────────────────────────────
-function OSApp() {
+function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: ThemeKey) => void }) {
+  const C = THEMES[theme].C;
+  const isDark = THEMES[theme].isDark;
   const [segIdx, setSegIdx] = useState(0);
   const [beatIdx, setBeatIdx] = useState(0);
   const [view, setView] = useState<ViewType>('presenter');
@@ -255,27 +270,28 @@ function OSApp() {
 
   // ── Compare ───────────────────────────────────────────────────────────────
   function resetCompare() {
+    compareSignal.current.cancelled = true;
     setCompareState({ step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false });
   }
 
+  const compareSignal = useRef({ cancelled: false });
   async function runCompare() {
     if (!activePreset || compareState.running) return;
+    compareSignal.current = { cancelled: false };
     resetCompare();
     setCompareState(s => ({ ...s, running: true, step: 1 }));
-    try {
-      await streamFromApi(activePreset.leftPrompt, (chunk) => {
-        setCompareState(s => ({ ...s, leftText: s.leftText + chunk }));
-      });
-      setCompareState(s => ({ ...s, leftDone: true, step: 2 }));
-      await new Promise(r => setTimeout(r, 400));
-      await streamFromApi(activePreset.rightPrompt, (chunk) => {
-        setCompareState(s => ({ ...s, rightText: s.rightText + chunk }));
-      });
-      setCompareState(s => ({ ...s, rightDone: true, step: 3, running: false }));
-    } catch (err) {
-      console.error('Compare stream error:', err);
-      setCompareState(s => ({ ...s, running: false, leftText: s.leftText || '[Error ~ check ANTHROPIC_API_KEY]' }));
-    }
+    await typeOut(activePreset.leftAnswer, (chunk) => {
+      setCompareState(s => ({ ...s, leftText: s.leftText + chunk }));
+    }, compareSignal.current);
+    if (compareSignal.current.cancelled) return;
+    setCompareState(s => ({ ...s, leftDone: true, step: 2 }));
+    await new Promise(r => setTimeout(r, 500));
+    if (compareSignal.current.cancelled) return;
+    await typeOut(activePreset.rightAnswer, (chunk) => {
+      setCompareState(s => ({ ...s, rightText: s.rightText + chunk }));
+    }, compareSignal.current);
+    if (compareSignal.current.cancelled) return;
+    setCompareState(s => ({ ...s, rightDone: true, step: 3, running: false }));
   }
 
   // ── Q&A ───────────────────────────────────────────────────────────────────
@@ -373,14 +389,40 @@ function OSApp() {
               style={{ width: 50, accentColor: C.primary }} />
           </div>
           <div style={{ ...mono, fontSize: 17, fontWeight: 500, minWidth: 52, textAlign: 'right' }}>{fmt(timerSecs)}</div>
-          <Btn primary onClick={toggleTimer}>{timerRunning ? '⏸' : '▶'} {timerRunning ? 'PAUSE' : 'START'}</Btn>
-          <Btn onClick={resetTimer} style={{ fontSize: 9 }}>↺</Btn>
-          <Btn onClick={() => setView(v => v === 'presenter' ? 'audience' : 'presenter')}>
+          <Btn primary C={C} onClick={toggleTimer}>{timerRunning ? '⏸' : '▶'} {timerRunning ? 'PAUSE' : 'START'}</Btn>
+          <Btn C={C} onClick={resetTimer} style={{ fontSize: 9 }}>↺</Btn>
+          <Btn C={C} onClick={() => setView(v => v === 'presenter' ? 'audience' : 'presenter')}>
             {view === 'presenter' ? '🖥 SHARE' : '⬅ BACK'}
           </Btn>
-          <Btn onClick={() => setShowNotes(n => !n)} style={{ color: showNotes ? C.primary : C.muted }}>
+          <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
+
+          {/* Theme toggle ~ TM / AM */}
+          <div style={{ display: 'flex', gap: 0, border: `1px solid ${C.border}`, borderRadius: 100, overflow: 'hidden', marginLeft: 4 }}>
+            {(['tm', 'am'] as ThemeKey[]).map(t => (
+              <button
+                key={t}
+                onClick={() => onThemeChange(t)}
+                title={THEMES[t].sub}
+                style={{
+                  padding: '4px 10px',
+                  ...mono,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: t === theme ? C.primary : 'transparent',
+                  color: t === theme ? (isDark ? C.bg : C.text) : C.muted,
+                  transition: 'all 0.15s',
+                }}
+              >
+                {THEMES[t].label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -649,18 +691,23 @@ function OSApp() {
 }
 
 // ── Reusable Btn ─────────────────────────────────────────────────────────────
-function Btn({ children, onClick, primary, style }: {
+function Btn({ children, onClick, primary, style, C }: {
   children: React.ReactNode; onClick?: () => void; primary?: boolean;
   style?: React.CSSProperties;
+  C?: Palette;
 }) {
+  const p = C?.primary ?? '#7D6B5A';
+  const bg = C?.bg ?? '#1a1613';
+  const text = C?.text ?? '#FAF8F5';
+  const border = C?.border ?? 'rgba(156,139,122,0.3)';
   return (
     <button onClick={onClick} style={{
       padding: '4px 12px', borderRadius: 100, fontSize: 9,
       fontFamily: 'ui-monospace, monospace', fontWeight: 700,
       cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase',
-      border: `1px solid ${primary ? '#7D6B5A' : 'rgba(156,139,122,0.3)'}`,
-      background: primary ? '#7D6B5A' : 'transparent',
-      color: primary ? '#1a1613' : 'rgba(250,248,245,0.7)',
+      border: `1px solid ${primary ? p : border}`,
+      background: primary ? p : 'transparent',
+      color: primary ? bg : text,
       transition: 'all 0.15s', whiteSpace: 'nowrap',
       ...style,
     }}>

@@ -43,12 +43,14 @@ export interface ComparePreset {
   leftTitle: string;
   leftWhy: string;
   leftPrompt: string;
+  leftAnswer: string;   // manual pre-written answer ~ no API call
   leftAnnLbl: string;
   leftAnnTxt: string;
   rightTag: string;
   rightTitle: string;
   rightWhy: string;
   rightPrompt: string;
+  rightAnswer: string;  // manual pre-written answer ~ no API call
   rightAnnLbl: string;
   rightAnnTxt: string;
   landing: string;
@@ -67,10 +69,12 @@ export const COMPARE_PRESETS: Record<string, ComparePreset> = {
     leftTitle: '<em>"ChatGPT habit"</em>',
     leftWhy: 'How most people prompt ~ vague, no context.',
     leftPrompt: 'write me an invoice reminder',
+    leftAnswer: "Subject: Friendly Invoice Reminder\n\nHi there,\n\nI hope this email finds you well. I'm writing to follow up on the outstanding invoice that was sent on [date]. As of today, payment has not yet been received.\n\nPlease let me know if you have any questions or if there is anything I can do to help facilitate payment. I'd appreciate it if you could process the payment at your earliest convenience.\n\nThank you for your prompt attention to this matter.\n\nBest regards,\n[Your Name]",
     rightTag: '✓ With context',
     rightTitle: '<em>Thinking partner</em>',
     rightWhy: 'Role, person, goal, constraint.',
     rightPrompt: "I'm a VA for a small marketing agency. My client Sarah hasn't paid invoice #INV-204 ~ €450, 7 days overdue. She's a good client, first time late, want to keep the relationship. Write a polite reminder that:\n- Stays warm\n- Is firm enough to actually get paid\n- Gives her an easy path to pay (Stripe)\n- Under 100 words\n\nSign as me ~ Meri.",
+    rightAnswer: "Subject: Quick nudge on INV-204\n\nHi Sarah,\n\nHope you're doing well! Just a friendly heads-up that invoice #INV-204 (€450) is now 7 days past due ~ totally understand things slip when you're busy.\n\nIf it's easier, here's a one-click Stripe link to settle it: [stripe link]\n\nLet me know if anything's stuck on your end and I'll sort it out.\n\nThanks Sarah,\nMeri",
     leftAnnLbl: "What's wrong",
     leftAnnTxt: "It works. Just generic ~ no name, no amount, no relationship awareness.",
     rightAnnLbl: 'What changed',
