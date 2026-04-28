@@ -12,13 +12,12 @@ interface ThemeFonts {
   serif: string;  // scripted / italic accents
 }
 
+// Both themes use Abie Maxey's brand fonts ~ only the colors differ between themes
 const FONTS: Record<ThemeKey, ThemeFonts> = {
-  // Talent Mucho ~ Manrope + Cormorant Garamond (project defaults)
   tm: {
-    sans: 'var(--font-manrope, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-cormorant, ui-serif, Georgia, serif)',
+    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
+    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
   },
-  // Abie Maxey ~ Host Grotesk + Instrument Serif (her personal brand fonts)
   am: {
     sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
     serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
