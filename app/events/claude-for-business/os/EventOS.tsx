@@ -247,17 +247,50 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const seg = segments[segIdx];
   const beat = seg.beats[beatIdx];
 
-  // ── Edit persistence ──────────────────────────────────────────────────────
+  // ── Edit persistence ─ server (Vercel Blob) is source of truth, localStorage backs it up
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'synced' | 'offline'>('idle');
+
   useEffect(() => {
-    const saved = localStorage.getItem('os-edits');
-    if (!saved) return;
-    try {
-      const edits: Record<string, string> = JSON.parse(saved);
+    let cancelled = false;
+    function applyEdits(edits: Record<string, string>) {
+      if (cancelled) return;
       const copy: Segment[] = JSON.parse(JSON.stringify(SEGMENTS));
       Object.entries(edits).forEach(([path, val]) => setByPath(copy, path, val));
       setSegments(copy);
+    }
+    // 1. Hydrate immediately from localStorage (fast)
+    try {
+      const local = localStorage.getItem('os-edits');
+      if (local) applyEdits(JSON.parse(local));
     } catch { /* ignore */ }
+    // 2. Then fetch the canonical version from the server
+    fetch('/api/events/claude-for-business/script', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.edits) return;
+        applyEdits(data.edits);
+        localStorage.setItem('os-edits', JSON.stringify(data.edits));
+        setSyncStatus('synced');
+      })
+      .catch(() => setSyncStatus('offline'));
+    return () => { cancelled = true; };
   }, []);
+
+  function persistEditsToServer(edits: Record<string, string>) {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    setSyncStatus('saving');
+    saveTimerRef.current = setTimeout(() => {
+      fetch('/api/events/claude-for-business/script', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ edits }),
+      })
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(() => setSyncStatus('synced'))
+        .catch(() => setSyncStatus('offline'));
+    }, 700);
+  }
 
   function flashStatus(msg: string) {
     setEditStatus(msg);
@@ -274,6 +307,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     if (value !== original) stored[path] = value;
     else delete stored[path];
     localStorage.setItem('os-edits', JSON.stringify(stored));
+    persistEditsToServer(stored);
     flashStatus('Saved ✓');
   }
 
@@ -281,6 +315,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     if (!confirm('Reset all edits? Original script will be restored.')) return;
     localStorage.removeItem('os-edits');
     setSegments(SEGMENTS);
+    persistEditsToServer({});
     flashStatus('Reset ✓');
   }
 
@@ -312,6 +347,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           });
         });
         localStorage.setItem('os-edits', JSON.stringify(edits));
+        persistEditsToServer(edits);
         flashStatus('Imported ✓');
       } catch {
         flashStatus('Invalid file');
@@ -552,6 +588,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
           </Btn>
+          {editMode && (
+            <div title={`Sync: ${syncStatus}`} style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: syncStatus === 'offline' ? '#b03a2e' : syncStatus === 'saving' ? '#d4a92a' : C.primary, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', animation: syncStatus === 'saving' ? 'blink 1s ease-in-out infinite' : undefined }} />
+              {syncStatus === 'saving' ? 'SYNC' : syncStatus === 'synced' ? 'CLOUD' : syncStatus === 'offline' ? 'OFFLINE' : 'LOCAL'}
+            </div>
+          )}
 
           {/* Theme toggle ~ TM / AM */}
           <div style={{ display: 'flex', gap: 0, border: `1px solid ${C.border}`, borderRadius: 100, overflow: 'hidden', marginLeft: 4 }}>
