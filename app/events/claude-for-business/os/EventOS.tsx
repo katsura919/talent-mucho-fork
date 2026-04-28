@@ -700,9 +700,10 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
         <AudienceView
           seg={seg} segIdx={segIdx} beat={beatIdx}
           wbBlock={wbBlock} pollBlock={pollBlock}
-          timerSecs={timerRunning ? eventSecs : eventSecs}
+          timerSecs={eventSecs}
           C={C} mono={mono} serif={serif} sans={sans}
           spkColor={spkColor}
+          theme={theme}
         />
       )}
     </div>
@@ -960,110 +961,173 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, beat, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor }: {
+function AudienceView({ seg, segIdx, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor, theme }: {
   seg: Segment; segIdx: number; beat: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
-  C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
+  C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
+  theme: ThemeKey;
 }) {
   const fmtEvent = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-
   const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
   const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
 
+  // Premium contrast text on dark elements (uses light beige regardless of theme bg)
+  const onDark = '#FAF8F5';
+  const brand = theme === 'tm' ? 'TALENT MUCHO' : 'ABIE MAXEY';
+  const brandSub = 'CLAUDE FOR BUSINESS';
+  const footerLink = theme === 'tm' ? 'talentmucho.com' : 'abiemaxey.com';
+  const footerSecond = theme === 'tm' ? 'abiemaxey.com' : 'talentmucho.com';
+
+  // Themed em rendering for body copy
+  const emRender = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+  const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+
   return (
-    <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#FAF8F5', color: '#2A2520', ...sans }}>
-      {/* Top bar */}
-      <div style={{ background: '#2A2520', color: '#FAF8F5', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '3px solid #7D6B5A' }}>
-        <div style={{ ...mono, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7D6B5A' }}>
-          TALENT MUCHO<span style={{ color: 'rgba(250,248,245,0.35)', margin: '0 7px' }}>~</span>CLAUDE FOR BUSINESS
+    <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
+      {/* Subtle texture overlay */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.5, background: `radial-gradient(ellipse at top, ${C.primary}15 0%, transparent 60%), radial-gradient(ellipse at bottom right, ${C.peach} 0%, transparent 50%)` }} />
+
+      {/* ── HERO TOP STRIP ── */}
+      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 800, color: C.text }}>
+            {theme === 'tm' ? 'tm' : 'am'}
+          </div>
+          <div>
+            <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>{brand}</div>
+            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.45)', marginTop: 2 }}>{brandSub}</div>
+          </div>
         </div>
-        <div style={{ ...mono, fontSize: 11, color: 'rgba(250,248,245,0.6)', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite' }} />
-          LIVE WORKSHOP ~ {fmtEvent(timerSecs)} LEFT
+        <div style={{ ...mono, fontSize: 11, color: 'rgba(250,248,245,0.7)', letterSpacing: '0.14em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite', boxShadow: '0 0 12px #ff5e5e' }} />
+          LIVE <span style={{ opacity: 0.4 }}>~</span> <span style={{ fontWeight: 600, color: onDark }}>{fmtEvent(timerSecs)}</span> LEFT
         </div>
       </div>
 
-      {/* Current segment bar */}
-      <div style={{ background: '#7D6B5A', color: '#2A2520', padding: '12px 32px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <div>
-          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.65, marginBottom: 3 }}>
-            Segment {seg.num}
+      {/* ── HERO TITLE BAND ── */}
+      <div style={{ flexShrink: 0, padding: '52px 48px 38px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 28, height: 1, background: C.primary }} />
+            Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(SEGMENTS.length).padStart(2, '0')}</span>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.05, textTransform: 'uppercase' }}>
-            {seg.title}{seg.titleItalic && <> <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{seg.titleItalic}</em></>}
+          <h1 style={{ fontSize: 'clamp(48px, 7vw, 88px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.98, color: C.text, margin: 0, ...sans }}>
+            <span style={{ textTransform: 'uppercase' }}>{seg.title}</span>
+            {seg.titleItalic && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>{seg.titleItalic}</em></>}
+          </h1>
+
+          {/* Speakers + progress on same row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 28, marginTop: 28, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase' }}>With</span>
+              {seg.speakers.map(sk => (
+                <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 14px', borderRadius: 100, ...mono, fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}40`, background: `${spkColor(sk)}10`, color: spkColor(sk) === onDark ? C.text : spkColor(sk) }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: spkColor(sk) === onDark ? C.text : spkColor(sk) }} />
+                  {SPEAKERS[sk]?.name}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              {SEGMENTS.map((_, i) => (
+                <div key={i} style={{
+                  height: 4,
+                  width: i === segIdx ? 32 : 14,
+                  borderRadius: 4,
+                  background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                }} />
+              ))}
+            </div>
           </div>
-        </div>
-        <div style={{ display: 'flex', gap: 5 }}>
-          {SEGMENTS.map((_, i) => (
-            <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: i < segIdx ? '#2A2520' : i === segIdx ? '#2A2520' : 'rgba(42,37,32,0.18)', boxShadow: i === segIdx ? '0 0 0 4px rgba(42,37,32,0.18)' : 'none', transition: 'all 0.3s' }} />
-          ))}
         </div>
       </div>
 
-      {/* Body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px 60px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 22, maxWidth: 1200, margin: '0 auto' }}>
-          {/* Left col */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div style={{ background: '#fff', border: '1px solid #DED4C4', borderRadius: 12, padding: '20px 22px' }}>
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: '#7D6B5A', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ display: 'inline-block', width: 14, height: 1, background: '#7D6B5A' }} />
+      {/* ── BODY ── */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+
+          {/* ── LEFT: What we're covering ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div style={{ position: 'relative' }}>
+              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
                 What we&apos;re covering
               </div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#2A2520', letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 10, textTransform: 'uppercase' }}
-                dangerouslySetInnerHTML={{ __html: seg.audWhatTitle }} />
-              <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: '#2A2520' }}
-                dangerouslySetInnerHTML={{ __html: seg.audWhatBody }} />
-              <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginTop: 10 }}>
-                {seg.speakers.map(sk => (
-                  <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 100, ...mono, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}`, color: spkColor(sk) === '#FAF8F5' ? '#2A2520' : spkColor(sk) }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: spkColor(sk) === '#FAF8F5' ? '#2A2520' : spkColor(sk) }} />
-                    {SPEAKERS[sk]?.name}
-                  </div>
-                ))}
-              </div>
+              <h2 style={{ ...sans, fontSize: 30, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, margin: 0, marginBottom: 18 }}
+                dangerouslySetInnerHTML={{ __html: emRender(seg.audWhatTitle) }} />
+              <div style={{ ...serif, fontSize: 19, lineHeight: 1.7, color: C.text, opacity: 0.9 }}
+                dangerouslySetInnerHTML={{ __html: emRender(seg.audWhatBody) }} />
             </div>
           </div>
 
-          {/* Right col */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {/* Takeaway */}
-            <div style={{ background: '#2A2520', border: '1px solid #2A2520', borderRadius: 12, padding: '22px 22px' }}>
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: '#7D6B5A', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ display: 'inline-block', width: 14, height: 1, background: '#7D6B5A' }} />
+          {/* ── RIGHT: Takeaway + active prompt ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+            {/* Takeaway pull-quote */}
+            <div style={{
+              background: C.text, color: onDark,
+              borderRadius: 20, padding: '34px 30px',
+              boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
+              position: 'relative', overflow: 'hidden',
+            }}>
+              {/* Decorative quote mark */}
+              <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+
+              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10, position: 'relative' }}>
+                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
                 Take this with you
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, lineHeight: 1.55, color: '#FAF8F5' }}
-                dangerouslySetInnerHTML={{ __html: seg.audTakeaway.replace(/<em>/g, '<em style="color:#7D6B5A;font-style:italic">') }} />
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, lineHeight: 1.5, color: onDark, position: 'relative' }}
+                dangerouslySetInnerHTML={{ __html: emOnDark(seg.audTakeaway) }} />
             </div>
 
-            {/* Workbook */}
+            {/* Workbook prompt */}
             {wbBlock && (
-              <div style={{ background: '#EBE4D8', border: '1px solid #DED4C4', borderRadius: 12, padding: '20px 22px' }}>
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: '#7D6B5A', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>~ Workbook moment</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#2A2520', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '-0.01em' }}
-                  dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `"${wbText.split('"')[1]}"` : wbText }} />
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 13, color: '#9C8B7A', lineHeight: 1.5 }}>
+              <div style={{
+                background: C.surface, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.border}`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                  ~ Workbook moment
+                </div>
+                <div style={{ ...sans, fontSize: 19, fontWeight: 600, color: C.text, marginBottom: 10, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+                  dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
                   Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
             )}
 
-            {/* Poll */}
+            {/* Poll prompt */}
             {pollBlock && (
-              <div style={{ background: '#F5F0E8', border: '1px solid rgba(125,107,90,0.4)', borderRadius: 12, padding: '20px 22px' }}>
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: '#7D6B5A', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>~ Audience moment</div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: '#2A2520', marginBottom: 8, textTransform: 'uppercase' }}>{pollLines[0]}</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, ...mono, fontSize: 13, color: '#2A2520' }}>
+              <div style={{
+                background: C.surface2, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.primary}40`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                  ~ Audience moment
+                </div>
+                <div style={{ ...sans, fontSize: 18, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+                  {pollLines[0]}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {pollLines.slice(1).map((l, i) => (
-                    <div key={i} style={{ padding: '6px 12px', background: 'rgba(255,255,255,0.6)', borderRadius: 7 }}>{l}</div>
+                    <div key={i} style={{
+                      padding: '10px 14px', background: C.surface, borderRadius: 10,
+                      ...mono, fontSize: 13, color: C.text,
+                      border: `1px solid ${C.border}`,
+                    }}>{l}</div>
                   ))}
                 </div>
-                <div style={{ marginTop: 10, ...mono, fontSize: 10, color: '#7D6B5A', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Drop your answer in the Zoom chat
+                <div style={{ marginTop: 14, ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                  ↳ Drop your answer in the Zoom chat
                 </div>
               </div>
             )}
@@ -1071,13 +1135,17 @@ function AudienceView({ seg, segIdx, beat, wbBlock, pollBlock, timerSecs, C, mon
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ background: '#2A2520', color: 'rgba(250,248,245,0.5)', padding: '9px 32px', flexShrink: 0, ...mono, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>Workshop hosted by Abie Maxey + Meri Gee</div>
-        <div><a href="https://talentmucho.com" style={{ color: '#7D6B5A', textDecoration: 'none' }}>talentmucho.com</a> ~ abiemaxey.com</div>
+      {/* ── FOOTER ── */}
+      <div style={{ background: C.text, color: 'rgba(250,248,245,0.55)', padding: '14px 48px', flexShrink: 0, ...mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+        <div>Workshop hosted by <span style={{ color: onDark }}>Abie Maxey</span> + <span style={{ color: onDark }}>Meri Gee</span></div>
+        <div>
+          <a href={`https://${footerLink}`} style={{ color: C.primary, textDecoration: 'none', fontWeight: 700 }}>{footerLink}</a>
+          <span style={{ opacity: 0.4, margin: '0 8px' }}>~</span>
+          <a href={`https://${footerSecond}`} style={{ color: 'rgba(250,248,245,0.55)', textDecoration: 'none' }}>{footerSecond}</a>
+        </div>
       </div>
 
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
+      <style>{`@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.1)}}`}</style>
     </div>
   );
 }
