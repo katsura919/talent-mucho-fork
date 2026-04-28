@@ -7,6 +7,24 @@ import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset }
 type ThemeKey = 'tm' | 'am';
 type Palette = Record<string, string>;
 
+interface ThemeFonts {
+  sans: string;   // UI / body
+  serif: string;  // scripted / italic accents
+}
+
+const FONTS: Record<ThemeKey, ThemeFonts> = {
+  // Talent Mucho ~ Manrope + Cormorant Garamond (project defaults)
+  tm: {
+    sans: 'var(--font-manrope, ui-sans-serif, system-ui, sans-serif)',
+    serif: 'var(--font-cormorant, ui-serif, Georgia, serif)',
+  },
+  // Abie Maxey ~ Host Grotesk + Instrument Serif (her personal brand fonts)
+  am: {
+    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
+    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
+  },
+};
+
 const THEMES: Record<ThemeKey, { label: string; sub: string; isDark: boolean; C: Palette }> = {
   // Talent Mucho ~ dark, earthy, professional
   tm: {
@@ -76,7 +94,7 @@ function PinGate({ onUnlock, theme }: { onUnlock: () => void; theme: ThemeKey })
   }
 
   return (
-    <div style={{ background: C.bg, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 24, fontFamily: 'var(--font-manrope, sans-serif)' }}>
+    <div style={{ background: C.bg, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 24, fontFamily: FONTS[theme].sans }}>
       <div style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, fontWeight: 700 }}>{THEMES[theme].sub.toUpperCase()} ~ EVENT OS</div>
       <div style={{ fontSize: 13, color: C.muted, letterSpacing: '0.08em' }}>Enter access PIN to continue</div>
       <input
@@ -347,9 +365,10 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const pollBlock = beat?.blocks.find(b => b.type === 'poll');
 
   // ── Styles ────────────────────────────────────────────────────────────────
+  const F = FONTS[theme];
   const mono: React.CSSProperties = { fontFamily: 'ui-monospace, "Geist Mono", monospace' };
-  const sans: React.CSSProperties = { fontFamily: 'var(--font-manrope, sans-serif)' };
-  const serif: React.CSSProperties = { fontFamily: 'var(--font-cormorant, serif)' };
+  const sans: React.CSSProperties = { fontFamily: F.sans };
+  const serif: React.CSSProperties = { fontFamily: F.serif };
 
   return (
     <div style={{ background: C.bg, color: C.text, height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', ...sans }}>
@@ -761,7 +780,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
                 {col.tag}
               </div>
               <div style={{ fontSize: 11, fontWeight: 800, color: C.text, letterSpacing: '-0.01em', textTransform: 'uppercase' }}
-                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:var(--font-cormorant,serif);font-style:italic;font-weight:400;color:${C.primary};text-transform:none">`) }} />
+                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-style:italic;font-weight:400;color:${C.primary};text-transform:none">`) }} />
               <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
             <div style={{ padding: '6px 12px', background: C.bg, flexShrink: 0, borderBottom: `1px solid rgba(255,255,255,0.06)` }}>

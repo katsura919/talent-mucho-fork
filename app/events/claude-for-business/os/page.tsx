@@ -1,8 +1,12 @@
-import dynamic from 'next/dynamic';
+'use client';
 
-// No SSR ~ uses localStorage, sessionStorage, and full-viewport layout
-const EventOS = dynamic(() => import('./EventOS'), { ssr: false });
+import EventOS from './EventOS';
 
 export default function EventOSPage() {
-  return <EventOS />;
+  // Fixed full-viewport overlay so the global header/footer/cookie banner are hidden
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, background: '#1a1613' }}>
+      <EventOS />
+    </div>
+  );
 }
