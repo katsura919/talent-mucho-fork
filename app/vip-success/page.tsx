@@ -12,7 +12,12 @@ export const metadata: Metadata = {
 
 const PAID_SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
 
-const whatNext = [
+type WhatNextCta =
+  | { type: "link"; href: string; label: string }
+  | { type: "calendar" }
+  | null;
+
+const whatNext: Array<{ step: string; title: string; body: string; cta: WhatNextCta }> = [
   {
     step: "02",
     title: "Save the date for May 1",
