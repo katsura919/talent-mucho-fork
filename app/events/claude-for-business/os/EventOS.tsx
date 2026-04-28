@@ -26,18 +26,18 @@ const FONTS: Record<ThemeKey, ThemeFonts> = {
 };
 
 const THEMES: Record<ThemeKey, { label: string; sub: string; isDark: boolean; C: Palette }> = {
-  // Talent Mucho ~ dark, earthy, professional
+  // Talent Mucho ~ light, beige + clay (matches talentmucho.com)
   tm: {
     label: 'TM',
     sub: 'Talent Mucho',
-    isDark: true,
+    isDark: false,
     C: {
-      bg: '#1a1613', surface: '#2A2520', surface2: '#3D352E',
-      border: 'rgba(156,139,122,0.18)',
-      primary: '#7D6B5A', primaryHover: '#9C8B7A',
-      text: '#FAF8F5', muted: 'rgba(250,248,245,0.5)',
-      peach: 'rgba(125,107,90,0.12)', sage: 'rgba(156,139,122,0.25)',
-      abie: '#FAF8F5', meri: '#9C8B7A', both: 'rgba(250,248,245,0.45)',
+      bg: '#FAF8F5', surface: '#FFFFFF', surface2: '#EBE4D8',
+      border: 'rgba(42,37,32,0.12)',
+      primary: '#7D6B5A', primaryHover: '#665847',
+      text: '#2A2520', muted: '#9C8B7A',
+      peach: 'rgba(125,107,90,0.10)', sage: 'rgba(156,139,122,0.20)',
+      abie: '#2A2520', meri: '#7D6B5A', both: '#9C8B7A',
       good: '#4a7c59', bad: '#8b3a3a',
     },
   },
@@ -783,9 +783,9 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
                 dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-style:italic;font-weight:400;color:${C.primary};text-transform:none">`) }} />
               <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
-            <div style={{ padding: '6px 12px', background: C.bg, flexShrink: 0, borderBottom: `1px solid rgba(255,255,255,0.06)` }}>
-              <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.3)', marginBottom: 3 }}>Prompt</div>
-              <div style={{ ...mono, fontSize: 10, lineHeight: 1.5, color: col.isLeft || state.step >= 2 ? 'rgba(250,248,245,0.75)' : 'rgba(250,248,245,0.25)', whiteSpace: 'pre-wrap', maxHeight: 80, overflowY: 'auto' }}>
+            <div style={{ padding: '6px 12px', background: C.surface2, flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
+              <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 3 }}>Prompt</div>
+              <div style={{ ...mono, fontSize: 10, lineHeight: 1.5, color: col.isLeft || state.step >= 2 ? C.text : C.muted, opacity: col.isLeft || state.step >= 2 ? 1 : 0.5, whiteSpace: 'pre-wrap', maxHeight: 80, overflowY: 'auto' }}>
                 {col.prompt}
               </div>
             </div>
@@ -948,7 +948,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
               <button onClick={() => onActive(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: q.active ? C.primary : C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {q.active ? '✓ Live' : 'Go live'}
               </button>
-              <button onClick={() => onDismiss(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid rgba(156,139,122,0.2)`, background: 'transparent', color: 'rgba(250,248,245,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <button onClick={() => onDismiss(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: C.muted, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Done ✕
               </button>
             </div>
