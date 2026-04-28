@@ -73,7 +73,7 @@ interface CompareState {
 }
 
 // ── Pin gate ───────────────────────────────────────────────────────────────────
-const PIN = '1234'; // change this or set via NEXT_PUBLIC_EVENT_OS_PIN
+const PIN = '2028'; // change this or set via NEXT_PUBLIC_EVENT_OS_PIN
 
 function PinGate({ onUnlock, theme }: { onUnlock: () => void; theme: ThemeKey }) {
   const C = THEMES[theme].C;
