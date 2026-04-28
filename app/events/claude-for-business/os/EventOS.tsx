@@ -1248,11 +1248,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
       {/* ── HERO TITLE BAND ── */}
       <div style={{ flexShrink: 0, padding: '52px 48px 38px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ display: 'inline-block', width: 28, height: 1, background: C.primary }} />
+          <div style={{ ...mono, fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={{ display: 'inline-block', width: 32, height: 1, background: C.primary }} />
             Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(48px, 7vw, 88px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.98, color: C.text, margin: 0, ...sans }}>
+          <h1 style={{ fontSize: 'clamp(64px, 9vw, 128px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, color: C.text, margin: 0, ...sans }}>
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
@@ -1264,10 +1264,10 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           {/* Speakers + progress on same row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 28, marginTop: 28, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase' }}>With</span>
+              <span style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase' }}>With</span>
               {seg.speakers.map(sk => (
-                <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 14px', borderRadius: 100, ...mono, fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}40`, background: `${spkColor(sk)}10`, color: spkColor(sk) === onDark ? C.text : spkColor(sk) }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: spkColor(sk) === onDark ? C.text : spkColor(sk) }} />
+                <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 18px', borderRadius: 100, ...mono, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}40`, background: `${spkColor(sk)}10`, color: spkColor(sk) === onDark ? C.text : spkColor(sk) }}>
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: spkColor(sk) === onDark ? C.text : spkColor(sk) }} />
                   {SPEAKERS[sk]?.name}
                 </div>
               ))}
@@ -1294,8 +1294,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div style={{ position: 'relative' }}>
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What we&apos;re covering
               </div>
               <Editable
@@ -1304,7 +1304,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 value={emRender(seg.audWhatTitle)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatTitle`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...sans, fontSize: 30, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 18 }}
+                style={{ ...sans, fontSize: 42, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 22 }}
               />
               <Editable
                 key={`awb-${segIdx}`}
@@ -1312,7 +1312,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 value={emRender(seg.audWhatBody)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontSize: 19, lineHeight: 1.7, color: C.text, opacity: 0.9 }}
+                style={{ ...serif, fontSize: 26, lineHeight: 1.6, color: C.text, opacity: 0.9 }}
               />
             </div>
           </div>
@@ -1330,8 +1330,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
               {/* Decorative quote mark */}
               <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
 
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10, position: 'relative' }}>
-                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 Take this with you
               </div>
               <Editable
@@ -1340,7 +1340,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 value={emOnDark(seg.audTakeaway)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontStyle: 'italic', fontSize: 22, lineHeight: 1.5, color: onDark, position: 'relative' }}
+                style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
               />
             </div>
 
@@ -1352,12 +1352,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Workbook moment
                 </div>
-                <div style={{ ...sans, fontSize: 19, fontWeight: 600, color: C.text, marginBottom: 10, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+                <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
                   Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
@@ -1371,22 +1371,22 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Audience moment
                 </div>
-                <div style={{ ...sans, fontSize: 18, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+                <div style={{ ...sans, fontSize: 22, fontWeight: 600, color: C.text, marginBottom: 14, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                   {pollLines[0]}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {pollLines.slice(1).map((l, i) => (
                     <div key={i} style={{
-                      padding: '10px 14px', background: C.surface, borderRadius: 10,
-                      ...mono, fontSize: 13, color: C.text,
+                      padding: '12px 16px', background: C.surface, borderRadius: 10,
+                      ...mono, fontSize: 16, color: C.text,
                       border: `1px solid ${C.border}`,
                     }}>{l}</div>
                   ))}
                 </div>
-                <div style={{ marginTop: 14, ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                <div style={{ marginTop: 16, ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                   ↳ Drop your answer in the Zoom chat
                 </div>
               </div>
