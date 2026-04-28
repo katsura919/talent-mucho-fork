@@ -87,22 +87,35 @@ export const SEGMENTS: Segment[] = [
   // 00 ~ Welcome
   {
     id: 0, num: '00', title: 'Welcome', titleItalic: '',
-    subtitle: '06:00~06:05 ~ open warm, manage Zoom expectations',
+    subtitle: '06:00~06:05 ~ open warm, land the promise',
     duration: '5 min', speakers: ['BOTH'], panel: 'demo',
-    audWhatTitle: '<em>Welcome</em> in',
-    audWhatBody: "<p>You're here. We're glad. The next 2 hours are going to be more workshop than webinar ~ which means we want you doing things, not just watching.</p><p>This is the <em>Educate</em> pillar of Talent Mucho. The free part. <em>Because if you don't understand what AI can do, the rest doesn't matter.</em></p>",
-    audTakeaway: 'This is a <em>workshop</em>, not a webinar. Be present ~ get more.',
+    audWhatTitle: '<em>This</em> is where you start.',
+    audWhatBody: "<p>You signed up because you've been saying <em>\"I need to learn AI\"</em> for months. Tonight you actually do it ~ in a small group, with two operators who run businesses on this stack every day.</p><p>By the end, you'll have a <em>clear starting point</em>, not more overwhelm. That's the deal.</p>",
+    audTakeaway: 'You came for a <em>starting point</em>. You leave with one.',
     beats: [
       {
-        id: 'w1', title: 'Open + housekeeping', speaker: 'BOTH', blocks: [
-          { type: 'stage', text: 'Both on cam. Wait 30s for stragglers. Big smile.' },
-          { type: 'scripted', speaker: 'BOTH', text: "Hey everyone ~ welcome. I'm Abie, this is Meri. <em>This is a workshop, not a webinar.</em> We want you here, not lurking." },
+        id: 'w0', title: 'Land the promise', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: 'Both on cam. Wait 30s for stragglers. Warm smile, slow tempo.' },
+          { type: 'scripted', speaker: 'BOTH', text: "Hey everyone ~ welcome. I'm Abie, this is Meri. Before we do anything else ~ <em>thank you</em> for showing up. You could be doing a hundred other things tonight." },
+          { type: 'scripted', speaker: 'BOTH', text: "Quick promise so you know what you're in for. You signed up because you've been saying <em>\"I need to learn AI\"</em> for months. Tonight, that ends." },
           { type: 'bullets', speaker: 'BOTH', items: [
-            'Drop your name + where you\'re joining from in the chat',
-            'Meri is in the chat the whole event ~ ask anything',
-            'You\'ll see a workbook on screen ~ that\'s your live companion',
-            'Recording goes to VIPs only ~ so be present',
+            "By 8 PM, you'll <em>finally understand</em> what AI can actually do for your business",
+            "You'll get hands-on with Claude in a small group setting ~ <em>no experience required</em>",
+            "And you'll leave with a <em>clear starting point</em> ~ not 47 tabs and more overwhelm",
           ]},
+          { type: 'scripted', speaker: 'BOTH', text: "That's the deal. <em>That's all we promised on the landing page.</em> We're going to deliver it." },
+        ],
+      },
+      {
+        id: 'w1', title: 'Housekeeping', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'BOTH', text: "Two house rules and we go." },
+          { type: 'bullets', speaker: 'BOTH', items: [
+            "Drop your name + where you're joining from in the chat right now",
+            "Meri is in the chat the whole event ~ ask anything, no question is too basic",
+            "You'll see a workbook on screen ~ that's your live companion, use it",
+            "<em>This is a workshop, not a webinar.</em> Be present ~ you'll get 10x more out of it",
+          ]},
+          { type: 'poll', text: "POLL ~ Drop a 1, 2, 3, or 4 in chat:\n1 = I run my own business\n2 = I work in a company but want my own thing\n3 = I freelance / side hustle\n4 = Just curious about AI" },
         ],
       },
     ],
@@ -378,12 +391,12 @@ export const SEGMENTS: Segment[] = [
     duration: '22 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Open <em>Q&amp;A</em>',
     audWhatBody: "<p>Meri's been collecting your questions all hour. We're going to take the top ones and answer them with real demos ~ not generic advice.</p><p>After Q&A: a 4-minute close on what to do next.</p>",
-    audTakeaway: "<em>Tonight was the trailer.</em> The actual movie plays inside Skool ~ where we rebuild every system from tonight, on camera.",
+    audTakeaway: "You got your <em>starting point</em>. The next step is whether you <em>actually take it.</em>",
     beats: [
       {
         id: 'q1', title: 'Frame Q&A', speaker: 'BOTH', blocks: [
           { type: 'stage', text: 'Both back on cam. Meri reads from her queue.' },
-          { type: 'scripted', speaker: 'BOTH', text: "<em>This is the part you came for.</em> Meri has the top 5-6 questions. We answer with real demos. 3 min max each." },
+          { type: 'scripted', speaker: 'BOTH', text: "<em>This is the part you came for.</em> Meri has the top 5~6 questions. We answer with real demos. 3 min max each." },
         ],
       },
       {
@@ -392,52 +405,80 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q3', title: 'The framing line', speaker: 'BOTH', blocks: [
-          { type: 'stage', text: "Q&A is wrapping. Tone tightens ~ this is the most important 4 minutes." },
-          { type: 'scripted', speaker: 'BOTH', text: "Before you go ~ <em>one thing</em>. Tonight you saw what's possible. The dashboard. The AI employees. The CLI. The proposals. <em>What we didn't show you</em> ~ because 2 hours is 2 hours ~ is <em>how we built any of it.</em>" },
-          { type: 'scripted', speaker: 'BOTH', text: "You watched the destination tonight. <em>You didn't get the map.</em>" },
-        ],
-      },
-      {
-        id: 'q4', title: 'Skool ~ the receipts', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "So here's what we built next door. <em>Tonight was the trailer. Skool is where the actual movie plays.</em>" },
-          { type: 'bullets', speaker: 'ABIE', items: [
-            'Every system you saw tonight ~ rebuilt inside Skool, week by week, on camera',
-            'You see the messy version. The failures. The prompts that didn\'t work first time. <em>The receipts.</em>',
-            'Templates ~ UGC Pipeline, Sales Pipeline, the AI Employee blueprints. The actual scaffolding.',
-            'Monthly "build with us" ~ pick one workflow, build it together as a community',
-            'Direct access to both of us. Real Q&A. Weekly.',
+        id: 'q3', title: 'Recap the promise', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "Q&A is wrapping. Tone tightens ~ this is the most important 6 minutes of the night." },
+          { type: 'scripted', speaker: 'BOTH', text: "Quick recap before we close. <em>What did we promise you tonight?</em>" },
+          { type: 'bullets', speaker: 'BOTH', items: [
+            "You'd <em>finally understand</em> what AI can do for your business ~ ✓ done",
+            "You'd get hands-on with Claude in a small group ~ ✓ done",
+            "You'd walk away with a <em>clear starting point</em>, not more overwhelm ~ ✓ done",
           ]},
-          { type: 'scripted', speaker: 'ABIE', text: "Skool is the <em>Educate</em> pillar of Talent Mucho ~ done deeper, weekly, with two operators in the room." },
+          { type: 'scripted', speaker: 'BOTH', text: "<em>That was free.</em> No catch. We delivered what we promised on the landing page. <em>You owe us nothing.</em>" },
         ],
       },
       {
-        id: 'q5', title: 'The price reframe', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "<em>This isn't about content.</em> The internet has enough Claude videos. What it doesn't have is <em>the receipts</em> ~ two operators showing exactly how their stack works, every week, without polishing it first." },
+        id: 'q4', title: 'The honest reframe', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "But here's what's also true. Tonight you saw <em>what's possible.</em> The dashboard. The AI employees. The CLI that runs my day. The proposals." },
+          { type: 'scripted', speaker: 'ABIE', text: "<em>What we didn't show you</em> ~ because 2 hours is 2 hours ~ is <em>how we built any of it.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "You got the destination tonight. <em>You didn't get the map.</em>" },
+          { type: 'stage', text: "Pause 2 seconds. Let it land." },
+        ],
+      },
+      {
+        id: 'q5', title: 'Stack the value', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. One time. €47. Here's exactly what's inside:" },
           { type: 'bullets', speaker: 'MERI', items: [
-            'VIP tonight ~ €47 ~ recording + Claude Vault + 90 days premium Skool',
-            'After tonight, premium Skool goes back to its normal price',
-            'You can spend 6 months figuring this out alone, the way we did ~',
-            'Or join us inside Skool and have it in 6 weeks',
+            "<em>The full recording</em> of tonight ~ rewatch any demo, copy any prompt (€97 value alone)",
+            "<em>The Claude Vault</em> ~ every prompt we used tonight, plus 30+ more from our actual client work, organised by use case (€297 value)",
+            "<em>90 days inside our premium Skool community</em> ~ where we rebuild every system from tonight, week by week, on camera (€141 value at €47/mo)",
+            "<em>Live monthly Build-With-Us calls</em> ~ pick one workflow, build it with us as a small group (€200/call value)",
+            "<em>Direct access to Abie + Meri</em> in the community ~ ask anything, weekly Q&A",
+          ]},
+          { type: 'scripted', speaker: 'MERI', text: "Total real value? <em>Over €700.</em> Tonight only ~ €47." },
+        ],
+      },
+      {
+        id: 'q6', title: 'Why this price, this once', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "<em>I want to be honest about the price.</em> €47 isn't because we don't value our work. It's because <em>we want you in the room early.</em>" },
+          { type: 'bullets', speaker: 'MERI', items: [
+            "After tonight, premium Skool goes back to <em>€97/month</em>",
+            "We're building this community in front of you ~ early members shape what we build",
+            "You can spend <em>6 months</em> figuring this out alone the way we did ~",
+            "Or you can spend <em>6 weeks inside Skool</em> with two operators in the room",
           ]},
           { type: 'scripted', speaker: 'MERI', text: "<em>€47 isn't a fee. It's compressed time.</em>" },
         ],
       },
       {
-        id: 'q6', title: 'Three doors out', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight ~ they map to how we work at Talent Mucho. <em>Educate. Build. Operate.</em>" },
+        id: 'q7', title: 'Risk reversal', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "And because €47 still feels like a yes-or-no decision for some of you ~ <em>here's our promise.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "Try the recording. Open the Vault. Sit in one Skool call. If in the first <em>14 days</em> you genuinely feel like you didn't get more than €47 of value ~ email us. <em>Full refund.</em> No form. No \"sorry to see you go\" survey. Just gone." },
+          { type: 'scripted', speaker: 'ABIE', text: "<em>The only thing you risk is showing up.</em>" },
+        ],
+      },
+      {
+        id: 'q8', title: 'Three doors out', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
-            'Door 1 ~ <em>Educate (free).</em> Open Claude tonight. Try one demo. Join the free Skool tier.',
-            'Door 2 ~ <em>Educate deeper (€47).</em> VIP recording, Claude Vault, 90 days premium Skool ~ where we rebuild every system from tonight, on camera. <em>This is the one most of you should take.</em>',
-            'Door 3 ~ <em>Build + Operate (custom).</em> If you want us to build your AI systems and place a trained VA inside your business ~ book a free call. talentmucho.com/booking',
+            "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
+            "<em>Door 2 ~ €47 VIP.</em> Recording, Vault, 90 days premium Skool, monthly build-calls, direct access. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
+            "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
           ]},
         ],
       },
       {
-        id: 'q7', title: 'Last line', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "<em>Last thing.</em> The difference between tonight being interesting and tonight changing your business is what you do in the next 24 hours. Don't close this tab and go scroll. <em>Open Claude. Try one thing. Tonight.</em>" },
-          { type: 'scripted', speaker: 'BOTH', text: "Thank you for being here for two hours. <em>Go build something.</em> Goodnight." },
-          { type: 'stage', text: 'Wave off. Stop recording. Stay 5 min for stragglers + hot leads.' },
+        id: 'q9', title: 'The starting point', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'BOTH', text: "Last thing. Then we let you go." },
+          { type: 'scripted', speaker: 'BOTH', text: "When you signed up, the landing page said <em>\"This is where you start.\"</em>" },
+          { type: 'scripted', speaker: 'BOTH', text: "Tonight you got a starting point. <em>The only thing left is whether you actually take it.</em>" },
+          { type: 'scripted', speaker: 'BOTH', text: "The difference between tonight being <em>interesting</em> and tonight <em>changing your business</em> is what you do in the next 24 hours. Don't close this tab and go scroll." },
+          { type: 'bullets', speaker: 'BOTH', items: [
+            "Open Claude tonight. <em>One thing.</em> Try one demo from tonight",
+            "If you want the map ~ the VIP link is in the chat",
+            "If you want us inside your business ~ talentmucho.com/booking",
+          ]},
+          { type: 'scripted', speaker: 'BOTH', text: "Thank you for two hours of your life. We don't take that lightly. <em>Go build something.</em> Goodnight." },
+          { type: 'stage', text: 'Wave off slowly. Don\'t cut the recording yet ~ stay 5 min for stragglers + hot leads. Meri pins VIP link one more time.' },
         ],
       },
     ],
