@@ -1170,18 +1170,48 @@ const CLAUDE_BUILDING_BLOCKS = [
     short: 'one-task pro',
     desc: "A specific job Claude nails every time. Built once, reused forever.",
     example: "Our Carousel Generator ~ paste a blog, get 7 slides, copy in your voice, takes 30 seconds. We have one for proposals, one for Threads, one for client briefs. Build a few and your weeks change shape.",
+    simulation: {
+      prompt: "Turn this blog post into an Instagram carousel.",
+      steps: [
+        '↳ Reading blog (1,200 words)',
+        '↳ Extracting the 3 key insights',
+        '↳ Structuring 7 slides ~ hook · setup · takeaways · CTA',
+        '↳ Writing each slide in your brand voice',
+        '✓ 7-slide carousel ready in 28 seconds',
+      ],
+    },
   },
   {
     name: 'Claude Project',
     short: 'trained employee',
     desc: "A workspace where Claude has actually been onboarded to your business.",
     example: "Drop your docs, your tone, your clients, your offers ~ once. Every chat in there starts with Claude already knowing you. The difference between hiring a temp and hiring an employee.",
+    simulation: {
+      prompt: "Draft a follow-up to Sarah from the call yesterday.",
+      steps: [
+        '↳ Pulling Sarah\'s profile from Project context',
+        '↳ Reading the call notes from yesterday',
+        '↳ Matching your tone (casual, no "kindly")',
+        '↳ Using your standard follow-up structure',
+        '✓ Draft ready ~ no re-explaining who Sarah is',
+      ],
+    },
   },
   {
     name: 'Claude Team',
     short: 'shared employee',
     desc: "Same trained employee. Everyone on your team has access to it.",
     example: "Add a new client to the Project on Monday ~ your VA's Claude knows about them by Tuesday's standup. No more \"have you got the latest brief?\" Same Claude, same context, same updates.",
+    simulation: {
+      prompt: "(Meri uploaded the Maria client brief on Monday)",
+      steps: [
+        '↳ Project syncs the brief across the team',
+        '↳ Tuesday: Abie opens her Claude',
+        '↳ Claude already knows Maria, the offer, the timeline',
+        '↳ No Slack ping. No "did you see the doc?"',
+        '✓ Same Claude. Same context. Same employee.',
+      ],
+    },
   },
 ];
 
@@ -1404,9 +1434,26 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
 }) {
   const [activeIdx, setActiveIdx] = useState(1); // start at 7AM (skip the "still asleep" intro)
   const [autoplay, setAutoplay] = useState(false);
+  const [activeBlock, setActiveBlock] = useState<number | null>(null);
+  const [blockSteps, setBlockSteps] = useState(0);
   const onDark = '#FAF8F5';
   const active = OPS_MANAGER_DAY[activeIdx];
   const sz = (px: number) => Math.round(px * scale);
+
+  // Stagger reveal of simulation steps for the active building block
+  useEffect(() => {
+    if (activeBlock === null) { setBlockSteps(0); return; }
+    const total = CLAUDE_BUILDING_BLOCKS[activeBlock].simulation.steps.length;
+    setBlockSteps(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setBlockSteps(i);
+      if (i < total) setTimeout(tick, 700);
+    };
+    const initial = setTimeout(tick, 350);
+    return () => clearTimeout(initial);
+  }, [activeBlock]);
 
   // autoplay: cycle through events every 5s when on
   useEffect(() => {
@@ -1424,39 +1471,100 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 28, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
         Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
-        {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
-          <div key={b.name} style={{
-            padding: '26px 28px',
-            borderRadius: 16,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-            <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-              {String(i + 1).padStart(2, '0')} · {b.short}
-            </div>
-            <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
-              {b.name}
-            </div>
-            <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
-              {b.desc}
-            </div>
-            <div style={{ ...serif, fontSize: sz(17), lineHeight: 1.6, color: C.muted, paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
-              <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
-              {b.example}
-            </div>
-          </div>
-        ))}
+      <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
+        ↓ click any block to see it run live
       </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
+        {CLAUDE_BUILDING_BLOCKS.map((b, i) => {
+          const isActive = activeBlock === i;
+          return (
+            <div
+              key={b.name}
+              onClick={() => setActiveBlock(isActive ? null : i)}
+              style={{
+                padding: '26px 28px',
+                borderRadius: 16,
+                background: isActive ? C.text : C.surface,
+                color: isActive ? onDark : C.text,
+                border: `2px solid ${isActive ? C.primary : C.border}`,
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: isActive ? 'translateY(-2px)' : 'none',
+                boxShadow: isActive ? `0 18px 36px -12px ${C.primary}55` : 'none',
+              }}
+            >
+              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+              <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                {String(i + 1).padStart(2, '0')} · {b.short}
+              </div>
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
+                {b.name}
+              </div>
+              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text, fontStyle: 'italic' }}>
+                {b.desc}
+              </div>
+              <div style={{ ...serif, fontSize: sz(17), lineHeight: 1.6, color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, paddingTop: 12, borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
+                {b.example}
+              </div>
+
+              {/* Simulation log when active */}
+              {isActive && (
+                <div style={{
+                  marginTop: 6,
+                  padding: '14px 16px',
+                  background: 'rgba(250,248,245,0.06)',
+                  borderRadius: 10,
+                  border: '1px solid rgba(250,248,245,0.1)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                    You ~
+                  </div>
+                  <div style={{ ...mono, fontSize: sz(13), lineHeight: 1.5, color: onDark, marginBottom: 12 }}>
+                    &ldquo;{b.simulation.prompt}&rdquo;
+                  </div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                    Claude ~
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {b.simulation.steps.slice(0, blockSteps).map((step, si) => (
+                      <div key={si} style={{
+                        ...mono, fontSize: sz(12), lineHeight: 1.5,
+                        color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                        fontWeight: step.startsWith('✓') ? 700 : 400,
+                        opacity: 0,
+                        animation: 'fadeInUp 0.4s ease forwards',
+                      }}>
+                        {step}
+                      </div>
+                    ))}
+                    {blockSteps < b.simulation.steps.length && (
+                      <div style={{ ...mono, fontSize: sz(12), color: C.primary, opacity: 0.7 }}>
+                        <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+      `}</style>
 
       {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
       <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
