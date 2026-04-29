@@ -231,6 +231,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const [nextQId, setNextQId] = useState(1);
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
+  const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
   const [compareState, setCompareState] = useState<CompareState>({
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
@@ -589,6 +590,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
+          <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
+            {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
+          </Btn>
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
           </Btn>
@@ -734,7 +738,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </div>
 
           {/* PROMPTER */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: `1px solid ${C.border}`, minWidth: 0 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: showDemoPanel ? `1px solid ${C.border}` : 'none', minWidth: 0 }}>
             {/* Seg header */}
             <div style={{ padding: '12px 24px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
               <div>
@@ -854,7 +858,8 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
             </div>
           </div>
 
-          {/* DEMO PANEL */}
+          {/* DEMO PANEL ~ collapsed by default · toggle from the top bar (◧/◨ button) */}
+          {showDemoPanel && (
           <div style={{ width: 420, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.surface }}>
             {/* Panel header */}
             <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -929,6 +934,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
               )}
             </div>
           </div>
+          )}
         </div>
       )}
 
