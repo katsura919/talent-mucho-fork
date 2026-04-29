@@ -1416,14 +1416,54 @@ function OpsManagerDay({ C, mono, sans, serif }: {
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-      {/* Section header */}
+      {/* ── Building blocks ~ the concepts that make Sarah possible ── */}
       <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        A day with your AI Ops Manager
+        First, the building blocks
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
+        {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
+          <div key={b.name} style={{
+            padding: '24px 26px',
+            borderRadius: 16,
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+            <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+              {String(i + 1).padStart(2, '0')} · {b.short}
+            </div>
+            <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+              {b.name}
+            </div>
+            <div style={{ ...serif, fontSize: 17, lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
+              {b.desc}
+            </div>
+            <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.muted, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+              <span style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
+              {b.example}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Now ~ the Ops Manager visualisation ── */}
+      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Now ~ a day with your AI Ops Manager
       </div>
       <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
-        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ same Claude underneath, trained on your business,
-        plugged into your tools, on a schedule. <span style={{ color: C.primary }}>Click any moment to see what she&apos;s doing.</span>
+        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ same Claude underneath, trained on your business
+        (Project), plugged into your tools (Connectors), on a schedule.
+        <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
       </div>
 
       {/* Profile card */}
