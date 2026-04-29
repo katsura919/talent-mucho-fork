@@ -76,7 +76,7 @@ export const COMPARE_PRESETS: Record<string, ComparePreset> = {
     rightTitle: '<em>Asks first</em>',
     rightWhy: 'Pauses and asks for the context that makes the email actually work.',
     rightPrompt: 'write me an invoice reminder',
-    rightAnswer: "Happy to help ~ a few quick questions so I can get the framing and tone right:\n\nThe situation\n1. Who's the client? (first name is fine)\n2. What's the invoice for, and how much?\n3. How overdue ~ days, weeks, longer?\n4. What's your relationship ~ first time late, or a pattern?\n\nThe framing\n5. What outcome do you want ~ a gentle nudge, a firm reminder, or a final notice?\n6. Open to offering a payment plan, or push for full payment now?\n\nTone of voice\n7. How do you usually sound with this client ~ formal, casual, warm, brisk?\n8. Got 1~2 past emails I can match your voice from?\n9. Anything you'd never say (\"kindly\", \"as per\", emoji, etc.)?\n\nOnce you tell me, I'll draft the reminder in your voice, framed for the outcome you actually want.",
+    rightAnswer: "Happy to help ~ three quick things so I get the framing and tone right:\n\n1. Who's the client and how overdue is it?\n2. What outcome do you want ~ a gentle nudge, a firm reminder, or a final notice?\n3. How do you usually sound with them ~ formal, casual, warm, brisk?\n\nOnce you tell me, I'll draft a few versions in your voice.",
     rightBridge: "Or, if you'd rather skip the questions, here are 3 ready-to-send versions in different tones ~ pick the one closest to your vibe:",
     rightDrafts: [
       {
