@@ -1291,7 +1291,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
 
       {/* ── BODY ── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+        {/* Standard body grid hidden when the segment uses the compare panel ~ the side-by-side comparison takes that real estate instead */}
+        <div style={{ display: seg.panel === 'compare' ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
 
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -1399,20 +1400,41 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
         {/* ── ChatGPT vs Claude side-by-side ~ shows when segment uses the compare panel ── */}
         {seg.panel === 'compare' && seg.panelData && COMPARE_PRESETS[seg.panelData] && (() => {
           const p = COMPARE_PRESETS[seg.panelData];
+          const samePrompt = p.leftPrompt === p.rightPrompt;
           const cols = [
             { side: 'left' as const, tag: p.leftTag, title: p.leftTitle, why: p.leftWhy, prompt: p.leftPrompt, answer: p.leftAnswer, annLbl: p.leftAnnLbl, annTxt: p.leftAnnTxt },
             { side: 'right' as const, tag: p.rightTag, title: p.rightTitle, why: p.rightWhy, prompt: p.rightPrompt, answer: p.rightAnswer, annLbl: p.rightAnnLbl, annTxt: p.rightAnnTxt },
           ];
           return (
-            <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+            <div style={{ maxWidth: 1280, margin: '0 auto' }}>
               <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-                Same prompt, two ways
+                {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
               </div>
               <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
                 {p.scenario}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22 }}>
+
+              {/* Shared prompt at top (only when both sides use the same prompt) */}
+              {samePrompt && (
+                <div style={{
+                  padding: '20px 26px',
+                  background: C.surface,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 14,
+                  marginBottom: 22,
+                  textAlign: 'center',
+                }}>
+                  <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
+                    The prompt (sent to both)
+                  </div>
+                  <div style={{ ...mono, fontSize: 22, lineHeight: 1.4, color: C.text, fontWeight: 500 }}>
+                    &ldquo;{p.leftPrompt}&rdquo;
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22, alignItems: 'stretch' }}>
                 {cols.map(col => {
                   const isBad = col.side === 'left';
                   const tagBg = isBad ? 'rgba(176,58,46,0.12)' : 'rgba(74,124,89,0.14)';
@@ -1444,21 +1466,32 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                           {col.why}
                         </div>
                       </div>
-                      {/* Prompt */}
-                      <div style={{ padding: '14px 22px', background: C.surface2, borderBottom: `1px solid ${C.border}` }}>
-                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
-                          The prompt
+                      {/* Prompt (only show per-column when prompts differ) */}
+                      {!samePrompt && (
+                        <div style={{ padding: '14px 22px', background: C.surface2, borderBottom: `1px solid ${C.border}` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                            The prompt
+                          </div>
+                          <div style={{ ...mono, fontSize: 14, lineHeight: 1.55, color: C.text, whiteSpace: 'pre-wrap' }}>
+                            {col.prompt}
+                          </div>
                         </div>
-                        <div style={{ ...mono, fontSize: 14, lineHeight: 1.55, color: C.text, whiteSpace: 'pre-wrap' }}>
-                          {col.prompt}
+                      )}
+                      {/* Response */}
+                      <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          The response
+                        </div>
+                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                          {col.answer}
                         </div>
                       </div>
                       {/* Annotation ~ what this teaches */}
-                      <div style={{ padding: '16px 22px 20px' }}>
+                      <div style={{ padding: '14px 22px 18px' }}>
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                           {col.annLbl}
                         </div>
-                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.55 }}>
+                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.5 }}>
                           {col.annTxt}
                         </div>
                       </div>
@@ -1469,13 +1502,13 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
               {/* Landing line */}
               <div style={{
                 marginTop: 26,
-                padding: '20px 28px',
-                background: C.surface,
-                border: `1px solid ${C.border}`,
+                padding: '22px 28px',
+                background: C.text,
+                color: '#FAF8F5',
                 borderRadius: 14,
                 textAlign: 'center',
               }}>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.text, lineHeight: 1.5 }}
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
                   dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
               </div>
             </div>
