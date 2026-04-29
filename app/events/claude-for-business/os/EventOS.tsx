@@ -1059,7 +1059,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 // Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
 const ABIE_STACK = [
   { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
-  { icon: 'CC', name: 'Website edits > GitHub', short: 'Website edits', desc: 'Describe the change. Claude writes, commits, deploys.' },
+  { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
   { icon: 'DB', name: 'Personal Dashboard', short: 'Dashboard', desc: 'Replaces Notion + Coda. Custom-built, lives on my own site.' },
   { icon: '⚡', name: 'ADHD Command Centre', short: 'ADHD CC', desc: "Keeps me on track on the days my brain doesn't want to." },
   { icon: '▣', name: 'Carousel Studio', short: 'Carousels', desc: 'Drafts Threads & Instagram in my brand voice.' },
@@ -1283,20 +1283,42 @@ function SpinWheel({ items, C, mono, sans, serif }: {
 
   function spin() {
     if (spinning) return;
-    // Pick from items not yet spun (so each demo lands once); reset if all done
+
+    // Step 1: pick a target wedge (skipping ones already demoed)
     const available = items.map((_, i) => i).filter(i => !history.includes(i));
     const pool = available.length ? available : items.map((_, i) => i);
     const targetIndex = pool[Math.floor(Math.random() * pool.length)];
-    const spins = 5 + Math.floor(Math.random() * 3); // 5~7 full rotations for variety
-    // Pointer is at the top (12 o'clock). Rotate so the target wedge centre lands there.
-    const targetAngle = 360 * spins + (360 - (targetIndex * wedgeAngle + wedgeAngle / 2));
+
+    // Step 2: figure out the absolute rotation (mod 360) where wedge `targetIndex`
+    // sits under the pointer (top of the wheel). Wedges are drawn starting at
+    // (i * wedgeAngle - 90)°, so wedge i's centre lives at (i + 0.5) * wedgeAngle - 90.
+    // After CSS rotation R, the centre is at that angle + R. We want it at -90 (top),
+    // i.e. R ≡ -(i + 0.5) * wedgeAngle  (mod 360).
+    const targetMod = (((-(targetIndex + 0.5) * wedgeAngle) % 360) + 360) % 360;
+    const currentMod = ((rotation % 360) + 360) % 360;
+    let delta = targetMod - currentMod;
+    if (delta <= 0) delta += 360;
+
+    // Step 3: add a few full rotations for drama, then animate
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const totalDelta = 360 * spins + delta;
+
     setSpinning(true);
     setWinner(null);
-    setRotation(prev => prev + targetAngle);
+    setRotation(prev => prev + totalDelta);
+
     setTimeout(() => {
+      // Step 4: derive the winner from the actual final rotation, so the
+      // result text always matches whatever wedge sits under the pointer
+      // (defensive ~ if any rounding drifted, this still tells the truth).
+      const finalRot = rotation + totalDelta;
+      const finalMod = ((finalRot % 360) + 360) % 360;
+      // Solve (i + 0.5) * wedgeAngle ≡ -finalMod (mod 360) for i
+      const raw = ((-finalMod / wedgeAngle - 0.5) % items.length + items.length) % items.length;
+      const derivedWinner = ((Math.round(raw) % items.length) + items.length) % items.length;
       setSpinning(false);
-      setWinner(targetIndex);
-      setHistory(h => [...h, targetIndex]);
+      setWinner(derivedWinner);
+      setHistory(h => [...h, derivedWinner]);
     }, 4200);
   }
 
@@ -1579,28 +1601,17 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
             </em></>}
           </h1>
 
-          {/* Speakers + progress on same row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 28, marginTop: 28, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase' }}>With</span>
-              {seg.speakers.map(sk => (
-                <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '7px 18px', borderRadius: 100, ...mono, fontSize: 14, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}40`, background: `${spkColor(sk)}10`, color: spkColor(sk) === onDark ? C.text : spkColor(sk) }}>
-                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: spkColor(sk) === onDark ? C.text : spkColor(sk) }} />
-                  {SPEAKERS[sk]?.name}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              {Array.from({ length: totalSegs }).map((_, i) => (
-                <div key={i} style={{
-                  height: 4,
-                  width: i === segIdx ? 32 : 14,
-                  borderRadius: 4,
-                  background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                }} />
-              ))}
-            </div>
+          {/* Progress bars only ~ speaker badges removed for a cleaner audience view */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 28, justifyContent: 'flex-end' }}>
+            {Array.from({ length: totalSegs }).map((_, i) => (
+              <div key={i} style={{
+                height: 4,
+                width: i === segIdx ? 32 : 14,
+                borderRadius: 4,
+                background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              }} />
+            ))}
           </div>
         </div>
       </div>
