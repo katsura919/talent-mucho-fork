@@ -1061,6 +1061,90 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+// VIP value stack ~ used in segment 07 audience view (the close)
+interface StackItem {
+  name: string;
+  desc: string;
+  value: number | 'priceless';
+}
+const VIP_STACK: StackItem[] = [
+  { name: 'Full recording of tonight',     desc: 'Rewatch any demo · copy any prompt · keep forever', value: 97 },
+  { name: 'The Claude Vault',              desc: '30+ proprietary skills ~ Carousel, Voice Memory, Inbox Triage, Proposals + more', value: 297 },
+  { name: '30 days premium Skool',         desc: "Closed mentorship · weekly Vibe Coding sessions · the receipts", value: 47 },
+  { name: 'Monthly Build-With-Us calls',   desc: 'Small group · pick one workflow · we build it together · €200/call', value: 200 },
+  { name: 'Direct access to Abie + Meri',  desc: "Ask anything · weekly Q&A · zero gatekeeping", value: 'priceless' },
+];
+
+// Three Doors Out ~ used in segment 07 audience view (the close)
+interface DoorOption {
+  label: string;
+  name: string;
+  italic: string;
+  price: string;
+  pitch: string;
+  bestFor: string;
+  whatYouGet: string[];
+  nextStep: string;
+  cta: string;
+  ctaUrl: string;
+  highlight?: boolean;
+}
+const THREE_DOORS: DoorOption[] = [
+  {
+    label: 'Door 1',
+    name: 'Free',
+    italic: 'just try it',
+    price: '€0',
+    pitch: 'Open Claude tonight. Try one demo from what you saw.',
+    bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
+    whatYouGet: [
+      "Free Skool tier ~ community access, no live sessions",
+      "The mindset shift you got tonight",
+      "Whatever you remember from this session",
+    ],
+    nextStep: 'Close this tab. Open claude.ai. Try one prompt.',
+    cta: 'Try Claude tonight',
+    ctaUrl: 'https://claude.ai/new',
+  },
+  {
+    label: 'Door 2',
+    name: 'VIP',
+    italic: '€47 ~ the map',
+    price: '€47',
+    pitch: "The recording, the skill library, 30 days inside our community.",
+    bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
+    whatYouGet: [
+      "Full recording (€97 value)",
+      "The Claude Vault ~ 30+ proprietary skills (€297)",
+      "30 days premium Skool ~ weekly Vibe Coding (€47)",
+      "Monthly Build-With-Us calls (€200 each)",
+      "Direct access to Abie + Meri",
+      "+ 14-day refund · no form · no questions",
+    ],
+    nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
+    cta: 'Join VIP — €47',
+    ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
+    highlight: true,
+  },
+  {
+    label: 'Door 3',
+    name: 'Custom',
+    italic: 'we build it',
+    price: 'Talk to us',
+    pitch: "We build the AI stack inside your business and place a trained VA inside your team.",
+    bestFor: "Founders who are booked-out. Need this done, not learned.",
+    whatYouGet: [
+      "AI-Trained Ops Manager built for your business",
+      "Custom skills + connectors + scheduled runs",
+      "A trained VA placed inside your team",
+      "Monthly partnership ~ the Operate pillar",
+    ],
+    nextStep: 'Book a free 30-min call at talentmucho.com/booking',
+    cta: 'Book free call',
+    ctaUrl: 'https://talentmucho.com/booking',
+  },
+];
+
 // "A day with your AI Ops Manager" ~ used in segment 05 audience view
 interface OpsEvent {
   time: string;
@@ -2111,6 +2195,244 @@ function SpinWheel({ items, C, mono, sans, serif }: {
   );
 }
 
+// ── ValueStack ~ segment 07 audience view: the €47 math ─────────────────────
+function ValueStack({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+  const totalNumeric = VIP_STACK.reduce((s, item) => s + (typeof item.value === 'number' ? item.value : 0), 0);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        The €47 stack
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+        What&apos;s actually inside VIP. Honest values. Math doesn&apos;t lie.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 18 }}>
+        {VIP_STACK.map((item, i) => {
+          const isPriceless = item.value === 'priceless';
+          return (
+            <div key={item.name} style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto',
+              gap: 18,
+              alignItems: 'center',
+              padding: '18px 22px',
+              borderRadius: 12,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+            }}>
+              <div style={{
+                width: sz(34), height: sz(34),
+                borderRadius: '50%',
+                background: `${C.primary}20`,
+                color: C.primary,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...mono, fontSize: sz(13), fontWeight: 800,
+              }}>{String(i + 1).padStart(2, '0')}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
+                  {item.name}
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                  {item.desc}
+                </div>
+              </div>
+              <div style={{
+                ...mono, fontSize: sz(16), fontWeight: 800, color: isPriceless ? C.primary : C.text,
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
+              }}>
+                {isPriceless ? 'priceless' : `€${item.value}`}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Total + price reveal */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
+        padding: '24px 28px', borderRadius: 16,
+        background: C.text, color: onDark,
+        boxShadow: `0 18px 40px -14px ${C.text}40`,
+      }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Real value if bought separately
+          </div>
+          <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
+            €{totalNumeric}+
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Tonight only
+          </div>
+          <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
+            €47
+          </div>
+        </div>
+      </div>
+
+      {/* 14-day guarantee badge */}
+      <div style={{
+        marginTop: 14,
+        padding: '14px 22px',
+        borderRadius: 100,
+        background: `${C.primary}15`,
+        border: `1px solid ${C.primary}40`,
+        display: 'flex', alignItems: 'center', gap: 14,
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          width: sz(28), height: sz(28),
+          borderRadius: '50%',
+          background: C.primary, color: C.text,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...mono, fontSize: sz(14), fontWeight: 800,
+        }}>✓</div>
+        <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          14-day refund
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.text }}>
+          No form. No questions. The only thing you risk is showing up.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ThreeDoorsOut ~ segment 07 audience view: the choice ────────────────────
+function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const [activeDoor, setActiveDoor] = useState(1); // VIP open by default
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '56px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Three doors out
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, alignItems: 'stretch' }}>
+        {THREE_DOORS.map((door, i) => {
+          const isActive = activeDoor === i;
+          const accentBg = door.highlight ? C.primary : (isActive ? C.text : C.surface);
+          const textColor = (door.highlight || isActive) ? onDark : C.text;
+          return (
+            <div
+              key={door.label}
+              onClick={() => setActiveDoor(i)}
+              style={{
+                display: 'flex', flexDirection: 'column',
+                padding: '26px 26px 22px',
+                borderRadius: 18,
+                background: door.highlight ? C.text : (isActive ? C.surface2 : C.surface),
+                border: `2px solid ${door.highlight ? C.primary : (isActive ? C.primary : C.border)}`,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: door.highlight
+                  ? `0 24px 48px -12px ${C.primary}55`
+                  : isActive ? `0 12px 28px -10px ${C.text}25` : 'none',
+                transform: door.highlight ? 'translateY(-4px)' : 'none',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {door.highlight && (
+                <div style={{
+                  position: 'absolute', top: 14, right: 16,
+                  ...mono, fontSize: sz(9), fontWeight: 800,
+                  color: C.text, background: C.primary,
+                  padding: '4px 10px', borderRadius: 100,
+                  letterSpacing: '0.18em',
+                }}>RECOMMENDED</div>
+              )}
+
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
+                {door.label}
+              </div>
+              <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
+                {door.name}
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
+                ~ {door.italic}
+              </div>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
+                {door.pitch}
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
+                {door.bestFor}
+              </div>
+
+              {/* What you get list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18, flex: 1 }}>
+                {door.whatYouGet.map((item, ii) => (
+                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
+                    <span style={{ ...mono, fontSize: sz(12), color: C.primary, flexShrink: 0, paddingTop: 2 }}>~</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Next step + CTA */}
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Next step ~
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
+                  {door.nextStep}
+                </div>
+                <a
+                  href={door.ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    display: 'block',
+                    padding: `${sz(14)}px ${sz(20)}px`,
+                    borderRadius: 100,
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    ...mono, fontSize: sz(12), fontWeight: 800,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
+                    color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
+                    border: 'none',
+                  }}
+                >
+                  {door.cta} →
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Audience View ─────────────────────────────────────────────────────────────
 function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
@@ -2604,6 +2926,14 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
         {seg.num === '05' && (
           <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── The close ~ Value Stack + Three Doors ~ shows on segment 07 (Q&A + next step) ── */}
+        {seg.num === '07' && (
+          <>
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+          </>
         )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
