@@ -482,12 +482,11 @@ export const SEGMENTS: Segment[] = [
         id: 'q5', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
           { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. <em>One time. €47.</em> Here's exactly what's inside:" },
           { type: 'bullets', speaker: 'MERI', items: [
-            "<em>Full recording</em> of tonight ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
-            "<em>The Claude Vault</em> ~ our <em>premium proprietary skill library</em>: IG Carousel Generator, Competitor Analysis, Voice Memory, Inbox Triage ~ every skill you saw tonight + more (€297 value)",
-            "<em>First month of premium Skool free</em> ~ closed mentorship, weekly <em>Vibe Coding sessions</em>. €47/mo after if you stay, cancel anytime (€47 value)",
-            "<em>50% off the upcoming Bootcamp</em> ~ €147 → €74 for VIPs only (€74 saved)",
-            "<em>Monthly Build-With-Us calls</em> ~ small group, pick one workflow, build it with us (€200/call value)",
-            "<em>Direct access to Abie + Meri</em> in chat ~ ask anything, weekly Q&A. <em>Not a group chat. Closed mentorship.</em>",
+            "<em>Full replay + transcript</em> ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
+            "<em>The Claude Vault</em> ~ Talent Mucho's <em>premium proprietary skill library</em> · private dashboard setups + Claude skills (€297 value)",
+            "<em>VIP-only group follow-up</em> ~ 45 min private session with Abie & Meri, small group",
+            "<em>30-day Premium Skool access</em> ~ closed mentorship, weekly Vibe Coding. €49/mo after if you stay, cancel anytime (€49 value)",
+            "<em>Early access to the upcoming Bootcamp</em> ~ before it opens to the public",
           ]},
           { type: 'scripted', speaker: 'MERI', text: "<em>Total real value: over €700.</em> Tonight only ~ €47." },
           { type: 'scripted', speaker: 'ABIE', text: "Real talk on what these skills are worth. At our old dev agency we charged <em>€10,000 to €20,000 to build prototypes</em> for clients. Tonight you're getting the skills <em>and</em> the knowledge to build your own ~ for a fraction of one of those." },
@@ -517,7 +516,7 @@ export const SEGMENTS: Segment[] = [
           { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
             "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
-            "<em>Door 2 ~ €47 VIP.</em> Recording, Vault, first month of premium Skool free (€47/mo after), 50% off Bootcamp, monthly build-calls, direct access. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
+            "<em>Door 2 ~ €47 VIP.</em> Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
             "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
           ]},
         ],

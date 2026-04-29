@@ -1067,13 +1067,13 @@ interface StackItem {
   desc: string;
   value: number | 'priceless';
 }
+// VIP stack mirrors the landing page perks 1:1 so what people see at signup
+// matches what they see at the close (no surprises, builds trust)
 const VIP_STACK: StackItem[] = [
-  { name: 'Full recording of tonight',     desc: 'Rewatch any demo · copy any prompt · 30-day access', value: 97 },
-  { name: 'The Claude Vault',              desc: 'Premium proprietary skills ~ Carousel, Voice Memory, Inbox Triage, Proposals + more', value: 297 },
-  { name: 'Premium Skool ~ first month free', desc: "Closed mentorship · weekly Vibe Coding · €47/mo after · cancel anytime", value: 47 },
-  { name: '50% off the upcoming Bootcamp', desc: '3-day intensive · small group · live builds · normally €147 → €74 for VIPs', value: 74 },
-  { name: 'Monthly Build-With-Us calls',   desc: 'Small group · pick one workflow · we build it together · €200/call', value: 200 },
-  { name: 'Direct access to Abie + Meri',  desc: "Ask anything · weekly Q&A · zero gatekeeping", value: 'priceless' },
+  { name: 'Full replay + transcript',         desc: 'Rewatch any demo · copy any prompt · 30-day access',                                          value: 97 },
+  { name: 'The Claude Vault',                 desc: "Private dashboard setups + Talent Mucho's premium proprietary Claude skills",                  value: 297 },
+  { name: 'VIP-only group follow-up',         desc: '45-min private session with Abie & Meri · small group',                                       value: 'priceless' },
+  { name: '30-day Premium Skool access',      desc: "Closed mentorship · weekly Vibe Coding · €49/mo after, cancel anytime",                       value: 49 },
 ];
 
 // Three Doors Out ~ used in segment 07 audience view (the close)
@@ -1115,12 +1115,11 @@ const THREE_DOORS: DoorOption[] = [
     pitch: "The recording, the skill library, 30 days inside our community.",
     bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
     whatYouGet: [
-      "Full recording ~ 30-day access (€97)",
-      "The Claude Vault ~ premium proprietary skills (€297)",
-      "Premium Skool ~ first month free, €47/mo after (€47)",
-      "50% off the upcoming Bootcamp (€74 saved)",
-      "Monthly Build-With-Us calls (€200 each)",
-      "Direct access to Abie + Meri",
+      "Full replay + transcript ~ 30-day access (€97)",
+      "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
+      "VIP-only group follow-up ~ 45 min with Abie + Meri",
+      "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
+      "Early access to the upcoming Bootcamp",
       "+ 14-day refund · no form · no questions",
     ],
     nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
