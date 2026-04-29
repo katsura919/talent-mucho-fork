@@ -235,7 +235,7 @@ export const SEGMENTS: Segment[] = [
     duration: '13 min', speakers: ['MERI', 'ABIE'], panel: 'products',
     audWhatTitle: 'The four <em>Claudes</em> + three models',
     audWhatBody: "<p>The confusing thing about Claude ~ there are <em>four products</em> and <em>three model sizes</em>. Same brain underneath. Different doors depending on what you're doing.</p><p>You only need Chat for your first month. We'll show you the others so you know what's out there ~ then we land on what matters.</p>",
-    audTakeaway: '<em>Start with Chat. Use Sonnet.</em> 90% of your wins live there.',
+    audTakeaway: 'Coming from ChatGPT? <em>Sonnet is your GPT-4o.</em> When in doubt, just use Sonnet.',
     beats: [
       {
         id: 'p1', title: 'Same brain, four doors', speaker: 'MERI', blocks: [

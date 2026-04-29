@@ -1444,6 +1444,55 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
               />
             </div>
 
+            {/* Model translation card ~ shows on products segments only */}
+            {seg.panel === 'products' && (
+              <div style={{
+                background: C.surface, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.border}`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
+                  Coming from ChatGPT?
+                </div>
+                <div style={{ ...sans, fontSize: 18, fontWeight: 500, color: C.text, marginBottom: 16, lineHeight: 1.4 }}>
+                  Here&apos;s the rough translation:
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    { claude: 'Opus', desc: 'the genius', gpt: 'o1 / GPT-4', when: 'Complex thinking, strategy' },
+                    { claude: 'Sonnet', desc: 'the workhorse', gpt: 'GPT-4o', when: 'Daily driver · use 90% of the time', highlight: true },
+                    { claude: 'Haiku', desc: 'the fast one', gpt: 'GPT-4o mini', when: 'Quick lookups, short answers' },
+                  ].map(row => (
+                    <div key={row.claude} style={{
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: row.highlight ? `${C.primary}18` : `${C.muted}10`,
+                      border: row.highlight ? `1px solid ${C.primary}` : `1px solid ${C.border}`,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
+                        <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                          {row.claude}
+                          <span style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+                            ~ {row.desc}
+                          </span>
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                          ≈ {row.gpt}
+                        </div>
+                      </div>
+                      <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.04em' }}>
+                        {row.when}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 14, ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'center' }}>
+                  TL;DR ~ just use Sonnet
+                </div>
+              </div>
+            )}
+
             {/* Workbook prompt */}
             {wbBlock && (
               <div style={{
