@@ -940,6 +940,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
           fontSize={fontSize}
+          segments={segments}
           C={C} mono={mono} serif={serif} sans={sans}
           spkColor={spkColor}
           theme={theme}
@@ -1061,6 +1062,23 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+// Sample cities ~ used in the segment 00 welcome "where are you joining from?" feed
+// Scrolls through these so the audience sees a global welcome vibe before they've even typed
+const WELCOME_CITIES = [
+  '👋 Maria from Madrid',
+  '✨ Sarah from London',
+  '🌴 Jobell from Cebu',
+  '☕ Marcus from Berlin',
+  '🌊 Lisa from Lisbon',
+  '🍁 Anna from Toronto',
+  '🦘 Tom from Sydney',
+  '🌅 Priya from Mumbai',
+  '⚡ Diego from Buenos Aires',
+  '🌸 Yuki from Tokyo',
+  '🌵 Carlos from Mexico City',
+  '🍷 Sophie from Paris',
+];
+
 // VIP value stack ~ used in segment 07 audience view (the close)
 interface StackItem {
   name: string;
@@ -2434,14 +2452,296 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
   );
 }
 
+// ── WelcomeInteractive ~ segment 00 audience view: countdown + agenda + cities
+const EVENT_START_LOCAL = '2026-05-01T00:00:00'; // edit if the event time changes
+function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSecs }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+  segments: Segment[];
+  timerSecs: number;
+}) {
+  const [now, setNow] = useState(Date.now());
+  const [cityIdx, setCityIdx] = useState(0);
+  const [revealedPromises, setRevealedPromises] = useState(0);
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  // Tick every second for the countdown
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Cycle through cities every 2.5s
+  useEffect(() => {
+    const t = setInterval(() => setCityIdx(i => (i + 1) % WELCOME_CITIES.length), 2500);
+    return () => clearInterval(t);
+  }, []);
+
+  // Stagger the promise checklist on mount
+  useEffect(() => {
+    setRevealedPromises(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealedPromises(i);
+      if (i < 3) setTimeout(tick, 800);
+    };
+    const initial = setTimeout(tick, 600);
+    return () => clearTimeout(initial);
+  }, []);
+
+  const eventStartMs = new Date(EVENT_START_LOCAL).getTime();
+  const msToEvent = eventStartMs - now;
+  const isLive = msToEvent <= 0;
+
+  // Pre-event countdown
+  const days    = Math.max(0, Math.floor(msToEvent / 86400000));
+  const hours   = Math.max(0, Math.floor((msToEvent % 86400000) / 3600000));
+  const minutes = Math.max(0, Math.floor((msToEvent % 3600000) / 60000));
+  const seconds = Math.max(0, Math.floor((msToEvent % 60000) / 1000));
+
+  // Live time remaining (workshop is 2 hours)
+  const fmtLiveTime = (s: number) => {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  };
+
+  const promises = [
+    "Finally understand what AI can do for your business",
+    "Get hands-on with Claude in a small group ~ no experience required",
+    "Walk away with a clear starting point ~ not 47 tabs and overwhelm",
+  ];
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+      {/* ── Countdown / Live clock ── */}
+      <div style={{
+        background: C.text,
+        color: onDark,
+        borderRadius: 24,
+        padding: '40px 36px',
+        marginBottom: 36,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: `0 28px 56px -16px ${C.text}40`,
+      }}>
+        {/* Glow background */}
+        <div style={{
+          position: 'absolute', top: '-50%', left: '-20%',
+          width: '60%', height: '180%',
+          background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+              {isLive ? (
+                <>
+                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite', boxShadow: '0 0 16px #ff5e5e' }} />
+                  Live now
+                </>
+              ) : (
+                <>
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                  We go live in
+                </>
+              )}
+            </div>
+            {isLive ? (
+              <>
+                <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: onDark, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
+                  {fmtLiveTime(timerSecs)}
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
+                  Workshop time remaining
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: sz(14), flexWrap: 'wrap' }}>
+                  {[
+                    { val: days, label: 'days' },
+                    { val: hours, label: 'hours' },
+                    { val: minutes, label: 'min' },
+                    { val: seconds, label: 'sec' },
+                  ].map((u, i) => (
+                    <div key={u.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: sz(72) }}>
+                      <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: i === 3 ? C.primary : onDark, letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                        {String(u.val).padStart(2, '0')}
+                      </div>
+                      <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 6 }}>
+                        {u.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
+                  May 1st · 12 AM · grab a drink, get comfy
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Live cities feed */}
+          <div style={{
+            minWidth: 280,
+            padding: '18px 22px',
+            borderRadius: 14,
+            background: 'rgba(250,248,245,0.06)',
+            border: `1px solid rgba(250,248,245,0.12)`,
+            position: 'relative',
+          }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
+              Drop your city in chat
+            </div>
+            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
+              We&apos;re from everywhere tonight ~
+            </div>
+            <div style={{ minHeight: sz(28), display: 'flex', alignItems: 'center' }}>
+              <div
+                key={cityIdx}
+                style={{
+                  ...sans, fontSize: sz(18), fontWeight: 600, color: onDark, letterSpacing: '-0.01em',
+                  animation: 'fadeInUp 0.4s ease',
+                }}
+              >
+                {WELCOME_CITIES[cityIdx]}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Two-column: Promise checklist + Agenda ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26 }}>
+
+        {/* Promise checklist */}
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            What we promised you
+          </div>
+          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+            By 8 PM tonight, all three are done.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {promises.map((p, i) => {
+              const visible = i < revealedPromises;
+              return (
+                <div key={i} style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 14,
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  background: visible ? `${C.primary}10` : 'transparent',
+                  border: `1px solid ${visible ? `${C.primary}30` : C.border}`,
+                  opacity: visible ? 1 : 0.45,
+                  transform: visible ? 'translateY(0)' : 'translateY(6px)',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}>
+                  <div style={{
+                    width: sz(28), height: sz(28), flexShrink: 0,
+                    borderRadius: '50%',
+                    background: visible ? C.primary : 'transparent',
+                    border: `2px solid ${visible ? C.primary : C.border}`,
+                    color: C.text === '#2A2520' ? onDark : C.bg,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    ...mono, fontSize: sz(14), fontWeight: 800,
+                    transition: 'all 0.3s',
+                  }}>
+                    {visible ? '✓' : ''}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(17), color: C.text, lineHeight: 1.45, fontWeight: 500 }}>
+                    {p}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Agenda */}
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Tonight&apos;s agenda
+          </div>
+          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+            Two hours. Eight beats. No filler.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {segments.map((s) => (
+              <div key={s.id} style={{
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr auto',
+                gap: 12,
+                alignItems: 'center',
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: s.id === 0 ? `${C.primary}15` : 'transparent',
+                border: `1px solid ${s.id === 0 ? `${C.primary}40` : 'transparent'}`,
+              }}>
+                <div style={{
+                  width: sz(28), height: sz(28), flexShrink: 0,
+                  borderRadius: '50%',
+                  background: s.id === 0 ? C.primary : `${C.muted}15`,
+                  color: s.id === 0 ? (C.text === '#2A2520' ? onDark : C.bg) : C.muted,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                }}>{s.num}</div>
+                <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>
+                  {s.title}{s.titleItalic && <> <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{s.titleItalic}</em></>}
+                </div>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 600, color: C.muted, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
+                  {s.duration}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.15); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
   fontSize: number; // top-bar slider value (14~30, default 19)
+  segments: Segment[]; // full agenda, used by segment 00 welcome
   C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
@@ -2554,8 +2854,10 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
 
       {/* ── BODY ── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
-        {/* Standard body grid hidden when the segment uses the compare panel ~ the side-by-side comparison takes that real estate instead */}
-        <div style={{ display: seg.panel === 'compare' ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+        {/* Standard body grid hidden when:
+            - segment uses compare panel (side-by-side comparison takes the real estate)
+            - segment is the welcome (countdown + agenda take over) */}
+        <div style={{ display: (seg.panel === 'compare' || seg.num === '00') ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
 
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -2922,6 +3224,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
         {seg.num === '04' && (
           <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+        )}
+
+        {/* ── Welcome interactive ~ countdown + agenda + cities (segment 00) ── */}
+        {seg.num === '00' && (
+          <WelcomeInteractive C={C} mono={mono} sans={sans} serif={serif} scale={audScale} segments={segments} timerSecs={timerSecs} />
         )}
 
         {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
