@@ -185,7 +185,7 @@ export default function ClaudeEventPage() {
               </div>
 
               {/* Secondary actions ~ small text links so the primary CTA is clearly the form */}
-              <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm items-center">
                 <Link
                   href="#learn"
                   className="text-clay-500 hover:text-clay-600 font-medium transition-colors inline-flex items-center gap-1"
@@ -195,12 +195,13 @@ export default function ClaudeEventPage() {
                 </Link>
                 <span className="text-beige-300">·</span>
                 <a
-                  href="https://www.skool.com/future-proof-with-ai-4339"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-charcoal-900/70 hover:text-charcoal-900 font-medium transition-colors"
+                  href="#community"
+                  className="text-charcoal-900/70 hover:text-charcoal-900 font-medium transition-colors inline-flex items-center gap-1.5"
                 >
-                  Join our community
+                  <span className="inline-flex items-center gap-1 bg-clay-500/10 border border-clay-500/30 rounded-full px-2 py-0.5 text-[11px] font-semibold text-clay-500 uppercase tracking-[0.1em]">
+                    🔥 200+ in &lt; 1 week
+                  </span>
+                  See our Skool
                 </a>
               </div>
             </div>
@@ -234,6 +235,99 @@ export default function ClaudeEventPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          SKOOL COMMUNITY — light · highlight the momentum
+      ══════════════════════════════════════ */}
+      <section id="community" className="py-14 md:py-20 bg-beige-100 border-y border-beige-200 relative overflow-hidden">
+        {/* Soft accent glow behind the card */}
+        <div className="absolute inset-0 pointer-events-none opacity-50">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-clay-500/15 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="section-container relative">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white border border-clay-500/30 rounded-3xl shadow-elegant overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-8 md:gap-12 items-center p-8 md:p-12">
+
+                {/* ── Big stat ── */}
+                <div className="text-center md:text-left flex-shrink-0">
+                  <div className="inline-flex items-center gap-2 bg-clay-500/10 border border-clay-500/30 rounded-full px-3 py-1 mb-4">
+                    <span className="text-base">🔥</span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-clay-500">Going fast</span>
+                  </div>
+                  <div
+                    className="text-7xl md:text-8xl font-light text-charcoal-900 leading-none"
+                    style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                  >
+                    <em className="italic text-clay-500">200+</em>
+                  </div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-taupe-400 mt-2">
+                    members
+                  </p>
+                  <p className="text-xs text-clay-500 italic mt-1 font-light">
+                    in less than a week
+                  </p>
+                </div>
+
+                {/* ── Pitch ── */}
+                <div className="text-center md:text-left">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-clay-500 mb-3">
+                    Join our community
+                  </p>
+                  <h2
+                    className="text-3xl md:text-4xl font-light text-charcoal-900 mb-4 leading-tight"
+                    style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                  >
+                    The room is <em className="italic text-clay-500">already filling up.</em>
+                  </h2>
+                  <p className="text-espresso-800 font-light leading-relaxed text-base mb-5">
+                    Our Skool community went from zero to 200+ members in under 7 days. Founders, VAs, freelancers, and curious operators ~ all figuring out AI together. <span className="text-clay-500 font-medium">Free to join.</span>
+                  </p>
+
+                  {/* Member avatars (visual social proof) */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {['🌴', '☕', '🌸', '🍷', '⚡'].map((emoji, i) => (
+                        <div
+                          key={i}
+                          className="w-9 h-9 rounded-full bg-gradient-to-br from-beige-200 to-beige-300 border-2 border-white flex items-center justify-center text-base shadow-sm"
+                        >
+                          {emoji}
+                        </div>
+                      ))}
+                      <div className="w-9 h-9 rounded-full bg-clay-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
+                        +195
+                      </div>
+                    </div>
+                    <p className="text-xs text-taupe-400 font-light italic">
+                      and counting, every hour
+                    </p>
+                  </div>
+                </div>
+
+                {/* ── CTA ── */}
+                <div className="flex justify-center md:justify-end flex-shrink-0">
+                  <a
+                    href="https://www.skool.com/future-proof-with-ai-4339"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex flex-col items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-7 py-5 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    <span className="flex items-center gap-2">
+                      Join the community
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.16em] font-semibold text-beige-50/70">
+                      Free Skool tier
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
