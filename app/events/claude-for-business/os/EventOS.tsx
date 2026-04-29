@@ -1455,10 +1455,10 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
                 <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
-                  Coming from ChatGPT?
+                  The 3 models
                 </div>
                 <div style={{ ...sans, fontSize: 18, fontWeight: 500, color: C.text, marginBottom: 16, lineHeight: 1.4 }}>
-                  Here&apos;s the rough translation:
+                  Coming from ChatGPT? Here&apos;s the rough translation:
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
