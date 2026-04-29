@@ -95,110 +95,143 @@ export default function ClaudeEventPage() {
   return (
     <>
       {/* ══════════════════════════════════════
-          HERO — light
+          HERO — light · form lives in the hero so visitors can sign up immediately
       ══════════════════════════════════════ */}
-      <section className="pt-20 pb-24 md:pt-28 md:pb-32 bg-beige-50">
-        <div className="section-container ">
-          <div className="max-w-4xl mx-auto text-center">
+      <section id="register" className="pt-20 pb-16 md:pt-28 md:pb-24 bg-beige-50">
+        <div className="section-container">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-start max-w-7xl mx-auto">
 
-            {/* Host signature */}
-            <div className="flex flex-col items-center gap-4 mb-10">
-              <Image
-                src="/assets/website-samples/hero_image.png"
-                alt="Abie Maxey and Meri"
-                width={200}
-                height={240}
-                className="w-40 object-contain drop-shadow-md"
-              />
-              <p className="text-espresso-800/50 text-base font-light italic">
-                by Abie Maxey and Meri Gee
-              </p>
-            </div>
+            {/* ── LEFT: hero pitch ── */}
+            <div>
+              {/* Host signature */}
+              <div className="flex items-center gap-4 mb-8">
+                <Image
+                  src="/assets/website-samples/hero_image.png"
+                  alt="Abie Maxey and Meri"
+                  width={120}
+                  height={144}
+                  className="w-24 object-contain drop-shadow-md"
+                />
+                <div>
+                  <p className="text-espresso-800/50 text-sm font-light italic">
+                    by Abie Maxey and Meri Gee
+                  </p>
+                  <p className="text-espresso-800/40 text-xs uppercase tracking-[0.18em] mt-1">
+                    Talent Mucho · Educate
+                  </p>
+                </div>
+              </div>
 
-            {/* Live badge */}
-            <div className="inline-flex items-center gap-2 bg-white border border-beige-300 rounded-full px-4 py-2 mb-8">
-              <span className="w-2 h-2 rounded-full bg-[#2D8CFF] animate-pulse shrink-0" />
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-espresso-800">
-                Free Live Zoom Event · May 1, 2026
-              </span>
-            </div>
-
-            <p className="text-espresso-800/60 font-light text-lg mb-3 italic">Hey you,</p>
-            <h1
-              className="font-light tracking-tight text-charcoal-900 mb-6"
-              style={{
-                fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif",
-                fontSize: "clamp(3.25rem, 8vw, 6.5rem)",
-                lineHeight: 1.0,
-              }}
-            >
-              This is where
-              <br />
-              <em className="italic text-clay-500">you start.</em>
-            </h1>
-
-            <p className="text-base font-semibold uppercase tracking-[0.18em] text-taupe-400 mb-4">
-              Claude AI for Business Owners
-            </p>
-
-            <p className="text-lg md:text-xl text-espresso-800 font-light leading-relaxed max-w-2xl mx-auto mb-10">
-              A growing community of business owners, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
-            </p>
-
-            {/* Walk-away bullets */}
-            <ul className="flex flex-col items-center gap-3 mb-12">
-              {walkAways.map((item) => (
-                <li key={item} className="flex items-start gap-3 max-w-md text-left">
-                  <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  <span className="text-sm text-espresso-800 font-light leading-relaxed">{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Meta row */}
-            <div className="flex flex-wrap justify-center gap-3 mb-10">
-              {[
-                { icon: <Calendar className="w-3.5 h-3.5" />, label: "Friday, May 1, 2026" },
-                { icon: <Clock className="w-3.5 h-3.5" />, label: "6:00 to 8:00 PM EST" },
-                { icon: <Video className="w-3.5 h-3.5" />, label: "Live on Zoom" },
-                { icon: <Star className="w-3.5 h-3.5" />, label: "Free to attend" },
-              ].map(({ icon, label }) => (
-                <span
-                  key={label}
-                  className="inline-flex items-center gap-2 bg-white border border-beige-200 rounded-full px-4 py-2 text-sm text-espresso-800 font-light"
-                >
-                  <span className="text-taupe-400">{icon}</span>
-                  {label}
+              {/* Live badge */}
+              <div className="inline-flex items-center gap-2 bg-white border border-beige-300 rounded-full px-4 py-2 mb-7">
+                <span className="w-2 h-2 rounded-full bg-[#2D8CFF] animate-pulse shrink-0" />
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-espresso-800">
+                  Free Live Zoom Event · May 1, 2026
                 </span>
-              ))}
+              </div>
+
+              <p className="text-espresso-800/60 font-light text-lg mb-3 italic">Hey you,</p>
+              <h1
+                className="font-light tracking-tight text-charcoal-900 mb-6"
+                style={{
+                  fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif",
+                  fontSize: "clamp(2.75rem, 7vw, 5.5rem)",
+                  lineHeight: 1.0,
+                }}
+              >
+                This is where
+                <br />
+                <em className="italic text-clay-500">you start.</em>
+              </h1>
+
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-taupe-400 mb-4">
+                Claude AI for Business Owners
+              </p>
+
+              <p className="text-base md:text-lg text-espresso-800 font-light leading-relaxed mb-8 max-w-xl">
+                A growing community of business owners, learning AI together for the first time ~ no experience needed, no pressure, just real guidance.
+              </p>
+
+              {/* Walk-away bullets */}
+              <ul className="flex flex-col gap-3 mb-8">
+                {walkAways.map((item) => (
+                  <li key={item} className="flex items-start gap-3 max-w-xl">
+                    <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                    <span className="text-sm text-espresso-800 font-light leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Meta chips */}
+              <div className="flex flex-wrap gap-2.5 mb-8">
+                {[
+                  { icon: <Calendar className="w-3.5 h-3.5" />, label: "May 1, 2026" },
+                  { icon: <Clock className="w-3.5 h-3.5" />, label: "6 to 8 PM EST" },
+                  { icon: <Video className="w-3.5 h-3.5" />, label: "Live on Zoom" },
+                  { icon: <Star className="w-3.5 h-3.5" />, label: "Free to attend" },
+                ].map(({ icon, label }) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-1.5 bg-white border border-beige-200 rounded-full px-3.5 py-1.5 text-xs text-espresso-800 font-medium"
+                  >
+                    <span className="text-taupe-400">{icon}</span>
+                    {label}
+                  </span>
+                ))}
+              </div>
+
+              {/* Secondary actions ~ small text links so the primary CTA is clearly the form */}
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                <Link
+                  href="#learn"
+                  className="text-clay-500 hover:text-clay-600 font-medium transition-colors inline-flex items-center gap-1"
+                >
+                  See the agenda
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <span className="text-beige-300">·</span>
+                <a
+                  href="https://www.skool.com/future-proof-with-ai-4339"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-charcoal-900/70 hover:text-charcoal-900 font-medium transition-colors"
+                >
+                  Join our community
+                </a>
+              </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href="#register"
-                className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-              >
-                Reserve My Free Spot
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#learn"
-                className="inline-flex items-center justify-center px-9 py-4 text-base font-medium text-clay-500 border border-beige-300 rounded-full hover:border-clay-500 hover:bg-clay-500/5 transition-all duration-200"
-              >
-                See the agenda
-              </Link>
-              <a
-                href="https://www.skool.com/future-proof-with-ai-4339"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-9 py-4 text-base font-medium text-charcoal-900 border border-beige-300 rounded-full hover:border-charcoal-900 hover:bg-charcoal-900/5 transition-all duration-200"
-              >
-                Join our Community
-              </a>
+            {/* ── RIGHT: signup form (sticky on desktop so it stays in view as you scroll the pitch) ── */}
+            <div className="lg:sticky lg:top-24 self-start w-full">
+              <div className="bg-white border border-beige-200 rounded-2xl p-7 md:p-8 shadow-elegant">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500">Reserve your spot</span>
+                  <span className="text-beige-300">·</span>
+                  <span className="text-xs uppercase tracking-[0.18em] text-taupe-400">Free · 30 sec</span>
+                </div>
+                <p
+                  className="text-2xl md:text-3xl font-light text-charcoal-900 mb-2 leading-tight"
+                  style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                >
+                  Save your spot.
+                </p>
+                <p className="text-sm text-taupe-400 font-light mb-6 leading-relaxed">
+                  272+ already in. Free to attend ~ Zoom link emailed before the event.
+                </p>
+                <Suspense fallback={null}>
+                  <RegisterForm />
+                </Suspense>
+                <div className="mt-5 pt-5 border-t border-beige-200 flex items-start gap-2.5">
+                  <span className="text-base mt-0.5">📬</span>
+                  <p className="text-xs text-taupe-400 font-light leading-relaxed">
+                    <span className="font-semibold text-espresso-800">Heads up:</span> our confirmation sometimes lands in spam ~ check there and mark us safe so you don&apos;t miss the Zoom link.
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -522,70 +555,33 @@ export default function ClaudeEventPage() {
       </section>
 
       {/* ══════════════════════════════════════
-          REGISTER — light
+          LAST CALL — slim final CTA · the form is in the hero, this just scrolls back up
       ══════════════════════════════════════ */}
-      <section id="register" className="section-padding bg-beige-50">
+      <section className="py-16 md:py-20 bg-beige-50 border-t border-beige-200">
         <div className="section-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-
-            {/* Left: value summary */}
-            <div className="lg:pt-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-4">
-                Reserve Your Spot
-              </p>
-              <h2
-                className="text-4xl md:text-5xl font-light text-charcoal-900 mb-6 leading-tight"
-                style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
-              >
-                Two hours. Real tools. A plan you can use tonight.
-              </h2>
-              <p className="text-espresso-800 font-light leading-relaxed mb-8">
-                Join 272+ already registered ~ free, live, and built for anyone who is ready to finally get into AI.
-              </p>
-              <div className="flex flex-col gap-4 mb-8">
-                {[
-                  { label: "Friday, May 1, 2026", sub: "6:00 to 8:00 PM EST" },
-                  { label: "Zoom link sent before the event", sub: "We'll email it to you ~ check your inbox closer to the date" },
-                  { label: "272+ already registered", sub: "Join the wave ~ free to attend" },
-                  { label: "VIP ~ €47", sub: "Guaranteed seat, replay, Claude Vault + Premium Skool access" },
-                ].map(({ label, sub }) => (
-                  <div key={label} className="flex items-start gap-3">
-                    <span className="w-5 h-5 rounded-full bg-clay-500 flex items-center justify-center shrink-0 mt-0.5">
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <div>
-                      <p className="text-sm font-semibold text-charcoal-900">{label}</p>
-                      <p className="text-xs text-taupe-400 font-light">{sub}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-beige-100 border border-beige-200 rounded-xl px-4 py-3 flex items-start gap-3">
-                <span className="text-base mt-0.5">📬</span>
-                <p className="text-xs text-taupe-400 font-light leading-relaxed">
-                  <span className="font-semibold text-espresso-800">Heads up:</span> Our confirmation email sometimes lands in spam. Once you register, check your spam folder and mark us as safe so you don&apos;t miss the Zoom link.
-                </p>
-              </div>
-            </div>
-
-            {/* Right: form */}
-            <div className="bg-white border border-beige-200 rounded-2xl p-8 md:p-10 shadow-elegant">
-              <p
-                className="text-2xl font-light text-charcoal-900 mb-1"
-                style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
-              >
-                Save your spot
-              </p>
-              <p className="text-sm text-taupe-400 font-light mb-7">
-                Due to high demand, we added a VIP option to keep delivering value after the call.
-              </p>
-              <Suspense fallback={null}>
-                <RegisterForm />
-              </Suspense>
-            </div>
-
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-4">
+              Still here?
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-light text-charcoal-900 mb-5 leading-tight"
+              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+            >
+              Two hours. Real tools. A plan you can use tonight.
+            </h2>
+            <p className="text-espresso-800/70 font-light leading-relaxed mb-8">
+              Join 272+ already registered ~ free, live, built for anyone ready to finally get into AI.
+            </p>
+            <Link
+              href="#register"
+              className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+            >
+              Reserve my free spot
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <p className="text-xs text-taupe-400 font-light italic mt-4">
+              Takes 30 seconds · Zoom link emailed before the event
+            </p>
           </div>
         </div>
       </section>
