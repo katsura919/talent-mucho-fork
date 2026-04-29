@@ -1075,6 +1075,7 @@ interface AILevel {
   oneLiner: string;
   addOn: AICap;
   explainer: string;
+  realExample: string; // Talent Mucho's actual use of this level
   has: AICap[];
 }
 
@@ -1083,56 +1084,63 @@ const AI_LEVELS: AILevel[] = [
     level: '01',
     title: 'The AI',
     titleItalic: 'Contractor',
-    oneLiner: "Great at the task. Doesn't know you yet.",
+    oneLiner: "Brilliant. Forgets you the moment you close the tab.",
     addOn: 'skill',
-    explainer: "This is just Claude Chat. You ask, it answers. Every conversation starts fresh ~ Claude has no memory of you, your clients, or your last reply. Like hiring a freelancer for a one-off task.",
+    explainer: "Plain Claude Chat. Open it, ask, get answer, close. Tomorrow morning it's a stranger again. Like that brilliant freelancer who does excellent work then ghosts you ~ except by design. Fine for one-off tasks. Painful if you're re-explaining who Sarah is, what your tone is, and why you don't say \"kindly\" every single Monday.",
+    realExample: "Where we still use this: quick research, one-off rewrites, anything we'd ask a smart stranger.",
     has: ['skill'],
   },
   {
     level: '02',
     title: 'The Trained',
     titleItalic: 'AI Employee',
-    oneLiner: 'Trained on your business. Remembers your context.',
+    oneLiner: "Onboarded once. Stops asking who's Sarah.",
     addOn: 'brain',
-    explainer: "This is a Claude Project ~ you upload your docs, set instructions once, and Claude remembers everything. Your tone, your clients, your offers, your past replies. Like onboarding a new hire instead of explaining yourself every Monday.",
+    explainer: "This is a Claude Project ~ a workspace where you drop your docs, your tone of voice, your client list, your offers, your past replies. Once. Now every chat in there starts with Claude already knowing your business. It's onboarding instead of explanation-ing. You wouldn't re-pitch your business to a new VA every Monday ~ stop doing it to Claude.",
+    realExample: "Our \"FAQ Voice\" Project ~ trained on a client's last 100 replies. Claude now answers in their voice without us having to translate.",
     has: ['skill', 'brain'],
   },
   {
     level: '03',
     title: 'The Connected',
     titleItalic: 'AI Employee',
-    oneLiner: 'Plugged into your tools. Moves data for you.',
+    oneLiner: "Plugged into your inbox. Actually moves the cursor.",
     addOn: 'connector',
-    explainer: "Add connectors (Gmail, Drive, Slack, Notion, your CRM). Claude can now read your actual emails and update your actual spreadsheets ~ not just talk about them. Like giving your trained employee access to the company shared drive.",
+    explainer: "Add connectors ~ Gmail, Drive, Slack, Notion, your CRM. Now Claude can READ your actual emails (not paraphrase them) and UPDATE your actual sheets (not describe what you should put in them). It's the difference between an employee who says \"I would suggest you reply to Sarah\" and one who replies, CCs you, and moves on.",
+    realExample: "Inbox Triage AI ~ reads overnight client mail, sorts by urgency, drafts replies, leaves only 2~3 decisions for Meri. 3 hours/day → 30 minutes.",
     has: ['skill', 'brain', 'connector'],
   },
   {
     level: '04',
     title: 'The Autonomous',
     titleItalic: 'AI Employee',
-    oneLiner: 'Works while you sleep.',
+    oneLiner: 'Works while you sleep. Sends results, not questions.',
     addOn: 'schedule',
-    explainer: "Set it on a schedule and give it a goal. Every morning at 7AM it processes overnight emails, drafts replies in your tone, posts your daily Threads update, sends Friday's invoice reminders. You wake up to results in your inbox, not in your to-do list.",
+    explainer: "Schedule + goal + access. Every morning at 7AM Claude triages overnight emails, drafts replies in your tone, posts your daily Threads update, fires Friday's invoice reminders. You wake up to results in your inbox, not a to-do list. The dream of \"I'll deal with this in the morning\" actually happens ~ just not by you.",
+    realExample: "Our Weekly Report AI ~ pulls metrics every Monday 6AM, drafts the recap, flags blockers. We open Slack to a finished report, not a blank doc.",
     has: ['skill', 'brain', 'connector', 'schedule'],
   },
 ];
 
-// Quick laymen-terms explainers for the Claude building blocks
+// Building blocks ~ the actual Claude features behind each level, in TM voice
 const CLAUDE_BUILDING_BLOCKS = [
   {
     name: 'Claude Skill',
     short: 'one-task pro',
-    desc: "A specific job Claude does really well ~ like 'turn this blog post into an Instagram carousel'. Built once, reused forever. Drop in a blog, get back 7 perfect slides.",
+    desc: "A specific job Claude nails every time. Built once, reused forever.",
+    example: "Our Carousel Generator ~ paste a blog, get 7 slides, copy in your voice, takes 30 seconds. We have one for proposals, one for Threads, one for client briefs. Build a few and your weeks change shape.",
   },
   {
     name: 'Claude Project',
     short: 'trained employee',
-    desc: "A workspace where Claude lives with your business context ~ your docs, your tone of voice, your clients, your offers. Walk into any chat in there and Claude already knows you.",
+    desc: "A workspace where Claude has actually been onboarded to your business.",
+    example: "Drop your docs, your tone, your clients, your offers ~ once. Every chat in there starts with Claude already knowing you. The difference between hiring a temp and hiring an employee.",
   },
   {
     name: 'Claude Team',
     short: 'shared employee',
-    desc: "Same trained Project, but shared. You, your VA, your business partner ~ everyone chats with the same Claude employee. Updates one of you make are instantly available to all.",
+    desc: "Same trained employee. Everyone on your team has access to it.",
+    example: "Add a new client to the Project on Monday ~ your VA's Claude knows about them by Tuesday's standup. No more \"have you got the latest brief?\" Same Claude, same context, same updates.",
   },
 ];
 
@@ -1357,12 +1365,52 @@ function AIEmployeeEvolution({ C, mono, sans, serif }: {
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      {/* ── BUILDING BLOCKS FIRST ~ what the audience needs to know before the matrix makes sense ── */}
       <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        AI Employee Evolution
+        First, the building blocks
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
+        {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
+          <div key={b.name} style={{
+            padding: '24px 26px',
+            borderRadius: 16,
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+            <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+              {String(i + 1).padStart(2, '0')} · {b.short}
+            </div>
+            <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+              {b.name}
+            </div>
+            <div style={{ ...serif, fontSize: 17, lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
+              {b.desc}
+            </div>
+            <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.muted, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+              <span style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
+              {b.example}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── NOW THE EVOLUTION MATRIX ── */}
+      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Now ~ the AI Employee Evolution
       </div>
       <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
-        Four levels. Each one adds one capability. Same employee ~ more capable.
+        Four levels. Each one adds one ingredient. Same Claude underneath ~ just better trained, better connected, better at running without you. <span style={{ color: C.primary }}>We run all four at Talent Mucho.</span>
       </div>
 
       {/* Matrix header ~ capability columns */}
@@ -1470,7 +1518,7 @@ function AIEmployeeEvolution({ C, mono, sans, serif }: {
       {/* Explainer panel for the active level */}
       <div style={{
         marginTop: 22,
-        padding: '24px 28px',
+        padding: '26px 30px',
         background: C.text, color: onDark,
         borderRadius: 16,
         boxShadow: `0 18px 40px -12px ${C.text}30`,
@@ -1478,46 +1526,26 @@ function AIEmployeeEvolution({ C, mono, sans, serif }: {
         <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
           Level {active.level} ~ in plain English
         </div>
-        <div style={{ ...sans, fontSize: 22, fontWeight: 600, color: onDark, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.25 }}>
+        <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: onDark, marginBottom: 14, letterSpacing: '-0.01em', lineHeight: 1.25 }}>
           {active.title}{' '}
           <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{active.titleItalic}</em>
         </div>
-        <div style={{ ...serif, fontSize: 18, lineHeight: 1.65, color: 'rgba(250,248,245,0.88)' }}>
+        <div style={{ ...serif, fontSize: 18, lineHeight: 1.65, color: 'rgba(250,248,245,0.88)', marginBottom: 18 }}>
           {active.explainer}
         </div>
-      </div>
-
-      {/* Quick reference: Claude Skill / Project / Team explainers */}
-      <div style={{ marginTop: 40 }}>
-        <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-          The building blocks (in human)
-        </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
-          The actual Claude features that make each level possible.
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
-            <div key={b.name} style={{
-              padding: '22px 24px',
-              borderRadius: 16,
-              background: C.surface,
-              border: `1px solid ${C.border}`,
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-              <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
-                {String(i + 1).padStart(2, '0')} · {b.short}
-              </div>
-              <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 10 }}>
-                {b.name}
-              </div>
-              <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, opacity: 0.85 }}>
-                {b.desc}
-              </div>
-            </div>
-          ))}
+        <div style={{
+          padding: '14px 18px',
+          background: 'rgba(250,248,245,0.06)',
+          border: `1px solid rgba(250,248,245,0.12)`,
+          borderRadius: 10,
+          display: 'flex', gap: 14, alignItems: 'flex-start',
+        }}>
+          <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', whiteSpace: 'nowrap', paddingTop: 2 }}>
+            From our stack ~
+          </div>
+          <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: 'rgba(250,248,245,0.92)' }}>
+            {active.realExample}
+          </div>
         </div>
       </div>
     </div>
