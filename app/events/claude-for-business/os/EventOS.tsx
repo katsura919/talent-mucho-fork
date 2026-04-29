@@ -1420,29 +1420,31 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           {/* ── RIGHT: Takeaway + active prompt ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-            {/* Takeaway pull-quote */}
-            <div style={{
-              background: C.text, color: onDark,
-              borderRadius: 20, padding: '34px 30px',
-              boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
-              position: 'relative', overflow: 'hidden',
-            }}>
-              {/* Decorative quote mark */}
-              <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+            {/* Takeaway pull-quote ~ hidden on products segments where the model-comparison card replaces it */}
+            {seg.panel !== 'products' && (
+              <div style={{
+                background: C.text, color: onDark,
+                borderRadius: 20, padding: '34px 30px',
+                boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                {/* Decorative quote mark */}
+                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
 
-              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
-                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-                Take this with you
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                  Take this with you
+                </div>
+                <Editable
+                  key={`atk-${segIdx}`}
+                  tagName="div"
+                  value={emOnDark(seg.audTakeaway)}
+                  editMode={editMode}
+                  onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
+                  style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
+                />
               </div>
-              <Editable
-                key={`atk-${segIdx}`}
-                tagName="div"
-                value={emOnDark(seg.audTakeaway)}
-                editMode={editMode}
-                onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
-              />
-            </div>
+            )}
 
             {/* Model translation card ~ shows on products segments only */}
             {seg.panel === 'products' && (
