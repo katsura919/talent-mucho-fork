@@ -1056,13 +1056,15 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+const CLAUDE_PRODUCTS = [
+  { icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here', desc: "The chat window. Where 90% of your wins start.", best: 'emails, content, replies, decisions' },
+  { icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work', desc: "Lives next to your files. Stops the copy-paste tax.", best: 'client docs, daily ops, multi-file work' },
+  { icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders', desc: "Plain-English coding. You describe, it builds.", best: 'automations, CSV cleaners, custom tools' },
+  { icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you', desc: "Browses, clicks, fills forms on your behalf.", best: 'research, lead gen, repetitive web tasks' },
+];
+
 function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties }) {
-  const products = [
-    { icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here', desc: "The chat window. Where 90% of your wins start.", best: 'emails, content, replies, decisions' },
-    { icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work', desc: "Lives next to your files. Stops the copy-paste tax.", best: 'client docs, daily ops, multi-file work' },
-    { icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders', desc: "Plain-English coding. You describe, it builds.", best: 'automations, CSV cleaners, custom tools' },
-    { icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you', desc: "Browses, clicks, fills forms on your behalf.", best: 'research, lead gen, repetitive web tasks' },
-  ];
+  const products = CLAUDE_PRODUCTS;
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
@@ -1393,6 +1395,52 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
             )}
           </div>
         </div>
+
+        {/* ── 4 Claudes grid ~ shows when segment uses the products panel ── */}
+        {seg.panel === 'products' && (
+          <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+            <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+              Same brain ~ four doors
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
+              {CLAUDE_PRODUCTS.map(p => (
+                <div key={p.icon} style={{
+                  padding: '24px 26px',
+                  borderRadius: 16,
+                  border: `1px solid ${C.border}`,
+                  background: C.surface,
+                  display: 'flex',
+                  gap: 18,
+                  alignItems: 'flex-start',
+                }}>
+                  <div style={{
+                    width: 52, height: 52, flexShrink: 0,
+                    borderRadius: 12,
+                    background: `${C.primary}20`,
+                    color: C.primary,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    ...mono, fontSize: 18, fontWeight: 800,
+                  }}>{p.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 4 }}>
+                      {p.name}
+                    </div>
+                    <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>
+                      {p.tag}
+                    </div>
+                    <div style={{ ...serif, fontSize: 18, lineHeight: 1.5, color: C.text, marginBottom: 8 }}>
+                      {p.desc}
+                    </div>
+                    <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── FOOTER ── */}
