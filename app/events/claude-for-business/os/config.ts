@@ -74,11 +74,11 @@ export const COMPARE_PRESETS: Record<string, ComparePreset> = {
     rightTitle: '<em>Asks first</em>',
     rightWhy: 'Pauses and asks for the context that makes the email actually work.',
     rightPrompt: 'write me an invoice reminder',
-    rightAnswer: "Happy to help with this ~ a few quick questions so I get the tone right:\n\n1. Who's the client? (just a first name is fine)\n2. What's the invoice for, and how much is it?\n3. How overdue is it?\n4. What's your relationship with this client ~ first time late, or a pattern?\n5. How do you usually sign off with them ~ formal, friendly, casual?\n6. Do they have a preferred way to pay (Stripe link, bank transfer, etc.)?\n\nOnce you tell me, I'll draft the reminder in your voice ~ short, warm, and firm enough to actually get paid.",
+    rightAnswer: "Happy to help ~ a few quick questions so I can get the framing and tone right:\n\nThe situation\n1. Who's the client? (first name is fine)\n2. What's the invoice for, and how much?\n3. How overdue ~ days, weeks, longer?\n4. What's your relationship ~ first time late, or a pattern?\n\nThe framing\n5. What outcome do you want ~ a gentle nudge, a firm reminder, or a final notice?\n6. Open to offering a payment plan, or push for full payment now?\n\nTone of voice\n7. How do you usually sound with this client ~ formal, casual, warm, brisk?\n8. Got 1~2 past emails I can match your voice from?\n9. Anything you'd never say (\"kindly\", \"as per\", emoji, etc.)?\n\nOnce you tell me, I'll draft the reminder in your voice, framed for the outcome you actually want.",
     leftAnnLbl: "What ChatGPT did",
     leftAnnTxt: "Gave you a finished template with [placeholders] you still have to fill in. You're back to doing the personalising work yourself.",
     rightAnnLbl: 'What Claude did',
-    rightAnnTxt: "Refused to guess. Asked for the context that makes the difference between a robot email and one that actually gets paid.",
+    rightAnnTxt: "Refused to guess. Asked about the situation, the framing, and your tone of voice ~ the three things that turn a generic email into one that sounds like you and actually gets paid.",
     landing: "Same prompt. Different mindset. <em>Claude treats you like a thinking partner</em>, not a search bar.",
   },
 };
