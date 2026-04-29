@@ -244,8 +244,10 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const qaInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
-  const seg = segments[segIdx];
-  const beat = seg.beats[beatIdx];
+  // Clamp segment + beat indices defensively in case state goes out of bounds
+  // (e.g. after edits remove beats, after imports, or during transitions)
+  const seg = segments[segIdx] ?? segments[0];
+  const beat = seg?.beats[beatIdx] ?? seg?.beats[0];
 
   // ── Edit persistence ─ server (Vercel Blob) is source of truth, localStorage backs it up
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -399,27 +401,29 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const goToSeg = useCallback((idx: number) => {
     setSegIdx(idx); setBeatIdx(0);
     const s = segments[idx];
+    if (!s) return;
     const newMode = s.panel as Mode;
     setMode(newMode);
     if (newMode === 'compare' && s.panelData) {
       const preset = COMPARE_PRESETS[s.panelData];
       if (preset) { setActivePreset(preset); resetCompare(); }
     }
-    if (s.speakers.includes('MERI') && !s.speakers.includes('ABIE')) setShowTab('meri');
+    const speakers = s.speakers ?? [];
+    if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
     else setShowTab('abie');
     prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const goToBeat = useCallback((idx: number) => {
     setBeatIdx(idx);
-    const b = segments[segIdx].beats[idx];
-    if (mode === 'showcase') {
+    const b = segments[segIdx]?.beats[idx];
+    if (b && mode === 'showcase') {
       if (b.speaker === 'MERI') setShowTab('meri');
       else if (b.speaker === 'ABIE') setShowTab('abie');
     }
     const el = document.getElementById(`beat-${idx}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [segIdx, mode]);
+  }, [segIdx, mode, segments]);
 
   // Keyboard navigation
   useEffect(() => {
