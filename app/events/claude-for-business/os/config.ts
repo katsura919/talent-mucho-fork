@@ -432,7 +432,7 @@ export const SEGMENTS: Segment[] = [
       {
         id: 'bts4', title: 'The point ~ start small', speaker: 'BOTH', blocks: [
           { type: 'scripted', speaker: 'BOTH', text: "<em>We didn't build any of this in a weekend.</em> One tool at a time. Each one solved one annoying problem. Six months in, the compound is real." },
-          { type: 'workbook', text: 'WORKBOOK ~ "The most annoying repetitive thing in my week is: ____." This is the thing you build first.' },
+          { type: 'scripted', speaker: 'BOTH', text: "Remember the answer you wrote down earlier ~ <em>the most annoying repetitive thing in your week?</em> That's what you build first. Not the dashboard. Not the AI employee. <em>One tool, one annoying problem.</em>" },
         ],
       },
     ],
