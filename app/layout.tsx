@@ -100,7 +100,7 @@ export const metadata: Metadata = {
     title: "Talent Mucho | Build Your Dream Team. Anywhere in the World.",
     description:
       "A boutique global talent studio helping companies build meaningful, distributed teams.",
-    images: ["/og-image.png"],
+    images: ["/tm-ogimage.jpg"],
     creator: "@talentmucho",
   },
 
