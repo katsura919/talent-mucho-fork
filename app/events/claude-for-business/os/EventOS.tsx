@@ -1817,9 +1817,16 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{ padding: '14px 16px', background: `${C.muted}10`, borderRadius: 10 }}>
-              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
-                Skill in use
+            <div style={{ padding: '14px 16px', background: `${C.primary}12`, borderRadius: 10, border: `1px solid ${C.primary}25` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: sz(16), height: sz(16),
+                  borderRadius: '50%',
+                  background: C.primary, color: C.text,
+                  fontSize: sz(8), fontWeight: 800,
+                }}>tm</span>
+                Talent Mucho Skill
               </div>
               <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                 {active.skill}
