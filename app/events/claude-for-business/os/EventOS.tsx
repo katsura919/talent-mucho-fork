@@ -1215,6 +1215,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
   const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
   const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
 
+  // Compare-panel reveal stages for interactive Claude flow:
+  // 0 = Claude's questions only · 1 = + user reply · 2 = + Claude's final email
+  const [compareStage, setCompareStage] = useState(0);
+  // Reset stages when segment changes
+  useEffect(() => { setCompareStage(0); }, [segIdx]);
+
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
   const onDark = '#FAF8F5';
   const brand = 'TALENT MUCHO';
@@ -1477,15 +1483,40 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                           </div>
                         </div>
                       )}
-                      {/* Response */}
+                      {/* Response (Claude's first response = the questions; ChatGPT's = the template) */}
                       <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
-                          The response
+                          {col.side === 'right' && p.rightUserReply ? 'Step 1 · Claude asks back' : 'The response'}
                         </div>
                         <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
                           {col.answer}
                         </div>
                       </div>
+
+                      {/* Step 2 ~ user provides context (Claude column only, when stage >= 1) */}
+                      {col.side === 'right' && p.rightUserReply && compareStage >= 1 && (
+                        <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, background: `${C.primary}10` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            Step 2 · You reply with context
+                          </div>
+                          <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap', fontStyle: 'italic', opacity: 0.95 }}>
+                            {p.rightUserReply}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Step 3 ~ Claude's final answer (Claude column only, when stage >= 2) */}
+                      {col.side === 'right' && p.rightFinalAnswer && compareStage >= 2 && (
+                        <div style={{ padding: '18px 22px 16px', borderBottom: `1px solid ${C.border}`, background: C.text, color: onDark }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
+                            Step 3 · Claude&apos;s final email
+                          </div>
+                          <div style={{ ...serif, fontSize: 16, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap' }}>
+                            {p.rightFinalAnswer}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Annotation ~ what this teaches */}
                       <div style={{ padding: '14px 22px 18px' }}>
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
@@ -1499,6 +1530,44 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                   );
                 })}
               </div>
+
+              {/* Reveal controls (only when there's a multi-step Claude flow defined) */}
+              {p.rightUserReply && p.rightFinalAnswer && (
+                <div style={{ marginTop: 22, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {compareStage < 2 && (
+                    <button
+                      onClick={() => setCompareStage(s => Math.min(2, s + 1))}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: C.primary, color: C.text === '#2A2520' ? '#FAF8F5' : C.bg,
+                        border: 'none',
+                        boxShadow: `0 6px 16px -4px ${C.primary}60`,
+                        transition: 'transform 0.15s, box-shadow 0.15s',
+                      }}
+                    >
+                      {compareStage === 0 ? '▸ Show what you reply with' : '▸ Reveal Claude\'s final email'}
+                    </button>
+                  )}
+                  {compareStage === 2 && (
+                    <button
+                      onClick={() => setCompareStage(0)}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: 'transparent', color: C.muted,
+                        border: `1px solid ${C.border}`,
+                      }}
+                    >
+                      ↺ Reset
+                    </button>
+                  )}
+                </div>
+              )}
               {/* Landing line */}
               <div style={{
                 marginTop: 26,

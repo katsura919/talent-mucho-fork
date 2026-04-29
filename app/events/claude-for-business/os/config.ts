@@ -50,7 +50,9 @@ export interface ComparePreset {
   rightTitle: string;
   rightWhy: string;
   rightPrompt: string;
-  rightAnswer: string;  // manual pre-written answer ~ no API call
+  rightAnswer: string;  // Claude's first response (asks questions)
+  rightUserReply?: string;   // What the user replies with context
+  rightFinalAnswer?: string; // Claude's final answer after context
   rightAnnLbl: string;
   rightAnnTxt: string;
   landing: string;
@@ -75,6 +77,8 @@ export const COMPARE_PRESETS: Record<string, ComparePreset> = {
     rightWhy: 'Pauses and asks for the context that makes the email actually work.',
     rightPrompt: 'write me an invoice reminder',
     rightAnswer: "Happy to help ~ a few quick questions so I can get the framing and tone right:\n\nThe situation\n1. Who's the client? (first name is fine)\n2. What's the invoice for, and how much?\n3. How overdue ~ days, weeks, longer?\n4. What's your relationship ~ first time late, or a pattern?\n\nThe framing\n5. What outcome do you want ~ a gentle nudge, a firm reminder, or a final notice?\n6. Open to offering a payment plan, or push for full payment now?\n\nTone of voice\n7. How do you usually sound with this client ~ formal, casual, warm, brisk?\n8. Got 1~2 past emails I can match your voice from?\n9. Anything you'd never say (\"kindly\", \"as per\", emoji, etc.)?\n\nOnce you tell me, I'll draft the reminder in your voice, framed for the outcome you actually want.",
+    rightUserReply: "Client is Sarah ~ founder of a small marketing agency, we've worked together for 18 months. Invoice INV-204, €450, 7 days overdue. First time she's been late.\n\nOutcome: friendly nudge, not a final notice ~ I want to keep the relationship. Open to a Stripe link so she can pay in one click. No payment plan needed.\n\nTone: we're casual ~ first names, light, sometimes a bit playful. Never use \"kindly\" or \"as per\". Sign me as Meri.\n\nHere's a past reply she sent me last week so you can match the vibe: \"Hey Meri, all sorted on my end ~ ping me Friday if you don't see it by then. Cheers!\"",
+    rightFinalAnswer: "Subject: Quick nudge on INV-204\n\nHey Sarah,\n\nHope you're having a good week! Quick one ~ invoice INV-204 (€450) hit the 7-day mark today, just wanted to make sure it didn't slip through the cracks.\n\nEasiest path: here's a Stripe link to settle it in one click → [stripe link]\n\nIf anything's stuck on your end, let me know and I'll sort it.\n\nThanks Sarah,\nMeri",
     leftAnnLbl: "What ChatGPT did",
     leftAnnTxt: "Gave you a finished template with [placeholders] you still have to fill in. You're back to doing the personalising work yourself.",
     rightAnnLbl: 'What Claude did',
