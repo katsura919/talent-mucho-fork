@@ -1056,11 +1056,74 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
-const CLAUDE_PRODUCTS = [
-  { icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here', desc: "The chat window. Where 90% of your wins start.", best: 'emails, content, replies, decisions' },
-  { icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work', desc: "Lives next to your files. Stops the copy-paste tax.", best: 'client docs, daily ops, multi-file work' },
-  { icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders', desc: "Plain-English coding. You describe, it builds.", best: 'automations, CSV cleaners, custom tools' },
-  { icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you', desc: "Browses, clicks, fills forms on your behalf.", best: 'research, lead gen, repetitive web tasks' },
+interface ClaudeProduct {
+  icon: string;
+  name: string;
+  tag: string;
+  desc: string;
+  best: string;
+  simulation: { prompt: string; steps: string[] };
+}
+
+const CLAUDE_PRODUCTS: ClaudeProduct[] = [
+  {
+    icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here',
+    desc: "The chat window. Where 90% of your wins start.",
+    best: 'emails, content, replies, decisions',
+    simulation: {
+      prompt: "Help me reply to this difficult client email...",
+      steps: [
+        '↳ Reading your message + the client thread',
+        '↳ Drafting a reply that acknowledges + redirects',
+        '↳ Offering 3 versions: warm, neutral, firm',
+        '✓ Done in under 30 seconds',
+      ],
+    },
+  },
+  {
+    icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work',
+    desc: "Lives next to your files. Stops the copy-paste tax.",
+    best: 'client docs, daily ops, multi-file work',
+    simulation: {
+      prompt: "Organise my Downloads folder by category",
+      steps: [
+        '↳ Scanning 247 files in /Downloads',
+        '↳ Sorting → Images / Documents / Spreadsheets / Invoices',
+        '↳ Renaming invoices by client + date',
+        '✓ All clean. 3 hours of admin done in 30 seconds.',
+      ],
+    },
+  },
+  {
+    icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders',
+    desc: "Plain-English coding. You describe, it builds.",
+    best: 'automations, CSV cleaners, custom tools',
+    simulation: {
+      prompt: "Add a Privacy Policy page to talentmucho.com",
+      steps: [
+        '↳ Reading repo structure',
+        '↳ Writing /app/privacy/page.tsx with GDPR copy',
+        '↳ git commit -m "feat: add privacy policy"',
+        '↳ Deploying to Vercel',
+        '✓ Live at talentmucho.com/privacy in 90 seconds',
+      ],
+    },
+  },
+  {
+    icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you',
+    desc: "Browses, clicks, fills forms on your behalf.",
+    best: 'research, lead gen, repetitive web tasks',
+    simulation: {
+      prompt: "Find 10 marketing agencies in Madrid hiring VAs",
+      steps: [
+        '↳ Opening LinkedIn + filtering by industry + city',
+        '↳ Scanning 60 profiles for "hiring" + "remote"',
+        '↳ Pulling: name, role, contact, recent post',
+        '↳ Saving to Google Sheet you can act on',
+        '✓ 10 qualified leads, ready to outreach',
+      ],
+    },
+  },
 ];
 
 function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties }) {
@@ -1220,11 +1283,34 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
   const [compareStage, setCompareStage] = useState(0);
   // User's selected draft index (after Claude shows variations)
   const [selectedDraft, setSelectedDraft] = useState<number | null>(null);
+  // Active Claude product (4-Claudes panel simulation)
+  const [activeClaude, setActiveClaude] = useState<number | null>(null);
+  // How many simulation steps have been revealed for the active Claude
+  const [revealedSteps, setRevealedSteps] = useState(0);
+
   // Reset stages when segment changes
   useEffect(() => {
     setCompareStage(0);
     setSelectedDraft(null);
+    setActiveClaude(null);
+    setRevealedSteps(0);
   }, [segIdx]);
+
+  // Stagger the reveal of simulation steps when a Claude is selected
+  useEffect(() => {
+    if (activeClaude === null) { setRevealedSteps(0); return; }
+    const product = CLAUDE_PRODUCTS[activeClaude];
+    setRevealedSteps(0);
+    let i = 0;
+    const total = product.simulation.steps.length;
+    const tick = () => {
+      i += 1;
+      setRevealedSteps(i);
+      if (i < total) setTimeout(tick, 700);
+    };
+    const initial = setTimeout(tick, 350);
+    return () => clearTimeout(initial);
+  }, [activeClaude]);
 
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
   const onDark = '#FAF8F5';
@@ -1619,49 +1705,113 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           );
         })()}
 
-        {/* ── 4 Claudes grid ~ shows when segment uses the products panel ── */}
+        {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
         {seg.panel === 'products' && (
           <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-            <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
               Same brain ~ four doors
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
-              {CLAUDE_PRODUCTS.map(p => (
-                <div key={p.icon} style={{
-                  padding: '24px 26px',
-                  borderRadius: 16,
-                  border: `1px solid ${C.border}`,
-                  background: C.surface,
-                  display: 'flex',
-                  gap: 18,
-                  alignItems: 'flex-start',
-                }}>
-                  <div style={{
-                    width: 52, height: 52, flexShrink: 0,
-                    borderRadius: 12,
-                    background: `${C.primary}20`,
-                    color: C.primary,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    ...mono, fontSize: 18, fontWeight: 800,
-                  }}>{p.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 4 }}>
-                      {p.name}
-                    </div>
-                    <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>
-                      {p.tag}
-                    </div>
-                    <div style={{ ...serif, fontSize: 18, lineHeight: 1.5, color: C.text, marginBottom: 8 }}>
-                      {p.desc}
-                    </div>
-                    <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                      Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.7 }}>
+              {activeClaude === null ? '↓ click any door to see it in action' : '↓ click another to switch · click again to close'}
             </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
+              {CLAUDE_PRODUCTS.map((p, i) => {
+                const isActive = activeClaude === i;
+                return (
+                  <div
+                    key={p.icon}
+                    onClick={() => setActiveClaude(isActive ? null : i)}
+                    style={{
+                      padding: '24px 26px',
+                      borderRadius: 16,
+                      border: `2px solid ${isActive ? C.primary : C.border}`,
+                      background: isActive ? C.text : C.surface,
+                      color: isActive ? onDark : C.text,
+                      cursor: 'pointer',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: isActive ? 'translateY(-2px)' : 'none',
+                      boxShadow: isActive ? `0 16px 32px -10px ${C.primary}55` : 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 16,
+                    }}
+                  >
+                    {/* Header row */}
+                    <div style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: 52, height: 52, flexShrink: 0,
+                        borderRadius: 12,
+                        background: isActive ? C.primary : `${C.primary}20`,
+                        color: isActive ? (C.text === '#2A2520' ? '#FAF8F5' : C.bg) : C.primary,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        ...mono, fontSize: 18, fontWeight: 800,
+                      }}>{p.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em', marginBottom: 4 }}>
+                          {p.name}
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>
+                          {p.tag}
+                        </div>
+                        <div style={{ ...serif, fontSize: 18, lineHeight: 1.5, color: isActive ? onDark : C.text, marginBottom: 8 }}>
+                          {p.desc}
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: isActive ? 'rgba(250,248,245,0.55)' : C.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                          Best for ~ <span style={{ color: isActive ? onDark : C.text, fontWeight: 700 }}>{p.best}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Simulation log (only when active) */}
+                    {isActive && (
+                      <div style={{
+                        marginTop: 4,
+                        padding: '14px 16px',
+                        background: 'rgba(250,248,245,0.06)',
+                        borderRadius: 10,
+                        border: '1px solid rgba(250,248,245,0.1)',
+                      }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          You ~
+                        </div>
+                        <div style={{ ...mono, fontSize: 14, lineHeight: 1.5, color: onDark, marginBottom: 14 }}>
+                          &ldquo;{p.simulation.prompt}&rdquo;
+                        </div>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          Claude ~
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {p.simulation.steps.slice(0, revealedSteps).map((step, si) => (
+                            <div key={si} style={{
+                              ...mono, fontSize: 13, lineHeight: 1.5,
+                              color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                              fontWeight: step.startsWith('✓') ? 700 : 400,
+                              opacity: 0,
+                              animation: 'fadeInUp 0.4s ease forwards',
+                            }}>
+                              {step}
+                            </div>
+                          ))}
+                          {revealedSteps < p.simulation.steps.length && (
+                            <div style={{ ...mono, fontSize: 13, color: C.primary, opacity: 0.7 }}>
+                              <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <style>{`
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(6px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes blink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+            `}</style>
           </div>
         )}
       </div>
