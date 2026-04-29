@@ -935,6 +935,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           totalSegs={segments.length}
           wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
+          fontSize={fontSize}
           C={C} mono={mono} serif={serif} sans={sans}
           spkColor={spkColor}
           theme={theme}
@@ -1394,16 +1395,18 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
 
 
 // ── OpsManagerDay ~ segment 05 audience view: a day with your AI Ops Manager ─
-function OpsManagerDay({ C, mono, sans, serif }: {
+function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
   serif: React.CSSProperties;
+  scale?: number; // 1.0 = base, comes from the top-bar font slider
 }) {
   const [activeIdx, setActiveIdx] = useState(1); // start at 7AM (skip the "still asleep" intro)
   const [autoplay, setAutoplay] = useState(false);
   const onDark = '#FAF8F5';
   const active = OPS_MANAGER_DAY[activeIdx];
+  const sz = (px: number) => Math.round(px * scale);
 
   // autoplay: cycle through events every 5s when on
   useEffect(() => {
@@ -1417,17 +1420,17 @@ function OpsManagerDay({ C, mono, sans, serif }: {
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
       {/* ── Building blocks ~ the concepts that make Sarah possible ── */}
-      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 28, lineHeight: 1.5 }}>
         Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
         {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
           <div key={b.name} style={{
-            padding: '24px 26px',
+            padding: '26px 28px',
             borderRadius: 16,
             background: C.surface,
             border: `1px solid ${C.border}`,
@@ -1438,17 +1441,17 @@ function OpsManagerDay({ C, mono, sans, serif }: {
             gap: 12,
           }}>
             <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-            <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
               {String(i + 1).padStart(2, '0')} · {b.short}
             </div>
-            <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+            <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
               {b.name}
             </div>
-            <div style={{ ...serif, fontSize: 17, lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
+            <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
               {b.desc}
             </div>
-            <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.muted, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
-              <span style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
+            <div style={{ ...serif, fontSize: sz(17), lineHeight: 1.6, color: C.muted, paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
+              <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
               {b.example}
             </div>
           </div>
@@ -1456,11 +1459,11 @@ function OpsManagerDay({ C, mono, sans, serif }: {
       </div>
 
       {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
-      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         A day with a Talent Mucho <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
         Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
         <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
@@ -1481,33 +1484,33 @@ function OpsManagerDay({ C, mono, sans, serif }: {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
           <div style={{
-            width: 64, height: 64, flexShrink: 0,
+            width: sz(72), height: sz(72), flexShrink: 0,
             borderRadius: '50%',
             background: C.primary, color: C.text,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            ...mono, fontSize: 24, fontWeight: 800,
+            ...mono, fontSize: sz(26), fontWeight: 800,
             boxShadow: `0 0 0 4px ${C.primary}30`,
           }}>tm</div>
           <div>
-            <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
               Talent Mucho ~ AI-Trained Ops Manager
             </div>
-            <div style={{ ...sans, fontSize: 28, fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+            <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
               Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
             </div>
-            <div style={{ ...serif, fontSize: 15, color: 'rgba(250,248,245,0.65)', marginTop: 6, fontStyle: 'italic' }}>
+            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8, fontStyle: 'italic' }}>
               Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
             Saves you ~
           </div>
-          <div style={{ ...sans, fontSize: 32, fontWeight: 800, color: C.primary, letterSpacing: '-0.02em', lineHeight: 1 }}>
+          <div style={{ ...sans, fontSize: sz(38), fontWeight: 800, color: C.primary, letterSpacing: '-0.02em', lineHeight: 1 }}>
             {OPS_TOTAL_SAVED}
           </div>
-          <div style={{ ...mono, fontSize: 10, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+          <div style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
             every weekday
           </div>
         </div>
@@ -1548,12 +1551,12 @@ function OpsManagerDay({ C, mono, sans, serif }: {
                 >
                   <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
                     <div style={{
-                      width: 36, height: 36,
+                      width: sz(40), height: sz(40),
                       borderRadius: '50%',
                       background: isActive ? C.primary : (isPast ? `${C.primary}50` : C.surface),
                       border: `2px solid ${isActive ? C.primary : C.border}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 18,
+                      fontSize: sz(20),
                       transition: 'all 0.2s',
                       boxShadow: isActive ? `0 0 0 4px ${C.primary}25` : 'none',
                     }}>
@@ -1561,13 +1564,13 @@ function OpsManagerDay({ C, mono, sans, serif }: {
                     </div>
                   </div>
                   <div>
-                    <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 3 }}>
+                    <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
                       {ev.time}
                     </div>
-                    <div style={{ ...sans, fontSize: 16, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 3 }}>
+                    <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
                       {ev.title}
                     </div>
-                    <div style={{ ...serif, fontStyle: 'italic', fontSize: 13, color: C.muted, lineHeight: 1.45 }}>
+                    <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                       {ev.oneLiner}
                     </div>
                   </div>
@@ -1596,16 +1599,16 @@ function OpsManagerDay({ C, mono, sans, serif }: {
           {/* Brand stamp */}
           <div style={{
             marginTop: 26,
-            padding: '14px 16px',
+            padding: '16px 18px',
             borderRadius: 12,
             background: `${C.primary}15`,
             border: `1px solid ${C.primary}40`,
             textAlign: 'center',
           }}>
-            <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 5 }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               ↳ This is the Operate pillar
             </div>
-            <div style={{ ...serif, fontSize: 14, color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
+            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
               We build, train, and place these inside our clients&apos; businesses.
             </div>
           </div>
@@ -1620,79 +1623,79 @@ function OpsManagerDay({ C, mono, sans, serif }: {
           position: 'sticky',
           top: 20,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
             <div style={{
-              width: 56, height: 56, flexShrink: 0,
+              width: sz(60), height: sz(60), flexShrink: 0,
               borderRadius: 14,
               background: `${C.primary}20`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 28,
+              fontSize: sz(30),
             }}>{active.icon}</div>
             <div>
-              <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+              <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
                 {active.time}
               </div>
-              <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
                 {active.title}
               </div>
             </div>
           </div>
 
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.text, lineHeight: 1.5, marginBottom: 18 }}>
+          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
             {active.oneLiner}
           </div>
 
-          <div style={{ ...serif, fontSize: 16, lineHeight: 1.65, color: C.text, opacity: 0.85, marginBottom: 22 }}>
+          <div style={{ ...serif, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
             {active.detail}
           </div>
 
           <div style={{
-            padding: '14px 18px',
+            padding: '16px 20px',
             background: C.surface2,
             borderRadius: 10,
             borderLeft: `3px solid ${C.primary}`,
-            marginBottom: 22,
+            marginBottom: 24,
           }}>
-            <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
               Sample output ~
             </div>
-            <div style={{ ...mono, fontSize: 13, lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
+            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
               {active.sample}
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{ padding: '12px 14px', background: `${C.muted}10`, borderRadius: 10 }}>
-              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ padding: '14px 16px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
                 Skill in use
               </div>
-              <div style={{ ...sans, fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                 {active.skill}
               </div>
             </div>
-            <div style={{ padding: '12px 14px', background: `${C.primary}15`, borderRadius: 10, border: `1px solid ${C.primary}30` }}>
-              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ padding: '14px 16px', background: `${C.primary}15`, borderRadius: 10, border: `1px solid ${C.primary}30` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
                 Time saved
               </div>
-              <div style={{ ...sans, fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                 {active.saved}
               </div>
             </div>
           </div>
 
           {active.connectors.length > 0 && (
-            <div style={{ marginTop: 12, padding: '12px 14px', background: `${C.muted}10`, borderRadius: 10 }}>
-              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                 Connectors plugged in
               </div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {active.connectors.map(con => (
                   <div key={con} style={{
-                    padding: '4px 10px',
+                    padding: '5px 12px',
                     borderRadius: 100,
                     background: C.surface,
                     border: `1px solid ${C.border}`,
-                    ...mono, fontSize: 11, fontWeight: 600, color: C.text,
+                    ...mono, fontSize: sz(13), fontWeight: 600, color: C.text,
                     letterSpacing: '0.04em',
                   }}>
                     {con}
@@ -1946,18 +1949,22 @@ function SpinWheel({ items, C, mono, sans, serif }: {
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
+  fontSize: number; // top-bar slider value (14~30, default 19)
   C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
   editMode: boolean;
   onSaveEdit: (path: string, value: string) => void;
 }) {
+  // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
+  const audScale = fontSize / 19;
+  const sz = (px: number) => Math.round(px * audScale);
   const fmtEvent = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
   const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
@@ -2433,7 +2440,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
 
         {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
         {seg.num === '05' && (
-          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} />
+          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
