@@ -1,58 +1,96 @@
-// Stores the Event OS script edits as a single JSON blob in Vercel Blob.
-// One file per event. The /os page loads it on mount and saves on each edit.
+// Stores the Event OS script edits in Supabase Postgres.
+// Schema lives in /supabase/migrations/0001_event_scripts.sql
 
 import { NextRequest, NextResponse } from 'next/server';
-import { put, list } from '@vercel/blob';
+import { getSupabaseServer } from '@/lib/supabase';
 
-// Path used in Blob storage
-const BLOB_KEY = 'events/claude-for-business/script.json';
+const SLUG = 'claude-for-business';
+
+interface EditsBody {
+  edits?: Record<string, string>;
+}
 
 export async function GET() {
-  try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json({ edits: {}, note: 'BLOB_READ_WRITE_TOKEN not configured' }, { status: 200 });
-    }
-    const { blobs } = await list({ prefix: BLOB_KEY });
-    if (!blobs.length) return NextResponse.json({ edits: {} });
-    const latest = blobs.sort((a, b) => (b.uploadedAt > a.uploadedAt ? 1 : -1))[0];
-    // Private blobs need the bearer token to read
-    const res = await fetch(latest.url, {
-      cache: 'no-store',
-      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
-    });
-    if (!res.ok) return NextResponse.json({ edits: {} });
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (err) {
-    console.error('Script GET error', err);
-    return NextResponse.json({ edits: {}, error: 'load failed' }, { status: 200 });
+  const sb = getSupabaseServer();
+  if (!sb) {
+    return NextResponse.json(
+      { edits: {}, note: 'Supabase not configured ~ add NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY' },
+      { status: 200 }
+    );
   }
+
+  const { data, error } = await sb
+    .from('event_scripts')
+    .select('edits, updated_at, version')
+    .eq('slug', SLUG)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[script GET]', error);
+    return NextResponse.json({ edits: {}, error: error.message }, { status: 200 });
+  }
+  if (!data) {
+    // Row doesn't exist yet ~ first save will create it on PUT via upsert
+    return NextResponse.json({ edits: {}, version: 0 });
+  }
+
+  return NextResponse.json({
+    edits: data.edits ?? {},
+    updatedAt: data.updated_at,
+    version: data.version,
+  });
 }
 
 export async function PUT(req: NextRequest) {
-  try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN not configured' }, { status: 503 });
-    }
-    const body = await req.json();
-    const edits = body?.edits;
-    if (!edits || typeof edits !== 'object') {
-      return NextResponse.json({ error: 'invalid body' }, { status: 400 });
-    }
-    const payload = JSON.stringify({
-      edits,
-      updatedAt: new Date().toISOString(),
-    });
-    // Match the store's access mode (the store was provisioned as private).
-    const blob = await put(BLOB_KEY, payload, {
-      access: 'private',
-      contentType: 'application/json',
-      addRandomSuffix: false,
-      allowOverwrite: true,
-    });
-    return NextResponse.json({ success: true, url: blob.url });
-  } catch (err) {
-    console.error('Script PUT error', err);
-    return NextResponse.json({ error: 'save failed' }, { status: 500 });
+  const sb = getSupabaseServer();
+  if (!sb) {
+    return NextResponse.json(
+      { error: 'Supabase not configured' },
+      { status: 503 }
+    );
   }
+
+  let body: EditsBody;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const edits = body?.edits;
+  if (!edits || typeof edits !== 'object' || Array.isArray(edits)) {
+    return NextResponse.json({ error: 'Body must contain { edits: {...} }' }, { status: 400 });
+  }
+
+  // ── Safety guard ~ refuse to clear all edits unless ?force=1
+  // (prevents accidental wipes during development/testing)
+  const url = new URL(req.url);
+  if (Object.keys(edits).length === 0 && !url.searchParams.has('force')) {
+    return NextResponse.json(
+      { error: "Refusing to clear all edits ~ pass '?force=1' if you really mean it" },
+      { status: 400 }
+    );
+  }
+
+  // Upsert ~ creates the row if first save, otherwise updates (history trigger
+  // captures the previous edits automatically via the database trigger)
+  const { data, error } = await sb
+    .from('event_scripts')
+    .upsert(
+      { slug: SLUG, edits, updated_at: new Date().toISOString() },
+      { onConflict: 'slug' }
+    )
+    .select('updated_at, version')
+    .maybeSingle();
+
+  if (error) {
+    console.error('[script PUT]', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    success: true,
+    updatedAt: data?.updated_at,
+    version: data?.version,
+  });
 }
