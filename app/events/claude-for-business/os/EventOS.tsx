@@ -1436,6 +1436,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
   const [autoplay, setAutoplay] = useState(false);
   const [activeBlock, setActiveBlock] = useState<number | null>(null);
   const [blockSteps, setBlockSteps] = useState(0);
+  const [expandedExamples, setExpandedExamples] = useState<Set<number>>(new Set());
   const onDark = '#FAF8F5';
   const active = OPS_MANAGER_DAY[activeIdx];
   const sz = (px: number) => Math.round(px * scale);
@@ -1511,10 +1512,53 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text, fontStyle: 'italic' }}>
                 {b.desc}
               </div>
-              <div style={{ ...serif, fontSize: sz(17), lineHeight: 1.6, color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, paddingTop: 12, borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}` }}>
-                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
-                {b.example}
-              </div>
+
+              {/* How we use it ~ collapsed toggle */}
+              {(() => {
+                const isExpanded = expandedExamples.has(i);
+                return (
+                  <div style={{
+                    paddingTop: 10,
+                    borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}`,
+                  }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedExamples(prev => {
+                          const next = new Set(prev);
+                          if (next.has(i)) next.delete(i);
+                          else next.add(i);
+                          return next;
+                        });
+                      }}
+                      style={{
+                        ...mono, fontSize: sz(10), fontWeight: 700,
+                        color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase',
+                        background: 'transparent', border: 'none',
+                        cursor: 'pointer', padding: 0,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <span style={{
+                        display: 'inline-block',
+                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
+                      }}>▸</span>
+                      How we use it
+                    </button>
+                    {isExpanded && (
+                      <div style={{
+                        ...serif, fontSize: sz(17), lineHeight: 1.6,
+                        color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
+                        marginTop: 10,
+                        animation: 'fadeInUp 0.25s ease',
+                      }}>
+                        {b.example}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Simulation log when active */}
               {isActive && (
