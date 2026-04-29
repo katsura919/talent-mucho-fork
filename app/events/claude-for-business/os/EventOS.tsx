@@ -1056,6 +1056,86 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+// AI Employee Evolution ~ used in segment 05 audience view (the 4-level matrix)
+// Capabilities stack additively: each level adds one new ingredient.
+const AI_CAPS = ['skill', 'brain', 'connector', 'schedule'] as const;
+type AICap = typeof AI_CAPS[number];
+
+const CAP_META: Record<AICap, { label: string; sub: string; icon: string }> = {
+  skill:     { label: 'Skill',     sub: 'Does the job',         icon: '◠◠' },
+  brain:     { label: 'Brain',     sub: 'Knows your business',  icon: '☁' },
+  connector: { label: 'Connector', sub: 'Acts in other apps',   icon: '◎' },
+  schedule:  { label: 'Schedule',  sub: 'Runs without you',     icon: '⏱' },
+};
+
+interface AILevel {
+  level: string;
+  title: string;
+  titleItalic: string;
+  oneLiner: string;
+  addOn: AICap;
+  explainer: string;
+  has: AICap[];
+}
+
+const AI_LEVELS: AILevel[] = [
+  {
+    level: '01',
+    title: 'The AI',
+    titleItalic: 'Contractor',
+    oneLiner: "Great at the task. Doesn't know you yet.",
+    addOn: 'skill',
+    explainer: "This is just Claude Chat. You ask, it answers. Every conversation starts fresh ~ Claude has no memory of you, your clients, or your last reply. Like hiring a freelancer for a one-off task.",
+    has: ['skill'],
+  },
+  {
+    level: '02',
+    title: 'The Trained',
+    titleItalic: 'AI Employee',
+    oneLiner: 'Trained on your business. Remembers your context.',
+    addOn: 'brain',
+    explainer: "This is a Claude Project ~ you upload your docs, set instructions once, and Claude remembers everything. Your tone, your clients, your offers, your past replies. Like onboarding a new hire instead of explaining yourself every Monday.",
+    has: ['skill', 'brain'],
+  },
+  {
+    level: '03',
+    title: 'The Connected',
+    titleItalic: 'AI Employee',
+    oneLiner: 'Plugged into your tools. Moves data for you.',
+    addOn: 'connector',
+    explainer: "Add connectors (Gmail, Drive, Slack, Notion, your CRM). Claude can now read your actual emails and update your actual spreadsheets ~ not just talk about them. Like giving your trained employee access to the company shared drive.",
+    has: ['skill', 'brain', 'connector'],
+  },
+  {
+    level: '04',
+    title: 'The Autonomous',
+    titleItalic: 'AI Employee',
+    oneLiner: 'Works while you sleep.',
+    addOn: 'schedule',
+    explainer: "Set it on a schedule and give it a goal. Every morning at 7AM it processes overnight emails, drafts replies in your tone, posts your daily Threads update, sends Friday's invoice reminders. You wake up to results in your inbox, not in your to-do list.",
+    has: ['skill', 'brain', 'connector', 'schedule'],
+  },
+];
+
+// Quick laymen-terms explainers for the Claude building blocks
+const CLAUDE_BUILDING_BLOCKS = [
+  {
+    name: 'Claude Skill',
+    short: 'one-task pro',
+    desc: "A specific job Claude does really well ~ like 'turn this blog post into an Instagram carousel'. Built once, reused forever. Drop in a blog, get back 7 perfect slides.",
+  },
+  {
+    name: 'Claude Project',
+    short: 'trained employee',
+    desc: "A workspace where Claude lives with your business context ~ your docs, your tone of voice, your clients, your offers. Walk into any chat in there and Claude already knows you.",
+  },
+  {
+    name: 'Claude Team',
+    short: 'shared employee',
+    desc: "Same trained Project, but shared. You, your VA, your business partner ~ everyone chats with the same Claude employee. Updates one of you make are instantly available to all.",
+  },
+];
+
 // Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
 const ABIE_STACK = [
   { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
@@ -1259,6 +1339,186 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── AIEmployeeEvolution ~ segment 05 audience view, the 4-level matrix ──────
+function AIEmployeeEvolution({ C, mono, sans, serif }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+}) {
+  const [activeLevel, setActiveLevel] = useState(0);
+  const onDark = '#FAF8F5';
+  const active = AI_LEVELS[activeLevel];
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        AI Employee Evolution
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Four levels. Each one adds one capability. Same employee ~ more capable.
+      </div>
+
+      {/* Matrix header ~ capability columns */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1.4fr repeat(4, 1fr)',
+        gap: 14,
+        paddingBottom: 14,
+        borderBottom: `1px solid ${C.border}`,
+        marginBottom: 16,
+      }}>
+        <div /> {/* spacer for level column */}
+        {AI_CAPS.map(cap => (
+          <div key={cap} style={{ textAlign: 'center' }}>
+            <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.text, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 3 }}>
+              {CAP_META[cap].label}
+            </div>
+            <div style={{ ...mono, fontSize: 10, color: C.muted, letterSpacing: '0.06em' }}>
+              {CAP_META[cap].sub}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Matrix rows ~ each level */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {AI_LEVELS.map((lvl, i) => {
+          const isActive = activeLevel === i;
+          return (
+            <div
+              key={lvl.level}
+              onClick={() => setActiveLevel(i)}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.4fr repeat(4, 1fr)',
+                gap: 14,
+                alignItems: 'center',
+                padding: '16px 18px',
+                borderRadius: 14,
+                border: `1px solid ${isActive ? C.primary : C.border}`,
+                background: isActive ? C.surface : 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: isActive ? `0 8px 24px -10px ${C.primary}40` : 'none',
+              }}
+            >
+              {/* Level name + description */}
+              <div>
+                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Level {lvl.level}
+                </div>
+                <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.15, marginBottom: 4 }}>
+                  {lvl.title}{' '}
+                  <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{lvl.titleItalic}</em>
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, lineHeight: 1.4 }}>
+                  {lvl.oneLiner}
+                </div>
+                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginTop: 8 }}>
+                  + {CAP_META[lvl.addOn].label}
+                </div>
+              </div>
+
+              {/* Capability cells */}
+              {AI_CAPS.map(cap => {
+                const has = lvl.has.includes(cap);
+                const isNew = cap === lvl.addOn;
+                return (
+                  <div
+                    key={cap}
+                    style={{
+                      aspectRatio: '1.4 / 1',
+                      borderRadius: 10,
+                      background: has ? (isNew ? `${C.primary}25` : `${C.muted}12`) : 'transparent',
+                      border: has ? `1px solid ${isNew ? C.primary : C.border}` : `1px dashed ${C.border}`,
+                      display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', justifyContent: 'center',
+                      gap: 4,
+                      position: 'relative',
+                      opacity: has ? 1 : 0.35,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {has && isNew && (
+                      <div style={{
+                        position: 'absolute', top: 5, right: 7,
+                        ...mono, fontSize: 8, fontWeight: 800,
+                        color: C.primary, letterSpacing: '0.18em',
+                      }}>NEW</div>
+                    )}
+                    <div style={{ fontSize: 22, color: has ? (isNew ? C.primary : C.text) : C.muted, opacity: has ? 1 : 0.4 }}>
+                      {CAP_META[cap].icon}
+                    </div>
+                    <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: has ? (isNew ? C.primary : C.text) : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                      {CAP_META[cap].label}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Explainer panel for the active level */}
+      <div style={{
+        marginTop: 22,
+        padding: '24px 28px',
+        background: C.text, color: onDark,
+        borderRadius: 16,
+        boxShadow: `0 18px 40px -12px ${C.text}30`,
+      }}>
+        <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
+          Level {active.level} ~ in plain English
+        </div>
+        <div style={{ ...sans, fontSize: 22, fontWeight: 600, color: onDark, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.25 }}>
+          {active.title}{' '}
+          <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{active.titleItalic}</em>
+        </div>
+        <div style={{ ...serif, fontSize: 18, lineHeight: 1.65, color: 'rgba(250,248,245,0.88)' }}>
+          {active.explainer}
+        </div>
+      </div>
+
+      {/* Quick reference: Claude Skill / Project / Team explainers */}
+      <div style={{ marginTop: 40 }}>
+        <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          The building blocks (in human)
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          The actual Claude features that make each level possible.
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
+            <div key={b.name} style={{
+              padding: '22px 24px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+              <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
+                {String(i + 1).padStart(2, '0')} · {b.short}
+              </div>
+              <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 10 }}>
+                {b.name}
+              </div>
+              <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, opacity: 0.85 }}>
+                {b.desc}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1986,6 +2246,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
         {seg.num === '04' && (
           <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+        )}
+
+        {/* ── AI Employee Evolution ~ shows on segment 05 (AI employees) ── */}
+        {seg.num === '05' && (
+          <AIEmployeeEvolution C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
