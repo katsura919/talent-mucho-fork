@@ -244,8 +244,10 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const qaInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
-  const seg = segments[segIdx];
-  const beat = seg.beats[beatIdx];
+  // Clamp segment + beat indices defensively in case state goes out of bounds
+  // (e.g. after edits remove beats, after imports, or during transitions)
+  const seg = segments[segIdx] ?? segments[0];
+  const beat = seg?.beats[beatIdx] ?? seg?.beats[0];
 
   // ── Edit persistence ─ server (Vercel Blob) is source of truth, localStorage backs it up
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -399,27 +401,29 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const goToSeg = useCallback((idx: number) => {
     setSegIdx(idx); setBeatIdx(0);
     const s = segments[idx];
+    if (!s) return;
     const newMode = s.panel as Mode;
     setMode(newMode);
     if (newMode === 'compare' && s.panelData) {
       const preset = COMPARE_PRESETS[s.panelData];
       if (preset) { setActivePreset(preset); resetCompare(); }
     }
-    if (s.speakers.includes('MERI') && !s.speakers.includes('ABIE')) setShowTab('meri');
+    const speakers = s.speakers ?? [];
+    if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
     else setShowTab('abie');
     prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const goToBeat = useCallback((idx: number) => {
     setBeatIdx(idx);
-    const b = segments[segIdx].beats[idx];
-    if (mode === 'showcase') {
+    const b = segments[segIdx]?.beats[idx];
+    if (b && mode === 'showcase') {
       if (b.speaker === 'MERI') setShowTab('meri');
       else if (b.speaker === 'ABIE') setShowTab('abie');
     }
     const el = document.getElementById(`beat-${idx}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [segIdx, mode]);
+  }, [segIdx, mode, segments]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -935,6 +939,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           totalSegs={segments.length}
           wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
+          fontSize={fontSize}
           C={C} mono={mono} serif={serif} sans={sans}
           spkColor={spkColor}
           theme={theme}
@@ -1056,13 +1061,332 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
+// VIP value stack ~ used in segment 07 audience view (the close)
+interface StackItem {
+  name: string;
+  desc: string;
+  value: number | 'priceless';
+}
+// VIP stack mirrors the landing page perks 1:1 so what people see at signup
+// matches what they see at the close (no surprises, builds trust)
+const VIP_STACK: StackItem[] = [
+  { name: 'Full replay + transcript',         desc: 'Rewatch any demo · copy any prompt · 30-day access',                                          value: 97 },
+  { name: 'The Claude Vault',                 desc: "Private dashboard setups + Talent Mucho's premium proprietary Claude skills",                  value: 297 },
+  { name: 'VIP-only group follow-up',         desc: '45-min private session with Abie & Meri · small group',                                       value: 'priceless' },
+  { name: '30-day Premium Skool access',      desc: "Closed mentorship · weekly Vibe Coding · €49/mo after, cancel anytime",                       value: 49 },
+];
+
+// Three Doors Out ~ used in segment 07 audience view (the close)
+interface DoorOption {
+  label: string;
+  name: string;
+  italic: string;
+  price: string;
+  pitch: string;
+  bestFor: string;
+  whatYouGet: string[];
+  nextStep: string;
+  cta: string;
+  ctaUrl: string;
+  highlight?: boolean;
+}
+const THREE_DOORS: DoorOption[] = [
+  {
+    label: 'Door 1',
+    name: 'Free',
+    italic: 'just try it',
+    price: '€0',
+    pitch: 'Open Claude tonight. Try one demo from what you saw.',
+    bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
+    whatYouGet: [
+      "Free Skool tier ~ community access, no live sessions",
+      "The mindset shift you got tonight",
+      "Whatever you remember from this session",
+    ],
+    nextStep: 'Close this tab. Open claude.ai. Try one prompt.',
+    cta: 'Try Claude tonight',
+    ctaUrl: 'https://claude.ai/new',
+  },
+  {
+    label: 'Door 2',
+    name: 'VIP',
+    italic: '€47 ~ the map',
+    price: '€47',
+    pitch: "The recording, the skill library, 30 days inside our community.",
+    bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
+    whatYouGet: [
+      "Full replay + transcript ~ 30-day access (€97)",
+      "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
+      "VIP-only group follow-up ~ 45 min with Abie + Meri",
+      "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
+      "Early access to the upcoming Bootcamp",
+      "+ 14-day refund · no form · no questions",
+    ],
+    nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
+    cta: 'Join VIP — €47',
+    ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
+    highlight: true,
+  },
+  {
+    label: 'Door 3',
+    name: 'Custom',
+    italic: 'we build it',
+    price: 'Talk to us',
+    pitch: "We build the AI stack inside your business and place a trained VA inside your team.",
+    bestFor: "Founders who are booked-out. Need this done, not learned.",
+    whatYouGet: [
+      "AI-Trained Ops Manager built for your business",
+      "Custom skills + connectors + scheduled runs",
+      "A trained VA placed inside your team",
+      "Monthly partnership ~ the Operate pillar",
+    ],
+    nextStep: 'Book a free 30-min call at talentmucho.com/booking',
+    cta: 'Book free call',
+    ctaUrl: 'https://talentmucho.com/booking',
+  },
+];
+
+// "A day with your AI Ops Manager" ~ used in segment 05 audience view
+interface OpsEvent {
+  time: string;
+  icon: string;
+  title: string;
+  oneLiner: string;
+  detail: string;
+  skill: string;
+  connectors: string[];
+  sample: string;
+  saved: string;
+}
+
+const OPS_MANAGER_DAY: OpsEvent[] = [
+  {
+    time: '6:45 AM',
+    icon: '☕',
+    title: "You're still asleep",
+    oneLiner: "Sarah's about to clock in. You're snoring.",
+    detail: "Sarah is your AI Ops Manager. She runs on a schedule, lives inside a Claude Project trained on your business, and has access to your tools. While you sleep, she's lining up the day so you can wake up to results, not a to-do list.",
+    skill: 'Schedule trigger',
+    connectors: ['Calendar', 'Drive'],
+    sample: '~ Sarah is reviewing her morning brief ~',
+    saved: 'all of it',
+  },
+  {
+    time: '7:00 AM',
+    icon: '📧',
+    title: 'Triages overnight inbox',
+    oneLiner: "Reads 47 emails. Flags 3 for you. Drafts 12 replies in your voice.",
+    detail: "Sarah opens Gmail, reads every overnight email, sorts by urgency, drafts replies in your tone for the easy ones, and flags only the 3 that need a human. The 12 drafts sit waiting for your one-click approval.",
+    skill: 'Inbox Triage',
+    connectors: ['Gmail', 'Drive'],
+    sample: '"Hey Sarah, hope you\'re doing well! Quick one ~ invoice INV-204 hit the 7-day mark today..."',
+    saved: '~3 hours',
+  },
+  {
+    time: '8:30 AM',
+    icon: '📊',
+    title: 'Drafts the Monday report',
+    oneLiner: "Pulls last week's metrics. Writes the recap. Spots 2 blockers.",
+    detail: "Sarah pulls the numbers from your sheets, compares against last week, drafts the full Monday recap with bullet highlights, and flags 2 blockers she thinks deserve attention.",
+    skill: 'Weekly Report',
+    connectors: ['Sheets', 'Drive', 'Slack'],
+    sample: "Revenue +12% WoW · Outreach replies down 30% (needs a look) · Sarah's invoice still outstanding",
+    saved: '~1 hour',
+  },
+  {
+    time: '9:30 AM',
+    icon: '🎯',
+    title: 'Qualifies 5 new leads',
+    oneLiner: "Scores them. Drafts a first reply. Updates the CRM.",
+    detail: "5 new leads landed overnight. Sarah scans LinkedIn + their website, scores each one, drafts a tailored first reply, and updates the CRM with notes. You only see the qualified ones.",
+    skill: 'Lead Qualification',
+    connectors: ['CRM', 'Gmail', 'Chrome agent'],
+    sample: 'Lead 4/5 (€8K agency, MVP fit, replied to Threads post) ~ ready to reply',
+    saved: '~45 minutes',
+  },
+  {
+    time: '11:00 AM',
+    icon: '🤝',
+    title: 'Onboards a new client',
+    oneLiner: "Sends welcome email. Generates SOPs. Creates Day-1 task list.",
+    detail: "New client signed yesterday. Sarah pulls the intake form, writes a personalised welcome email in your voice, generates the project SOP doc, schedules the kickoff, and posts the Day-1 task list to your project channel.",
+    skill: 'Onboarding',
+    connectors: ['Gmail', 'Drive', 'Calendar', 'Slack'],
+    sample: '"Welcome aboard, Maria! Couldn\'t be more excited. Here\'s how Week 1 looks..."',
+    saved: '~2 hours',
+  },
+  {
+    time: '2:00 PM',
+    icon: '📝',
+    title: 'Updates your project notes',
+    oneLiner: "Writes up yesterday's call. Drafts decisions. Pings the team.",
+    detail: "Yesterday's client call was 47 minutes. Sarah pulls the transcript, extracts decisions made, writes the action items, updates the project doc, and pings the relevant teammates with their next-step assignments.",
+    skill: 'Meeting Notes',
+    connectors: ['Notion', 'Drive', 'Slack'],
+    sample: '3 decisions logged · 5 action items assigned · Meri tagged on the brief',
+    saved: '~40 minutes',
+  },
+  {
+    time: '4:00 PM',
+    icon: '🚨',
+    title: 'Chases overdue invoices',
+    oneLiner: "Finds 4 invoices past due. Drafts reminders in matching tone.",
+    detail: "Sarah scans Stripe, finds invoices past 7 days, looks up each client's relationship history (first time late? pattern?), and drafts reminders in the right tone ~ gentle for first-timers, firmer for repeat offenders.",
+    skill: 'Invoice Chaser',
+    connectors: ['Stripe', 'Gmail', 'CRM'],
+    sample: 'INV-204 (Sarah, gentle) · INV-198 (Marco, firm) · INV-187 (Lisa, final notice)',
+    saved: '~30 minutes',
+  },
+  {
+    time: '5:30 PM',
+    icon: '📤',
+    title: 'Posts the EOD summary',
+    oneLiner: "Done for the day. Posts a 5-line wrap-up to Slack.",
+    detail: "Sarah closes out the day with a clean Slack summary: what got done, what got drafted, what needs your one-click sign-off tomorrow, and the 1 thing she couldn't figure out herself.",
+    skill: 'EOD Summary',
+    connectors: ['Slack'],
+    sample: '✓ 12 emails drafted · ✓ Monday report ready · ⏳ 3 awaiting your sign-off · ❓ 1 question for tomorrow',
+    saved: 'mental load',
+  },
+];
+
+const OPS_TOTAL_SAVED = '~7+ hours per day';
+
+// Building blocks ~ the actual Claude features behind each level, in TM voice
+const CLAUDE_BUILDING_BLOCKS = [
+  {
+    name: 'Claude Skill',
+    short: 'one-task pro',
+    desc: "A specific job Claude nails every time. Built once, reused forever.",
+    example: "Our Carousel Generator ~ paste a blog, get 7 slides, copy in your voice, takes 30 seconds. We have one for proposals, one for Threads, one for client briefs. Build a few and your weeks change shape.",
+    simulation: {
+      prompt: "Turn this blog post into an Instagram carousel.",
+      steps: [
+        '↳ Reading blog (1,200 words)',
+        '↳ Extracting the 3 key insights',
+        '↳ Structuring 7 slides ~ hook · setup · takeaways · CTA',
+        '↳ Writing each slide in your brand voice',
+        '✓ 7-slide carousel ready in 28 seconds',
+      ],
+    },
+  },
+  {
+    name: 'Claude Project',
+    short: 'trained employee',
+    desc: "A workspace where Claude has actually been onboarded to your business.",
+    example: "Drop your docs, your tone, your clients, your offers ~ once. Every chat in there starts with Claude already knowing you. The difference between hiring a temp and hiring an employee.",
+    simulation: {
+      prompt: "Draft a follow-up to Sarah from the call yesterday.",
+      steps: [
+        '↳ Pulling Sarah\'s profile from Project context',
+        '↳ Reading the call notes from yesterday',
+        '↳ Matching your tone (casual, no "kindly")',
+        '↳ Using your standard follow-up structure',
+        '✓ Draft ready ~ no re-explaining who Sarah is',
+      ],
+    },
+  },
+  {
+    name: 'Claude Team',
+    short: 'shared employee',
+    desc: "Same trained employee. Everyone on your team has access to it.",
+    example: "Add a new client to the Project on Monday ~ your VA's Claude knows about them by Tuesday's standup. No more \"have you got the latest brief?\" Same Claude, same context, same updates.",
+    simulation: {
+      prompt: "(Meri uploaded the Maria client brief on Monday)",
+      steps: [
+        '↳ Project syncs the brief across the team',
+        '↳ Tuesday: Abie opens her Claude',
+        '↳ Claude already knows Maria, the offer, the timeline',
+        '↳ No Slack ping. No "did you see the doc?"',
+        '✓ Same Claude. Same context. Same employee.',
+      ],
+    },
+  },
+];
+
+// Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
+const ABIE_STACK = [
+  { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
+  { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
+  { icon: 'DB', name: 'Personal Dashboard', short: 'Dashboard', desc: 'Replaces Notion + Coda. Custom-built, lives on my own site.' },
+  { icon: '⚡', name: 'ADHD Command Centre', short: 'ADHD CC', desc: "Keeps me on track on the days my brain doesn't want to." },
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousels', desc: 'Drafts Threads & Instagram in my brand voice.' },
+  { icon: 'UGC', name: 'UGC Pipeline', short: 'UGC', desc: 'Tracks every brand deal, deliverable, payment.' },
+  { icon: '$', name: 'Sales Pipeline', short: 'Sales', desc: 'Leads, follow-ups, proposals ~ one view.' },
+];
+
+interface ClaudeProduct {
+  icon: string;
+  name: string;
+  tag: string;
+  desc: string;
+  best: string;
+  simulation: { prompt: string; steps: string[] };
+}
+
+const CLAUDE_PRODUCTS: ClaudeProduct[] = [
+  {
+    icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here',
+    desc: "The chat window. Where 90% of your wins start.",
+    best: 'emails, content, replies, decisions',
+    simulation: {
+      prompt: "Help me reply to this difficult client email...",
+      steps: [
+        '↳ Reading your message + the client thread',
+        '↳ Drafting a reply that acknowledges + redirects',
+        '↳ Offering 3 versions: warm, neutral, firm',
+        '✓ Done in under 30 seconds',
+      ],
+    },
+  },
+  {
+    icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work',
+    desc: "Lives next to your files. Stops the copy-paste tax.",
+    best: 'client docs, daily ops, multi-file work',
+    simulation: {
+      prompt: "Organise my Downloads folder by category",
+      steps: [
+        '↳ Scanning 247 files in /Downloads',
+        '↳ Sorting → Images / Documents / Spreadsheets / Invoices',
+        '↳ Renaming invoices by client + date',
+        '✓ All clean. 3 hours of admin done in 30 seconds.',
+      ],
+    },
+  },
+  {
+    icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders',
+    desc: "Plain-English coding. You describe, it builds.",
+    best: 'automations, CSV cleaners, custom tools',
+    simulation: {
+      prompt: "Add a Privacy Policy page to talentmucho.com",
+      steps: [
+        '↳ Reading repo structure',
+        '↳ Writing /app/privacy/page.tsx with GDPR copy',
+        '↳ git commit -m "feat: add privacy policy"',
+        '↳ Deploying to Vercel',
+        '✓ Live at talentmucho.com/privacy in 90 seconds',
+      ],
+    },
+  },
+  {
+    icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you',
+    desc: "Browses, clicks, fills forms on your behalf.",
+    best: 'research, lead gen, repetitive web tasks',
+    simulation: {
+      prompt: "Find 10 marketing agencies in Madrid hiring VAs",
+      steps: [
+        '↳ Opening LinkedIn + filtering by industry + city',
+        '↳ Scanning 60 profiles for "hiring" + "remote"',
+        '↳ Pulling: name, role, contact, recent post',
+        '↳ Saving to Google Sheet you can act on',
+        '✓ 10 qualified leads, ready to outreach',
+      ],
+    },
+  },
+];
+
 function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties }) {
-  const products = [
-    { icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here', desc: "The chat window. Where 90% of your wins start.", best: 'emails, content, replies, decisions' },
-    { icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work', desc: "Lives next to your files. Stops the copy-paste tax.", best: 'client docs, daily ops, multi-file work' },
-    { icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders', desc: "Plain-English coding. You describe, it builds.", best: 'automations, CSV cleaners, custom tools' },
-    { icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you', desc: "Browses, clicks, fills forms on your behalf.", best: 'research, lead gen, repetitive web tasks' },
-  ];
+  const products = CLAUDE_PRODUCTS;
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
@@ -1095,15 +1419,7 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
   showTab: ShowTab; onTabChange: (t: ShowTab) => void;
   C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties;
 }) {
-  const abieItems = [
-    { icon: 'CLI', name: 'Email Co-pilot CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
-    { icon: 'CC', name: 'Website edits > GitHub', desc: 'Describe the change. Claude writes, commits, deploys.' },
-    { icon: 'DB', name: 'Personal Dashboard', desc: 'Replaces Notion + Coda. Custom-built, lives on my own site.' },
-    { icon: '⚡', name: 'ADHD Command Centre', desc: "Keeps me on track on the days my brain doesn't want to." },
-    { icon: '▣', name: 'Carousel Studio', desc: 'Drafts Threads & Instagram in my brand voice.' },
-    { icon: 'UGC', name: 'UGC Pipeline', desc: 'Tracks every brand deal, deliverable, payment.' },
-    { icon: '$', name: 'Sales Pipeline', desc: 'Leads, follow-ups, proposals ~ one view.' },
-  ];
+  const abieItems = ABIE_STACK;
   const meriItems = [
     { icon: '📥', name: 'Inbox Triage AI', desc: 'Sorts, drafts replies in client voice, flags only what needs a human. 3hr/day > 30min.' },
     { icon: '🎯', name: 'Lead Qualification AI', desc: 'Scores leads, drafts first reply. VA only handles real prospects.' },
@@ -1196,22 +1512,982 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
   );
 }
 
+
+// ── OpsManagerDay ~ segment 05 audience view: a day with your AI Ops Manager ─
+function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number; // 1.0 = base, comes from the top-bar font slider
+}) {
+  const [activeIdx, setActiveIdx] = useState(1); // start at 7AM (skip the "still asleep" intro)
+  const [autoplay, setAutoplay] = useState(false);
+  const [activeBlock, setActiveBlock] = useState<number | null>(null);
+  const [blockSteps, setBlockSteps] = useState(0);
+  const [expandedExamples, setExpandedExamples] = useState<Set<number>>(new Set());
+  const onDark = '#FAF8F5';
+  const active = OPS_MANAGER_DAY[activeIdx];
+  const sz = (px: number) => Math.round(px * scale);
+
+  // Stagger reveal of simulation steps for the active building block
+  useEffect(() => {
+    if (activeBlock === null) { setBlockSteps(0); return; }
+    const total = CLAUDE_BUILDING_BLOCKS[activeBlock].simulation.steps.length;
+    setBlockSteps(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setBlockSteps(i);
+      if (i < total) setTimeout(tick, 700);
+    };
+    const initial = setTimeout(tick, 350);
+    return () => clearTimeout(initial);
+  }, [activeBlock]);
+
+  // autoplay: cycle through events every 5s when on
+  useEffect(() => {
+    if (!autoplay) return;
+    const t = setInterval(() => {
+      setActiveIdx(i => (i + 1) % OPS_MANAGER_DAY.length);
+    }, 5000);
+    return () => clearInterval(t);
+  }, [autoplay]);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      {/* ── Building blocks ~ the concepts that make Sarah possible ── */}
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        First, the building blocks
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
+      </div>
+      <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
+        ↓ click any block to see it run live
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
+        {CLAUDE_BUILDING_BLOCKS.map((b, i) => {
+          const isActive = activeBlock === i;
+          return (
+            <div
+              key={b.name}
+              onClick={() => setActiveBlock(isActive ? null : i)}
+              style={{
+                padding: '26px 28px',
+                borderRadius: 16,
+                background: isActive ? C.text : C.surface,
+                color: isActive ? onDark : C.text,
+                border: `2px solid ${isActive ? C.primary : C.border}`,
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: isActive ? 'translateY(-2px)' : 'none',
+                boxShadow: isActive ? `0 18px 36px -12px ${C.primary}55` : 'none',
+              }}
+            >
+              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+              <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                {String(i + 1).padStart(2, '0')} · {b.short}
+              </div>
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
+                {b.name}
+              </div>
+              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text, fontStyle: 'italic' }}>
+                {b.desc}
+              </div>
+
+              {/* How we use it ~ collapsed toggle */}
+              {(() => {
+                const isExpanded = expandedExamples.has(i);
+                return (
+                  <div style={{
+                    paddingTop: 10,
+                    borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}`,
+                  }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedExamples(prev => {
+                          const next = new Set(prev);
+                          if (next.has(i)) next.delete(i);
+                          else next.add(i);
+                          return next;
+                        });
+                      }}
+                      style={{
+                        ...mono, fontSize: sz(10), fontWeight: 700,
+                        color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase',
+                        background: 'transparent', border: 'none',
+                        cursor: 'pointer', padding: 0,
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}
+                    >
+                      <span style={{
+                        display: 'inline-block',
+                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
+                      }}>▸</span>
+                      How we use it
+                    </button>
+                    {isExpanded && (
+                      <div style={{
+                        ...serif, fontSize: sz(17), lineHeight: 1.6,
+                        color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
+                        marginTop: 10,
+                        animation: 'fadeInUp 0.25s ease',
+                      }}>
+                        {b.example}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Simulation log when active */}
+              {isActive && (
+                <div style={{
+                  marginTop: 6,
+                  padding: '14px 16px',
+                  background: 'rgba(250,248,245,0.06)',
+                  borderRadius: 10,
+                  border: '1px solid rgba(250,248,245,0.1)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                    You ~
+                  </div>
+                  <div style={{ ...mono, fontSize: sz(13), lineHeight: 1.5, color: onDark, marginBottom: 12 }}>
+                    &ldquo;{b.simulation.prompt}&rdquo;
+                  </div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                    Claude ~
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {b.simulation.steps.slice(0, blockSteps).map((step, si) => (
+                      <div key={si} style={{
+                        ...mono, fontSize: sz(12), lineHeight: 1.5,
+                        color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                        fontWeight: step.startsWith('✓') ? 700 : 400,
+                        opacity: 0,
+                        animation: 'fadeInUp 0.4s ease forwards',
+                      }}>
+                        {step}
+                      </div>
+                    ))}
+                    {blockSteps < b.simulation.steps.length && (
+                      <div style={{ ...mono, fontSize: sz(12), color: C.primary, opacity: 0.7 }}>
+                        <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+      `}</style>
+
+      {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        A day with a Talent Mucho <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
+        Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
+        <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
+      </div>
+
+      {/* Profile card */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        gap: 22,
+        alignItems: 'center',
+        padding: '22px 26px',
+        borderRadius: 18,
+        background: C.text,
+        color: onDark,
+        marginBottom: 28,
+        boxShadow: `0 18px 40px -14px ${C.text}40`,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div style={{
+            width: sz(72), height: sz(72), flexShrink: 0,
+            borderRadius: '50%',
+            background: C.primary, color: C.text,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            ...mono, fontSize: sz(26), fontWeight: 800,
+            boxShadow: `0 0 0 4px ${C.primary}30`,
+          }}>tm</div>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
+              Talent Mucho ~ AI-Trained Ops Manager
+            </div>
+            <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+              Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
+            </div>
+            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8, fontStyle: 'italic' }}>
+              Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
+            </div>
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+            Saves you ~
+          </div>
+          <div style={{ ...sans, fontSize: sz(38), fontWeight: 800, color: C.primary, letterSpacing: '-0.02em', lineHeight: 1 }}>
+            {OPS_TOTAL_SAVED}
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+            every weekday
+          </div>
+        </div>
+      </div>
+
+      {/* Two-column: timeline + active-event detail */}
+      <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 26, alignItems: 'flex-start' }}>
+
+        {/* Timeline */}
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            position: 'absolute',
+            left: 23, top: 16, bottom: 16,
+            width: 2,
+            background: `linear-gradient(to bottom, ${C.primary}, ${C.muted}40)`,
+            borderRadius: 2,
+            zIndex: 0,
+          }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {OPS_MANAGER_DAY.map((ev, i) => {
+              const isActive = activeIdx === i;
+              const isPast = i < activeIdx;
+              return (
+                <div
+                  key={ev.time}
+                  onClick={() => { setActiveIdx(i); setAutoplay(false); }}
+                  style={{
+                    position: 'relative',
+                    display: 'grid',
+                    gridTemplateColumns: '50px 1fr',
+                    gap: 14,
+                    padding: '14px 16px 14px 0',
+                    cursor: 'pointer',
+                    borderRadius: 12,
+                    background: isActive ? `${C.primary}10` : 'transparent',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
+                    <div style={{
+                      width: sz(40), height: sz(40),
+                      borderRadius: '50%',
+                      background: isActive ? C.primary : (isPast ? `${C.primary}50` : C.surface),
+                      border: `2px solid ${isActive ? C.primary : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: sz(20),
+                      transition: 'all 0.2s',
+                      boxShadow: isActive ? `0 0 0 4px ${C.primary}25` : 'none',
+                    }}>
+                      {ev.icon}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+                      {ev.time}
+                    </div>
+                    <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
+                      {ev.title}
+                    </div>
+                    <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                      {ev.oneLiner}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center', gap: 8 }}>
+            <button
+              onClick={() => setAutoplay(a => !a)}
+              style={{
+                padding: '8px 18px', borderRadius: 100,
+                ...mono, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                cursor: 'pointer',
+                background: autoplay ? C.primary : 'transparent',
+                color: autoplay ? (C.text === '#2A2520' ? onDark : C.bg) : C.primary,
+                border: `1px solid ${C.primary}`,
+              }}
+            >
+              {autoplay ? '⏸ Pause autoplay' : '▶ Play her day'}
+            </button>
+          </div>
+
+          {/* Brand stamp */}
+          <div style={{
+            marginTop: 26,
+            padding: '16px 18px',
+            borderRadius: 12,
+            background: `${C.primary}15`,
+            border: `1px solid ${C.primary}40`,
+            textAlign: 'center',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+              ↳ This is the Operate pillar
+            </div>
+            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
+              We build, train, and place these inside our clients&apos; businesses.
+            </div>
+          </div>
+        </div>
+
+        {/* Active event detail */}
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          position: 'sticky',
+          top: 20,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
+            <div style={{
+              width: sz(60), height: sz(60), flexShrink: 0,
+              borderRadius: 14,
+              background: `${C.primary}20`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: sz(30),
+            }}>{active.icon}</div>
+            <div>
+              <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+                {active.time}
+              </div>
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                {active.title}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
+            {active.oneLiner}
+          </div>
+
+          <div style={{ ...serif, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
+            {active.detail}
+          </div>
+
+          <div style={{
+            padding: '16px 20px',
+            background: C.surface2,
+            borderRadius: 10,
+            borderLeft: `3px solid ${C.primary}`,
+            marginBottom: 24,
+          }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Sample output ~
+            </div>
+            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
+              {active.sample}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ padding: '14px 16px', background: `${C.primary}12`, borderRadius: 10, border: `1px solid ${C.primary}25` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: sz(16), height: sz(16),
+                  borderRadius: '50%',
+                  background: C.primary, color: C.text,
+                  fontSize: sz(8), fontWeight: 800,
+                }}>tm</span>
+                Talent Mucho Skill
+              </div>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                {active.skill}
+              </div>
+            </div>
+            <div style={{ padding: '14px 16px', background: `${C.primary}15`, borderRadius: 10, border: `1px solid ${C.primary}30` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+                Time saved
+              </div>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                {active.saved}
+              </div>
+            </div>
+          </div>
+
+          {active.connectors.length > 0 && (
+            <div style={{ marginTop: 12, padding: '14px 16px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                Connectors plugged in
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {active.connectors.map(con => (
+                  <div key={con} style={{
+                    padding: '5px 12px',
+                    borderRadius: 100,
+                    background: C.surface,
+                    border: `1px solid ${C.border}`,
+                    ...mono, fontSize: sz(13), fontWeight: 600, color: C.text,
+                    letterSpacing: '0.04em',
+                  }}>
+                    {con}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── SpinWheel ~ random demo picker, used in segment 04 audience view ─────────
+type SpinItem = { name: string; short?: string; desc: string; icon?: string };
+function SpinWheel({ items, C, mono, sans, serif }: {
+  items: SpinItem[];
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+}) {
+  const [rotation, setRotation] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const [winner, setWinner] = useState<number | null>(null);
+  const [history, setHistory] = useState<number[]>([]);
+  const wedgeAngle = 360 / items.length;
+  const radius = 200;
+  const onDark = '#FAF8F5';
+
+  function spin() {
+    if (spinning) return;
+
+    // Step 1: pick a target wedge (skipping ones already demoed)
+    const available = items.map((_, i) => i).filter(i => !history.includes(i));
+    const pool = available.length ? available : items.map((_, i) => i);
+    const targetIndex = pool[Math.floor(Math.random() * pool.length)];
+
+    // Step 2: figure out the absolute rotation (mod 360) where wedge `targetIndex`
+    // sits under the pointer (top of the wheel). Wedges are drawn starting at
+    // (i * wedgeAngle - 90)°, so wedge i's centre lives at (i + 0.5) * wedgeAngle - 90.
+    // After CSS rotation R, the centre is at that angle + R. We want it at -90 (top),
+    // i.e. R ≡ -(i + 0.5) * wedgeAngle  (mod 360).
+    const targetMod = (((-(targetIndex + 0.5) * wedgeAngle) % 360) + 360) % 360;
+    const currentMod = ((rotation % 360) + 360) % 360;
+    let delta = targetMod - currentMod;
+    if (delta <= 0) delta += 360;
+
+    // Step 3: add a few full rotations for drama, then animate
+    const spins = 5 + Math.floor(Math.random() * 3);
+    const totalDelta = 360 * spins + delta;
+
+    setSpinning(true);
+    setWinner(null);
+    setRotation(prev => prev + totalDelta);
+
+    setTimeout(() => {
+      // Step 4: derive the winner from the actual final rotation, so the
+      // result text always matches whatever wedge sits under the pointer
+      // (defensive ~ if any rounding drifted, this still tells the truth).
+      const finalRot = rotation + totalDelta;
+      const finalMod = ((finalRot % 360) + 360) % 360;
+      // Solve (i + 0.5) * wedgeAngle ≡ -finalMod (mod 360) for i
+      const raw = ((-finalMod / wedgeAngle - 0.5) % items.length + items.length) % items.length;
+      const derivedWinner = ((Math.round(raw) % items.length) + items.length) % items.length;
+      setSpinning(false);
+      setWinner(derivedWinner);
+      setHistory(h => [...h, derivedWinner]);
+    }, 4200);
+  }
+
+  function reset() {
+    setHistory([]);
+    setWinner(null);
+  }
+
+  const wedgeColors = [C.primary, C.surface2, C.muted + '40', C.peach || C.surface2];
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        What we demo live
+      </div>
+      <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
+        ↓ Pick someone in chat to spin · we demo whatever it lands on
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
+        {/* Wheel */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: 460, justifySelf: 'center', aspectRatio: '1 / 1' }}>
+          {/* Pointer at top */}
+          <div style={{
+            position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+            width: 0, height: 0,
+            borderLeft: '14px solid transparent',
+            borderRight: '14px solid transparent',
+            borderTop: `22px solid ${C.text}`,
+            zIndex: 3,
+            filter: `drop-shadow(0 4px 8px ${C.text}40)`,
+          }} />
+          <svg
+            viewBox={`-${radius + 10} -${radius + 10} ${(radius + 10) * 2} ${(radius + 10) * 2}`}
+            width="100%" height="100%"
+            style={{
+              transform: `rotate(${rotation}deg)`,
+              transition: spinning ? 'transform 4.2s cubic-bezier(0.17, 0.67, 0.21, 1)' : 'none',
+              filter: `drop-shadow(0 18px 32px ${C.text}25)`,
+            }}
+          >
+            {items.map((item, i) => {
+              const startAngle = (i * wedgeAngle - 90) * Math.PI / 180;
+              const endAngle = ((i + 1) * wedgeAngle - 90) * Math.PI / 180;
+              const x1 = radius * Math.cos(startAngle);
+              const y1 = radius * Math.sin(startAngle);
+              const x2 = radius * Math.cos(endAngle);
+              const y2 = radius * Math.sin(endAngle);
+              const largeArc = wedgeAngle > 180 ? 1 : 0;
+              const path = `M 0 0 L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+              const fill = wedgeColors[i % wedgeColors.length];
+              const isWinner = winner === i && !spinning;
+
+              // text positioning ~ middle of wedge, rotated to read radially
+              const midAngleDeg = i * wedgeAngle - 90 + wedgeAngle / 2;
+              const midRad = midAngleDeg * Math.PI / 180;
+              const textR = radius * 0.62;
+              const textX = textR * Math.cos(midRad);
+              const textY = textR * Math.sin(midRad);
+              const textRotation = midAngleDeg + 90;
+              const isLightWedge = fill === C.surface2 || fill === (C.muted + '40');
+
+              return (
+                <g key={i}>
+                  <path
+                    d={path}
+                    fill={fill}
+                    stroke={C.bg}
+                    strokeWidth={3}
+                    style={{
+                      filter: isWinner ? `drop-shadow(0 0 16px ${C.primary})` : undefined,
+                      transition: 'filter 0.4s',
+                    }}
+                  />
+                  <text
+                    x={textX} y={textY}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontFamily={String(mono.fontFamily)}
+                    fontSize={13} fontWeight={800}
+                    fill={isLightWedge ? C.text : (fill === C.primary ? (C.text === '#2A2520' ? onDark : C.bg) : C.text)}
+                    transform={`rotate(${textRotation} ${textX} ${textY})`}
+                    style={{ letterSpacing: '0.06em', textTransform: 'uppercase' }}
+                  >
+                    {item.short ?? item.name}
+                  </text>
+                </g>
+              );
+            })}
+            {/* Center cap */}
+            <circle r={28} fill={C.text} />
+            <circle r={20} fill={C.primary} />
+          </svg>
+        </div>
+
+        {/* Result panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 320 }}>
+          {winner === null ? (
+            <div style={{
+              flex: 1,
+              borderRadius: 18, border: `2px dashed ${C.border}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 32, textAlign: 'center',
+              minHeight: 220,
+            }}>
+              <div>
+                <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
+                  Awaiting the spin
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
+                  Wherever it lands, that&apos;s what we demo live.
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              borderRadius: 18, padding: '28px 30px',
+              background: C.text, color: onDark,
+              boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}40`,
+            }}>
+              <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 14 }}>
+                The wheel says ~
+              </div>
+              <div style={{ ...sans, fontSize: 36, fontWeight: 800, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
+                {items[winner].name}
+              </div>
+              <div style={{ ...serif, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
+                {items[winner].desc}
+              </div>
+            </div>
+          )}
+
+          {/* Controls */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <button
+              onClick={spin}
+              disabled={spinning}
+              style={{
+                flex: 1, minWidth: 160,
+                padding: '16px 28px', borderRadius: 100,
+                ...mono, fontSize: 14, fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                cursor: spinning ? 'not-allowed' : 'pointer',
+                background: spinning ? C.muted : C.primary,
+                color: C.text === '#2A2520' ? onDark : C.bg,
+                border: 'none',
+                boxShadow: spinning ? 'none' : `0 8px 20px -4px ${C.primary}55`,
+                transition: 'transform 0.15s, box-shadow 0.15s',
+                opacity: spinning ? 0.6 : 1,
+              }}
+            >
+              {spinning ? '● Spinning...' : winner !== null ? '↻ Spin again' : '▸ SPIN'}
+            </button>
+            {history.length > 0 && (
+              <button
+                onClick={reset}
+                disabled={spinning}
+                style={{
+                  padding: '14px 22px', borderRadius: 100,
+                  ...mono, fontSize: 12, fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  background: 'transparent', color: C.muted,
+                  border: `1px solid ${C.border}`,
+                }}
+              >
+                Reset
+              </button>
+            )}
+          </div>
+
+          {/* History tally */}
+          {history.length > 0 && (
+            <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+              Demoed so far ~ {history.map(i => items[i].short ?? items[i].name).join(' · ')}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ValueStack ~ segment 07 audience view: the €47 math ─────────────────────
+function ValueStack({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+  const totalNumeric = VIP_STACK.reduce((s, item) => s + (typeof item.value === 'number' ? item.value : 0), 0);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        The €47 stack
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+        What&apos;s actually inside VIP. Honest values. Math doesn&apos;t lie.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 18 }}>
+        {VIP_STACK.map((item, i) => {
+          const isPriceless = item.value === 'priceless';
+          return (
+            <div key={item.name} style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto',
+              gap: 18,
+              alignItems: 'center',
+              padding: '18px 22px',
+              borderRadius: 12,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+            }}>
+              <div style={{
+                width: sz(34), height: sz(34),
+                borderRadius: '50%',
+                background: `${C.primary}20`,
+                color: C.primary,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...mono, fontSize: sz(13), fontWeight: 800,
+              }}>{String(i + 1).padStart(2, '0')}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
+                  {item.name}
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                  {item.desc}
+                </div>
+              </div>
+              <div style={{
+                ...mono, fontSize: sz(16), fontWeight: 800, color: isPriceless ? C.primary : C.text,
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
+              }}>
+                {isPriceless ? 'priceless' : `€${item.value}`}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Total + price reveal */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
+        padding: '24px 28px', borderRadius: 16,
+        background: C.text, color: onDark,
+        boxShadow: `0 18px 40px -14px ${C.text}40`,
+      }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Real value if bought separately
+          </div>
+          <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
+            €{totalNumeric}+
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Tonight only
+          </div>
+          <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
+            €47
+          </div>
+        </div>
+      </div>
+
+      {/* 14-day guarantee badge */}
+      <div style={{
+        marginTop: 14,
+        padding: '14px 22px',
+        borderRadius: 100,
+        background: `${C.primary}15`,
+        border: `1px solid ${C.primary}40`,
+        display: 'flex', alignItems: 'center', gap: 14,
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          width: sz(28), height: sz(28),
+          borderRadius: '50%',
+          background: C.primary, color: C.text,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...mono, fontSize: sz(14), fontWeight: 800,
+        }}>✓</div>
+        <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          14-day refund
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.text }}>
+          No form. No questions. The only thing you risk is showing up.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ThreeDoorsOut ~ segment 07 audience view: the choice ────────────────────
+function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const [activeDoor, setActiveDoor] = useState(1); // VIP open by default
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '56px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Three doors out
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, alignItems: 'stretch' }}>
+        {THREE_DOORS.map((door, i) => {
+          const isActive = activeDoor === i;
+          const accentBg = door.highlight ? C.primary : (isActive ? C.text : C.surface);
+          const textColor = (door.highlight || isActive) ? onDark : C.text;
+          return (
+            <div
+              key={door.label}
+              onClick={() => setActiveDoor(i)}
+              style={{
+                display: 'flex', flexDirection: 'column',
+                padding: '26px 26px 22px',
+                borderRadius: 18,
+                background: door.highlight ? C.text : (isActive ? C.surface2 : C.surface),
+                border: `2px solid ${door.highlight ? C.primary : (isActive ? C.primary : C.border)}`,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: door.highlight
+                  ? `0 24px 48px -12px ${C.primary}55`
+                  : isActive ? `0 12px 28px -10px ${C.text}25` : 'none',
+                transform: door.highlight ? 'translateY(-4px)' : 'none',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {door.highlight && (
+                <div style={{
+                  position: 'absolute', top: 14, right: 16,
+                  ...mono, fontSize: sz(9), fontWeight: 800,
+                  color: C.text, background: C.primary,
+                  padding: '4px 10px', borderRadius: 100,
+                  letterSpacing: '0.18em',
+                }}>RECOMMENDED</div>
+              )}
+
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
+                {door.label}
+              </div>
+              <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
+                {door.name}
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
+                ~ {door.italic}
+              </div>
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
+                {door.pitch}
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
+                {door.bestFor}
+              </div>
+
+              {/* What you get list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18, flex: 1 }}>
+                {door.whatYouGet.map((item, ii) => (
+                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
+                    <span style={{ ...mono, fontSize: sz(12), color: C.primary, flexShrink: 0, paddingTop: 2 }}>~</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Next step + CTA */}
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  Next step ~
+                </div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
+                  {door.nextStep}
+                </div>
+                <a
+                  href={door.ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    display: 'block',
+                    padding: `${sz(14)}px ${sz(20)}px`,
+                    borderRadius: 100,
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    ...mono, fontSize: sz(12), fontWeight: 800,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
+                    color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
+                    border: 'none',
+                  }}
+                >
+                  {door.cta} →
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
+  fontSize: number; // top-bar slider value (14~30, default 19)
   C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
   editMode: boolean;
   onSaveEdit: (path: string, value: string) => void;
 }) {
+  // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
+  const audScale = fontSize / 19;
+  const sz = (px: number) => Math.round(px * audScale);
   const fmtEvent = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
   const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
+
+  // Compare-panel reveal stages for interactive Claude flow:
+  // 0 = Claude's questions only · 1 = + Claude's 3 draft variations
+  const [compareStage, setCompareStage] = useState(0);
+  // User's selected draft index (after Claude shows variations)
+  const [selectedDraft, setSelectedDraft] = useState<number | null>(null);
+  // Active Claude product (4-Claudes panel simulation)
+  const [activeClaude, setActiveClaude] = useState<number | null>(null);
+  // How many simulation steps have been revealed for the active Claude
+  const [revealedSteps, setRevealedSteps] = useState(0);
+
+  // Reset stages when segment changes
+  useEffect(() => {
+    setCompareStage(0);
+    setSelectedDraft(null);
+    setActiveClaude(null);
+    setRevealedSteps(0);
+  }, [segIdx]);
+
+  // Stagger the reveal of simulation steps when a Claude is selected
+  useEffect(() => {
+    if (activeClaude === null) { setRevealedSteps(0); return; }
+    const product = CLAUDE_PRODUCTS[activeClaude];
+    setRevealedSteps(0);
+    let i = 0;
+    const total = product.simulation.steps.length;
+    const tick = () => {
+      i += 1;
+      setRevealedSteps(i);
+      if (i < total) setTimeout(tick, 700);
+    };
+    const initial = setTimeout(tick, 350);
+    return () => clearTimeout(initial);
+  }, [activeClaude]);
 
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
   const onDark = '#FAF8F5';
@@ -1248,11 +2524,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
       {/* ── HERO TITLE BAND ── */}
       <div style={{ flexShrink: 0, padding: '52px 48px 38px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ display: 'inline-block', width: 28, height: 1, background: C.primary }} />
+          <div style={{ ...mono, fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={{ display: 'inline-block', width: 32, height: 1, background: C.primary }} />
             Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(48px, 7vw, 88px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.98, color: C.text, margin: 0, ...sans }}>
+          <h1 style={{ fontSize: 'clamp(64px, 9vw, 128px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, color: C.text, margin: 0, ...sans }}>
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
@@ -1261,41 +2537,31 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
             </em></>}
           </h1>
 
-          {/* Speakers + progress on same row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 28, marginTop: 28, flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase' }}>With</span>
-              {seg.speakers.map(sk => (
-                <div key={sk} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 14px', borderRadius: 100, ...mono, fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', border: `1px solid ${spkColor(sk)}40`, background: `${spkColor(sk)}10`, color: spkColor(sk) === onDark ? C.text : spkColor(sk) }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: spkColor(sk) === onDark ? C.text : spkColor(sk) }} />
-                  {SPEAKERS[sk]?.name}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              {Array.from({ length: totalSegs }).map((_, i) => (
-                <div key={i} style={{
-                  height: 4,
-                  width: i === segIdx ? 32 : 14,
-                  borderRadius: 4,
-                  background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                }} />
-              ))}
-            </div>
+          {/* Progress bars only ~ speaker badges removed for a cleaner audience view */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 28, justifyContent: 'flex-end' }}>
+            {Array.from({ length: totalSegs }).map((_, i) => (
+              <div key={i} style={{
+                height: 4,
+                width: i === segIdx ? 32 : 14,
+                borderRadius: 4,
+                background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              }} />
+            ))}
           </div>
         </div>
       </div>
 
       {/* ── BODY ── */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+        {/* Standard body grid hidden when the segment uses the compare panel ~ the side-by-side comparison takes that real estate instead */}
+        <div style={{ display: seg.panel === 'compare' ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
 
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div style={{ position: 'relative' }}>
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What we&apos;re covering
               </div>
               <Editable
@@ -1304,7 +2570,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 value={emRender(seg.audWhatTitle)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatTitle`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...sans, fontSize: 30, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 18 }}
+                style={{ ...sans, fontSize: 42, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 22 }}
               />
               <Editable
                 key={`awb-${segIdx}`}
@@ -1312,7 +2578,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 value={emRender(seg.audWhatBody)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontSize: 19, lineHeight: 1.7, color: C.text, opacity: 0.9 }}
+                style={{ ...serif, fontSize: 26, lineHeight: 1.6, color: C.text, opacity: 0.9 }}
               />
             </div>
           </div>
@@ -1320,29 +2586,77 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           {/* ── RIGHT: Takeaway + active prompt ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-            {/* Takeaway pull-quote */}
-            <div style={{
-              background: C.text, color: onDark,
-              borderRadius: 20, padding: '34px 30px',
-              boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
-              position: 'relative', overflow: 'hidden',
-            }}>
-              {/* Decorative quote mark */}
-              <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+            {/* Takeaway pull-quote ~ hidden on products segments where the model-comparison card replaces it */}
+            {seg.panel !== 'products' && (
+              <div style={{
+                background: C.text, color: onDark,
+                borderRadius: 20, padding: '34px 30px',
+                boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                {/* Decorative quote mark */}
+                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
 
-              <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10, position: 'relative' }}>
-                <span style={{ display: 'inline-block', width: 18, height: 1, background: C.primary }} />
-                Take this with you
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                  Take this with you
+                </div>
+                <Editable
+                  key={`atk-${segIdx}`}
+                  tagName="div"
+                  value={emOnDark(seg.audTakeaway)}
+                  editMode={editMode}
+                  onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
+                  style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
+                />
               </div>
-              <Editable
-                key={`atk-${segIdx}`}
-                tagName="div"
-                value={emOnDark(seg.audTakeaway)}
-                editMode={editMode}
-                onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontStyle: 'italic', fontSize: 22, lineHeight: 1.5, color: onDark, position: 'relative' }}
-              />
-            </div>
+            )}
+
+            {/* Model translation card ~ shows on products segments only */}
+            {seg.panel === 'products' && (
+              <div style={{
+                background: C.surface, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.border}`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
+                  The 3 models
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    { claude: 'Opus', desc: 'the genius', gpt: 'o1 / GPT-4', when: 'Complex thinking, strategy' },
+                    { claude: 'Sonnet', desc: 'the workhorse', gpt: 'GPT-4o', when: 'Daily driver · use 90% of the time', highlight: true },
+                    { claude: 'Haiku', desc: 'the fast one', gpt: 'GPT-4o mini', when: 'Quick lookups, short answers' },
+                  ].map(row => (
+                    <div key={row.claude} style={{
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: row.highlight ? `${C.primary}18` : `${C.muted}10`,
+                      border: row.highlight ? `1px solid ${C.primary}` : `1px solid ${C.border}`,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
+                        <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                          {row.claude}
+                          <span style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+                            ~ {row.desc}
+                          </span>
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                          ≈ {row.gpt}
+                        </div>
+                      </div>
+                      <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.04em' }}>
+                        {row.when}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 14, ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'center' }}>
+                  TL;DR ~ just use Sonnet
+                </div>
+              </div>
+            )}
 
             {/* Workbook prompt */}
             {wbBlock && (
@@ -1352,12 +2666,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Workbook moment
                 </div>
-                <div style={{ ...sans, fontSize: 19, fontWeight: 600, color: C.text, marginBottom: 10, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+                <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, lineHeight: 1.55 }}>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
                   Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
@@ -1371,28 +2685,367 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12 }}>
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Audience moment
                 </div>
-                <div style={{ ...sans, fontSize: 18, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+                <div style={{ ...sans, fontSize: 22, fontWeight: 600, color: C.text, marginBottom: 14, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                   {pollLines[0]}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {pollLines.slice(1).map((l, i) => (
                     <div key={i} style={{
-                      padding: '10px 14px', background: C.surface, borderRadius: 10,
-                      ...mono, fontSize: 13, color: C.text,
+                      padding: '12px 16px', background: C.surface, borderRadius: 10,
+                      ...mono, fontSize: 16, color: C.text,
                       border: `1px solid ${C.border}`,
                     }}>{l}</div>
                   ))}
                 </div>
-                <div style={{ marginTop: 14, ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                <div style={{ marginTop: 16, ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                   ↳ Drop your answer in the Zoom chat
                 </div>
               </div>
             )}
           </div>
         </div>
+
+        {/* ── ChatGPT vs Claude side-by-side ~ shows when segment uses the compare panel ── */}
+        {seg.panel === 'compare' && seg.panelData && COMPARE_PRESETS[seg.panelData] && (() => {
+          const p = COMPARE_PRESETS[seg.panelData];
+          const samePrompt = p.leftPrompt === p.rightPrompt;
+          const cols = [
+            { side: 'left' as const, tag: p.leftTag, title: p.leftTitle, why: p.leftWhy, prompt: p.leftPrompt, answer: p.leftAnswer, annLbl: p.leftAnnLbl, annTxt: p.leftAnnTxt },
+            { side: 'right' as const, tag: p.rightTag, title: p.rightTitle, why: p.rightWhy, prompt: p.rightPrompt, answer: p.rightAnswer, annLbl: p.rightAnnLbl, annTxt: p.rightAnnTxt },
+          ];
+          return (
+            <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+                {p.scenario}
+              </div>
+
+              {/* Shared prompt at top (only when both sides use the same prompt) */}
+              {samePrompt && (
+                <div style={{
+                  padding: '20px 26px',
+                  background: C.surface,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 14,
+                  marginBottom: 22,
+                  textAlign: 'center',
+                }}>
+                  <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
+                    The prompt (sent to both)
+                  </div>
+                  <div style={{ ...mono, fontSize: 22, lineHeight: 1.4, color: C.text, fontWeight: 500 }}>
+                    &ldquo;{p.leftPrompt}&rdquo;
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22, alignItems: 'stretch' }}>
+                {cols.map(col => {
+                  const isBad = col.side === 'left';
+                  const tagBg = isBad ? 'rgba(176,58,46,0.12)' : 'rgba(74,124,89,0.14)';
+                  const tagFg = isBad ? '#b03a2e' : '#1e8449';
+                  const tagBorder = isBad ? 'rgba(176,58,46,0.3)' : 'rgba(74,124,89,0.3)';
+                  return (
+                    <div key={col.side} style={{
+                      background: C.surface,
+                      borderRadius: 18,
+                      border: `1px solid ${C.border}`,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      {/* Header */}
+                      <div style={{ padding: '20px 22px 18px', borderBottom: `1px solid ${C.border}` }}>
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          padding: '5px 12px', borderRadius: 100,
+                          ...mono, fontSize: 11, fontWeight: 700,
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          background: tagBg, color: tagFg,
+                          border: `1px solid ${tagBorder}`,
+                          marginBottom: 12,
+                        }}>{col.tag}</div>
+                        <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
+                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-style:italic;font-weight:400;color:${C.primary}">`) }} />
+                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                          {col.why}
+                        </div>
+                      </div>
+                      {/* Prompt (only show per-column when prompts differ) */}
+                      {!samePrompt && (
+                        <div style={{ padding: '14px 22px', background: C.surface2, borderBottom: `1px solid ${C.border}` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                            The prompt
+                          </div>
+                          <div style={{ ...mono, fontSize: 14, lineHeight: 1.55, color: C.text, whiteSpace: 'pre-wrap' }}>
+                            {col.prompt}
+                          </div>
+                        </div>
+                      )}
+                      {/* Response (Claude's first response = the questions; ChatGPT's = the template) */}
+                      <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
+                        </div>
+                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                          {col.answer}
+                        </div>
+                      </div>
+
+                      {/* Step 2 ~ Claude offers multiple draft versions (Claude column only, when stage >= 1) */}
+                      {col.side === 'right' && p.rightDrafts && compareStage >= 1 && (
+                        <div style={{ padding: '18px 22px 16px', borderBottom: `1px solid ${C.border}`, background: `${C.primary}10` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 10 }}>
+                            Step 2 · Claude offers a selection
+                          </div>
+                          {p.rightBridge && (
+                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14, fontStyle: 'italic' }}>
+                              {p.rightBridge}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            {p.rightDrafts.map((draft, i) => {
+                              const isSelected = selectedDraft === i;
+                              return (
+                                <div
+                                  key={i}
+                                  onClick={() => setSelectedDraft(isSelected ? null : i)}
+                                  style={{
+                                    padding: '14px 16px',
+                                    borderRadius: 12,
+                                    border: `2px solid ${isSelected ? C.primary : C.border}`,
+                                    background: isSelected ? C.text : C.surface,
+                                    color: isSelected ? onDark : C.text,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: isSelected ? `0 8px 24px -6px ${C.primary}55` : 'none',
+                                    transform: isSelected ? 'translateY(-1px)' : 'none',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isSelected ? 10 : 0 }}>
+                                    <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: isSelected ? C.primary : C.text, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                      {draft.label}
+                                    </div>
+                                    <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: isSelected ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                                      {isSelected ? '✓ Selected' : 'Click to select'}
+                                    </div>
+                                  </div>
+                                  {isSelected && (
+                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                      {draft.body}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {selectedDraft === null && (
+                            <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 12, textAlign: 'center', opacity: 0.7 }}>
+                              ↑ click any version to read it
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Annotation ~ what this teaches */}
+                      <div style={{ padding: '14px 22px 18px' }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                          {col.annLbl}
+                        </div>
+                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                          {col.annTxt}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Reveal controls (only when Claude has draft variations defined) */}
+              {p.rightDrafts && (
+                <div style={{ marginTop: 22, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {compareStage === 0 && (
+                    <button
+                      onClick={() => setCompareStage(1)}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: C.primary, color: C.text === '#2A2520' ? '#FAF8F5' : C.bg,
+                        border: 'none',
+                        boxShadow: `0 6px 16px -4px ${C.primary}60`,
+                      }}
+                    >
+                      ▸ Show Claude&apos;s 3 versions
+                    </button>
+                  )}
+                  {compareStage === 1 && (
+                    <button
+                      onClick={() => { setCompareStage(0); setSelectedDraft(null); }}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: 'transparent', color: C.muted,
+                        border: `1px solid ${C.border}`,
+                      }}
+                    >
+                      ↺ Reset
+                    </button>
+                  )}
+                </div>
+              )}
+              {/* Landing line */}
+              <div style={{
+                marginTop: 26,
+                padding: '22px 28px',
+                background: C.text,
+                color: '#FAF8F5',
+                borderRadius: 14,
+                textAlign: 'center',
+              }}>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
+                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
+        {seg.num === '04' && (
+          <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+        )}
+
+        {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
+        {seg.num === '05' && (
+          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── The close ~ Value Stack + Three Doors ~ shows on segment 07 (Q&A + next step) ── */}
+        {seg.num === '07' && (
+          <>
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+          </>
+        )}
+
+        {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
+        {seg.panel === 'products' && (
+          <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+            <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+              Same brain ~ four doors
+            </div>
+            <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.7 }}>
+              {activeClaude === null ? '↓ click any door to see it in action' : '↓ click another to switch · click again to close'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
+              {CLAUDE_PRODUCTS.map((p, i) => {
+                const isActive = activeClaude === i;
+                return (
+                  <div
+                    key={p.icon}
+                    onClick={() => setActiveClaude(isActive ? null : i)}
+                    style={{
+                      padding: '24px 26px',
+                      borderRadius: 16,
+                      border: `2px solid ${isActive ? C.primary : C.border}`,
+                      background: isActive ? C.text : C.surface,
+                      color: isActive ? onDark : C.text,
+                      cursor: 'pointer',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: isActive ? 'translateY(-2px)' : 'none',
+                      boxShadow: isActive ? `0 16px 32px -10px ${C.primary}55` : 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 16,
+                    }}
+                  >
+                    {/* Header row */}
+                    <div style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: 52, height: 52, flexShrink: 0,
+                        borderRadius: 12,
+                        background: isActive ? C.primary : `${C.primary}20`,
+                        color: isActive ? (C.text === '#2A2520' ? '#FAF8F5' : C.bg) : C.primary,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        ...mono, fontSize: 18, fontWeight: 800,
+                      }}>{p.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em', marginBottom: 4 }}>
+                          {p.name}
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>
+                          {p.tag}
+                        </div>
+                        <div style={{ ...serif, fontSize: 18, lineHeight: 1.5, color: isActive ? onDark : C.text, marginBottom: 8 }}>
+                          {p.desc}
+                        </div>
+                        <div style={{ ...mono, fontSize: 11, color: isActive ? 'rgba(250,248,245,0.55)' : C.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                          Best for ~ <span style={{ color: isActive ? onDark : C.text, fontWeight: 700 }}>{p.best}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Simulation log (only when active) */}
+                    {isActive && (
+                      <div style={{
+                        marginTop: 4,
+                        padding: '14px 16px',
+                        background: 'rgba(250,248,245,0.06)',
+                        borderRadius: 10,
+                        border: '1px solid rgba(250,248,245,0.1)',
+                      }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          You ~
+                        </div>
+                        <div style={{ ...mono, fontSize: 14, lineHeight: 1.5, color: onDark, marginBottom: 14 }}>
+                          &ldquo;{p.simulation.prompt}&rdquo;
+                        </div>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          Claude ~
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {p.simulation.steps.slice(0, revealedSteps).map((step, si) => (
+                            <div key={si} style={{
+                              ...mono, fontSize: 13, lineHeight: 1.5,
+                              color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                              fontWeight: step.startsWith('✓') ? 700 : 400,
+                              opacity: 0,
+                              animation: 'fadeInUp 0.4s ease forwards',
+                            }}>
+                              {step}
+                            </div>
+                          ))}
+                          {revealedSteps < p.simulation.steps.length && (
+                            <div style={{ ...mono, fontSize: 13, color: C.primary, opacity: 0.7 }}>
+                              <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <style>{`
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(6px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes blink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+            `}</style>
+          </div>
+        )}
       </div>
 
       {/* ── FOOTER ── */}
