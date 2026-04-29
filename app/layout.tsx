@@ -86,7 +86,7 @@ export const metadata: Metadata = {
       "A boutique global talent studio helping companies build meaningful, distributed teams through curated remote staffing and talent sourcing.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/tm-ogimage.jpg",
         width: 1200,
         height: 630,
         alt: "Talent Mucho - Global Talent Studio",
