@@ -1457,9 +1457,6 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
                   The 3 models
                 </div>
-                <div style={{ ...sans, fontSize: 18, fontWeight: 500, color: C.text, marginBottom: 16, lineHeight: 1.4 }}>
-                  Coming from ChatGPT? Here&apos;s the rough translation:
-                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
                     { claude: 'Opus', desc: 'the genius', gpt: 'o1 / GPT-4', when: 'Complex thinking, strategy' },
