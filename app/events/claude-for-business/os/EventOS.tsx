@@ -1056,71 +1056,111 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
-// AI Employee Evolution ~ used in segment 05 audience view (the 4-level matrix)
-// Capabilities stack additively: each level adds one new ingredient.
-const AI_CAPS = ['skill', 'brain', 'connector', 'schedule'] as const;
-type AICap = typeof AI_CAPS[number];
-
-const CAP_META: Record<AICap, { label: string; sub: string; icon: string }> = {
-  skill:     { label: 'Skill',     sub: 'Does the job',         icon: '◠◠' },
-  brain:     { label: 'Brain',     sub: 'Knows your business',  icon: '☁' },
-  connector: { label: 'Connector', sub: 'Acts in other apps',   icon: '◎' },
-  schedule:  { label: 'Schedule',  sub: 'Runs without you',     icon: '⏱' },
-};
-
-interface AILevel {
-  level: string;
+// "A day with your AI Ops Manager" ~ used in segment 05 audience view
+interface OpsEvent {
+  time: string;
+  icon: string;
   title: string;
-  titleItalic: string;
   oneLiner: string;
-  addOn: AICap;
-  explainer: string;
-  realExample: string; // Talent Mucho's actual use of this level
-  has: AICap[];
+  detail: string;
+  skill: string;
+  connectors: string[];
+  sample: string;
+  saved: string;
 }
 
-const AI_LEVELS: AILevel[] = [
+const OPS_MANAGER_DAY: OpsEvent[] = [
   {
-    level: '01',
-    title: 'The AI',
-    titleItalic: 'Contractor',
-    oneLiner: "Brilliant. Forgets you the moment you close the tab.",
-    addOn: 'skill',
-    explainer: "Plain Claude Chat. Open it, ask, get answer, close. Tomorrow morning it's a stranger again. Like that brilliant freelancer who does excellent work then ghosts you ~ except by design. Fine for one-off tasks. Painful if you're re-explaining who Sarah is, what your tone is, and why you don't say \"kindly\" every single Monday.",
-    realExample: "Where we still use this: quick research, one-off rewrites, anything we'd ask a smart stranger.",
-    has: ['skill'],
+    time: '6:45 AM',
+    icon: '☕',
+    title: "You're still asleep",
+    oneLiner: "Sarah's about to clock in. You're snoring.",
+    detail: "Sarah is your AI Ops Manager. She runs on a schedule, lives inside a Claude Project trained on your business, and has access to your tools. While you sleep, she's lining up the day so you can wake up to results, not a to-do list.",
+    skill: 'Schedule trigger',
+    connectors: ['Calendar', 'Drive'],
+    sample: '~ Sarah is reviewing her morning brief ~',
+    saved: 'all of it',
   },
   {
-    level: '02',
-    title: 'The Trained',
-    titleItalic: 'AI Employee',
-    oneLiner: "Onboarded once. Stops asking who's Sarah.",
-    addOn: 'brain',
-    explainer: "This is a Claude Project ~ a workspace where you drop your docs, your tone of voice, your client list, your offers, your past replies. Once. Now every chat in there starts with Claude already knowing your business. It's onboarding instead of explanation-ing. You wouldn't re-pitch your business to a new VA every Monday ~ stop doing it to Claude.",
-    realExample: "Our \"FAQ Voice\" Project ~ trained on a client's last 100 replies. Claude now answers in their voice without us having to translate.",
-    has: ['skill', 'brain'],
+    time: '7:00 AM',
+    icon: '📧',
+    title: 'Triages overnight inbox',
+    oneLiner: "Reads 47 emails. Flags 3 for you. Drafts 12 replies in your voice.",
+    detail: "Sarah opens Gmail, reads every overnight email, sorts by urgency, drafts replies in your tone for the easy ones, and flags only the 3 that need a human. The 12 drafts sit waiting for your one-click approval.",
+    skill: 'Inbox Triage',
+    connectors: ['Gmail', 'Drive'],
+    sample: '"Hey Sarah, hope you\'re doing well! Quick one ~ invoice INV-204 hit the 7-day mark today..."',
+    saved: '~3 hours',
   },
   {
-    level: '03',
-    title: 'The Connected',
-    titleItalic: 'AI Employee',
-    oneLiner: "Plugged into your inbox. Actually moves the cursor.",
-    addOn: 'connector',
-    explainer: "Add connectors ~ Gmail, Drive, Slack, Notion, your CRM. Now Claude can READ your actual emails (not paraphrase them) and UPDATE your actual sheets (not describe what you should put in them). It's the difference between an employee who says \"I would suggest you reply to Sarah\" and one who replies, CCs you, and moves on.",
-    realExample: "Inbox Triage AI ~ reads overnight client mail, sorts by urgency, drafts replies, leaves only 2~3 decisions for Meri. 3 hours/day → 30 minutes.",
-    has: ['skill', 'brain', 'connector'],
+    time: '8:30 AM',
+    icon: '📊',
+    title: 'Drafts the Monday report',
+    oneLiner: "Pulls last week's metrics. Writes the recap. Spots 2 blockers.",
+    detail: "Sarah pulls the numbers from your sheets, compares against last week, drafts the full Monday recap with bullet highlights, and flags 2 blockers she thinks deserve attention.",
+    skill: 'Weekly Report',
+    connectors: ['Sheets', 'Drive', 'Slack'],
+    sample: "Revenue +12% WoW · Outreach replies down 30% (needs a look) · Sarah's invoice still outstanding",
+    saved: '~1 hour',
   },
   {
-    level: '04',
-    title: 'The Autonomous',
-    titleItalic: 'AI Employee',
-    oneLiner: 'Works while you sleep. Sends results, not questions.',
-    addOn: 'schedule',
-    explainer: "Schedule + goal + access. Every morning at 7AM Claude triages overnight emails, drafts replies in your tone, posts your daily Threads update, fires Friday's invoice reminders. You wake up to results in your inbox, not a to-do list. The dream of \"I'll deal with this in the morning\" actually happens ~ just not by you.",
-    realExample: "Our Weekly Report AI ~ pulls metrics every Monday 6AM, drafts the recap, flags blockers. We open Slack to a finished report, not a blank doc.",
-    has: ['skill', 'brain', 'connector', 'schedule'],
+    time: '9:30 AM',
+    icon: '🎯',
+    title: 'Qualifies 5 new leads',
+    oneLiner: "Scores them. Drafts a first reply. Updates the CRM.",
+    detail: "5 new leads landed overnight. Sarah scans LinkedIn + their website, scores each one, drafts a tailored first reply, and updates the CRM with notes. You only see the qualified ones.",
+    skill: 'Lead Qualification',
+    connectors: ['CRM', 'Gmail', 'Chrome agent'],
+    sample: 'Lead 4/5 (€8K agency, MVP fit, replied to Threads post) ~ ready to reply',
+    saved: '~45 minutes',
+  },
+  {
+    time: '11:00 AM',
+    icon: '🤝',
+    title: 'Onboards a new client',
+    oneLiner: "Sends welcome email. Generates SOPs. Creates Day-1 task list.",
+    detail: "New client signed yesterday. Sarah pulls the intake form, writes a personalised welcome email in your voice, generates the project SOP doc, schedules the kickoff, and posts the Day-1 task list to your project channel.",
+    skill: 'Onboarding',
+    connectors: ['Gmail', 'Drive', 'Calendar', 'Slack'],
+    sample: '"Welcome aboard, Maria! Couldn\'t be more excited. Here\'s how Week 1 looks..."',
+    saved: '~2 hours',
+  },
+  {
+    time: '2:00 PM',
+    icon: '📝',
+    title: 'Updates your project notes',
+    oneLiner: "Writes up yesterday's call. Drafts decisions. Pings the team.",
+    detail: "Yesterday's client call was 47 minutes. Sarah pulls the transcript, extracts decisions made, writes the action items, updates the project doc, and pings the relevant teammates with their next-step assignments.",
+    skill: 'Meeting Notes',
+    connectors: ['Notion', 'Drive', 'Slack'],
+    sample: '3 decisions logged · 5 action items assigned · Meri tagged on the brief',
+    saved: '~40 minutes',
+  },
+  {
+    time: '4:00 PM',
+    icon: '🚨',
+    title: 'Chases overdue invoices',
+    oneLiner: "Finds 4 invoices past due. Drafts reminders in matching tone.",
+    detail: "Sarah scans Stripe, finds invoices past 7 days, looks up each client's relationship history (first time late? pattern?), and drafts reminders in the right tone ~ gentle for first-timers, firmer for repeat offenders.",
+    skill: 'Invoice Chaser',
+    connectors: ['Stripe', 'Gmail', 'CRM'],
+    sample: 'INV-204 (Sarah, gentle) · INV-198 (Marco, firm) · INV-187 (Lisa, final notice)',
+    saved: '~30 minutes',
+  },
+  {
+    time: '5:30 PM',
+    icon: '📤',
+    title: 'Posts the EOD summary',
+    oneLiner: "Done for the day. Posts a 5-line wrap-up to Slack.",
+    detail: "Sarah closes out the day with a clean Slack summary: what got done, what got drafted, what needs your one-click sign-off tomorrow, and the 1 thing she couldn't figure out herself.",
+    skill: 'EOD Summary',
+    connectors: ['Slack'],
+    sample: '✓ 12 emails drafted · ✓ Monday report ready · ⏳ 3 awaiting your sign-off · ❓ 1 question for tomorrow',
+    saved: 'mental load',
   },
 ];
+
+const OPS_TOTAL_SAVED = '~7+ hours per day';
 
 // Building blocks ~ the actual Claude features behind each level, in TM voice
 const CLAUDE_BUILDING_BLOCKS = [
@@ -1352,200 +1392,258 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
   );
 }
 
-// ── AIEmployeeEvolution ~ segment 05 audience view, the 4-level matrix ──────
-function AIEmployeeEvolution({ C, mono, sans, serif }: {
+
+// ── OpsManagerDay ~ segment 05 audience view: a day with your AI Ops Manager ─
+function OpsManagerDay({ C, mono, sans, serif }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
   serif: React.CSSProperties;
 }) {
-  const [activeLevel, setActiveLevel] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(1); // start at 7AM (skip the "still asleep" intro)
+  const [autoplay, setAutoplay] = useState(false);
   const onDark = '#FAF8F5';
-  const active = AI_LEVELS[activeLevel];
+  const active = OPS_MANAGER_DAY[activeIdx];
+
+  // autoplay: cycle through events every 5s when on
+  useEffect(() => {
+    if (!autoplay) return;
+    const t = setInterval(() => {
+      setActiveIdx(i => (i + 1) % OPS_MANAGER_DAY.length);
+    }, 5000);
+    return () => clearInterval(t);
+  }, [autoplay]);
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-      {/* ── BUILDING BLOCKS FIRST ~ what the audience needs to know before the matrix makes sense ── */}
+      {/* Section header */}
       <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        First, the building blocks
-      </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
-        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 56 }}>
-        {CLAUDE_BUILDING_BLOCKS.map((b, i) => (
-          <div key={b.name} style={{
-            padding: '24px 26px',
-            borderRadius: 16,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-            <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-              {String(i + 1).padStart(2, '0')} · {b.short}
-            </div>
-            <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
-              {b.name}
-            </div>
-            <div style={{ ...serif, fontSize: 17, lineHeight: 1.5, color: C.text, fontStyle: 'italic' }}>
-              {b.desc}
-            </div>
-            <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.muted, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
-              <span style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>How we use it ~</span>
-              {b.example}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── NOW THE EVOLUTION MATRIX ── */}
-      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        Now ~ the AI Employee Evolution
+        A day with your AI Ops Manager
       </div>
       <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
-        Four levels. Each one adds one ingredient. Same Claude underneath ~ just better trained, better connected, better at running without you. <span style={{ color: C.primary }}>We run all four at Talent Mucho.</span>
+        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ same Claude underneath, trained on your business,
+        plugged into your tools, on a schedule. <span style={{ color: C.primary }}>Click any moment to see what she&apos;s doing.</span>
       </div>
 
-      {/* Matrix header ~ capability columns */}
+      {/* Profile card */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '1.4fr repeat(4, 1fr)',
-        gap: 14,
-        paddingBottom: 14,
-        borderBottom: `1px solid ${C.border}`,
-        marginBottom: 16,
+        gridTemplateColumns: '1fr auto',
+        gap: 22,
+        alignItems: 'center',
+        padding: '22px 26px',
+        borderRadius: 18,
+        background: C.text,
+        color: onDark,
+        marginBottom: 28,
+        boxShadow: `0 18px 40px -14px ${C.text}40`,
       }}>
-        <div /> {/* spacer for level column */}
-        {AI_CAPS.map(cap => (
-          <div key={cap} style={{ textAlign: 'center' }}>
-            <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.text, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 3 }}>
-              {CAP_META[cap].label}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div style={{
+            width: 64, height: 64, flexShrink: 0,
+            borderRadius: '50%',
+            background: C.primary, color: C.text,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            ...mono, fontSize: 24, fontWeight: 800,
+            boxShadow: `0 0 0 4px ${C.primary}30`,
+          }}>S</div>
+          <div>
+            <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
+              AI Operations Manager
             </div>
-            <div style={{ ...mono, fontSize: 10, color: C.muted, letterSpacing: '0.06em' }}>
-              {CAP_META[cap].sub}
+            <div style={{ ...sans, fontSize: 28, fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+              Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
+            </div>
+            <div style={{ ...serif, fontSize: 15, color: 'rgba(250,248,245,0.65)', marginTop: 6, fontStyle: 'italic' }}>
+              Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
-        ))}
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+            Saves you ~
+          </div>
+          <div style={{ ...sans, fontSize: 32, fontWeight: 800, color: C.primary, letterSpacing: '-0.02em', lineHeight: 1 }}>
+            {OPS_TOTAL_SAVED}
+          </div>
+          <div style={{ ...mono, fontSize: 10, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+            every weekday
+          </div>
+        </div>
       </div>
 
-      {/* Matrix rows ~ each level */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {AI_LEVELS.map((lvl, i) => {
-          const isActive = activeLevel === i;
-          return (
-            <div
-              key={lvl.level}
-              onClick={() => setActiveLevel(i)}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1.4fr repeat(4, 1fr)',
-                gap: 14,
-                alignItems: 'center',
-                padding: '16px 18px',
-                borderRadius: 14,
-                border: `1px solid ${isActive ? C.primary : C.border}`,
-                background: isActive ? C.surface : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                boxShadow: isActive ? `0 8px 24px -10px ${C.primary}40` : 'none',
-              }}
-            >
-              {/* Level name + description */}
-              <div>
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
-                  Level {lvl.level}
-                </div>
-                <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.15, marginBottom: 4 }}>
-                  {lvl.title}{' '}
-                  <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{lvl.titleItalic}</em>
-                </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, lineHeight: 1.4 }}>
-                  {lvl.oneLiner}
-                </div>
-                <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginTop: 8 }}>
-                  + {CAP_META[lvl.addOn].label}
-                </div>
-              </div>
+      {/* Two-column: timeline + active-event detail */}
+      <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 26, alignItems: 'flex-start' }}>
 
-              {/* Capability cells */}
-              {AI_CAPS.map(cap => {
-                const has = lvl.has.includes(cap);
-                const isNew = cap === lvl.addOn;
-                return (
-                  <div
-                    key={cap}
-                    style={{
-                      aspectRatio: '1.4 / 1',
-                      borderRadius: 10,
-                      background: has ? (isNew ? `${C.primary}25` : `${C.muted}12`) : 'transparent',
-                      border: has ? `1px solid ${isNew ? C.primary : C.border}` : `1px dashed ${C.border}`,
-                      display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', justifyContent: 'center',
-                      gap: 4,
-                      position: 'relative',
-                      opacity: has ? 1 : 0.35,
+        {/* Timeline */}
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            position: 'absolute',
+            left: 23, top: 16, bottom: 16,
+            width: 2,
+            background: `linear-gradient(to bottom, ${C.primary}, ${C.muted}40)`,
+            borderRadius: 2,
+            zIndex: 0,
+          }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {OPS_MANAGER_DAY.map((ev, i) => {
+              const isActive = activeIdx === i;
+              const isPast = i < activeIdx;
+              return (
+                <div
+                  key={ev.time}
+                  onClick={() => { setActiveIdx(i); setAutoplay(false); }}
+                  style={{
+                    position: 'relative',
+                    display: 'grid',
+                    gridTemplateColumns: '50px 1fr',
+                    gap: 14,
+                    padding: '14px 16px 14px 0',
+                    cursor: 'pointer',
+                    borderRadius: 12,
+                    background: isActive ? `${C.primary}10` : 'transparent',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
+                    <div style={{
+                      width: 36, height: 36,
+                      borderRadius: '50%',
+                      background: isActive ? C.primary : (isPast ? `${C.primary}50` : C.surface),
+                      border: `2px solid ${isActive ? C.primary : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 18,
                       transition: 'all 0.2s',
-                    }}
-                  >
-                    {has && isNew && (
-                      <div style={{
-                        position: 'absolute', top: 5, right: 7,
-                        ...mono, fontSize: 8, fontWeight: 800,
-                        color: C.primary, letterSpacing: '0.18em',
-                      }}>NEW</div>
-                    )}
-                    <div style={{ fontSize: 22, color: has ? (isNew ? C.primary : C.text) : C.muted, opacity: has ? 1 : 0.4 }}>
-                      {CAP_META[cap].icon}
-                    </div>
-                    <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: has ? (isNew ? C.primary : C.text) : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                      {CAP_META[cap].label}
+                      boxShadow: isActive ? `0 0 0 4px ${C.primary}25` : 'none',
+                    }}>
+                      {ev.icon}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+                  <div>
+                    <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 3 }}>
+                      {ev.time}
+                    </div>
+                    <div style={{ ...sans, fontSize: 16, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 3 }}>
+                      {ev.title}
+                    </div>
+                    <div style={{ ...serif, fontStyle: 'italic', fontSize: 13, color: C.muted, lineHeight: 1.45 }}>
+                      {ev.oneLiner}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* Explainer panel for the active level */}
-      <div style={{
-        marginTop: 22,
-        padding: '26px 30px',
-        background: C.text, color: onDark,
-        borderRadius: 16,
-        boxShadow: `0 18px 40px -12px ${C.text}30`,
-      }}>
-        <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>
-          Level {active.level} ~ in plain English
+          <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center', gap: 8 }}>
+            <button
+              onClick={() => setAutoplay(a => !a)}
+              style={{
+                padding: '8px 18px', borderRadius: 100,
+                ...mono, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                cursor: 'pointer',
+                background: autoplay ? C.primary : 'transparent',
+                color: autoplay ? (C.text === '#2A2520' ? onDark : C.bg) : C.primary,
+                border: `1px solid ${C.primary}`,
+              }}
+            >
+              {autoplay ? '⏸ Pause autoplay' : '▶ Play her day'}
+            </button>
+          </div>
         </div>
-        <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: onDark, marginBottom: 14, letterSpacing: '-0.01em', lineHeight: 1.25 }}>
-          {active.title}{' '}
-          <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{active.titleItalic}</em>
-        </div>
-        <div style={{ ...serif, fontSize: 18, lineHeight: 1.65, color: 'rgba(250,248,245,0.88)', marginBottom: 18 }}>
-          {active.explainer}
-        </div>
+
+        {/* Active event detail */}
         <div style={{
-          padding: '14px 18px',
-          background: 'rgba(250,248,245,0.06)',
-          border: `1px solid rgba(250,248,245,0.12)`,
-          borderRadius: 10,
-          display: 'flex', gap: 14, alignItems: 'flex-start',
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          position: 'sticky',
+          top: 20,
         }}>
-          <div style={{ ...mono, fontSize: 10, fontWeight: 800, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', whiteSpace: 'nowrap', paddingTop: 2 }}>
-            From our stack ~
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+            <div style={{
+              width: 56, height: 56, flexShrink: 0,
+              borderRadius: 14,
+              background: `${C.primary}20`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 28,
+            }}>{active.icon}</div>
+            <div>
+              <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+                {active.time}
+              </div>
+              <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+                {active.title}
+              </div>
+            </div>
           </div>
-          <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: 'rgba(250,248,245,0.92)' }}>
-            {active.realExample}
+
+          <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.text, lineHeight: 1.5, marginBottom: 18 }}>
+            {active.oneLiner}
           </div>
+
+          <div style={{ ...serif, fontSize: 16, lineHeight: 1.65, color: C.text, opacity: 0.85, marginBottom: 22 }}>
+            {active.detail}
+          </div>
+
+          <div style={{
+            padding: '14px 18px',
+            background: C.surface2,
+            borderRadius: 10,
+            borderLeft: `3px solid ${C.primary}`,
+            marginBottom: 22,
+          }}>
+            <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Sample output ~
+            </div>
+            <div style={{ ...mono, fontSize: 13, lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
+              {active.sample}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ padding: '12px 14px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+                Skill in use
+              </div>
+              <div style={{ ...sans, fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                {active.skill}
+              </div>
+            </div>
+            <div style={{ padding: '12px 14px', background: `${C.primary}15`, borderRadius: 10, border: `1px solid ${C.primary}30` }}>
+              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+                Time saved
+              </div>
+              <div style={{ ...sans, fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
+                {active.saved}
+              </div>
+            </div>
+          </div>
+
+          {active.connectors.length > 0 && (
+            <div style={{ marginTop: 12, padding: '12px 14px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                Connectors plugged in
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {active.connectors.map(con => (
+                  <div key={con} style={{
+                    padding: '4px 10px',
+                    borderRadius: 100,
+                    background: C.surface,
+                    border: `1px solid ${C.border}`,
+                    ...mono, fontSize: 11, fontWeight: 600, color: C.text,
+                    letterSpacing: '0.04em',
+                  }}>
+                    {con}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -2276,9 +2374,9 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
-        {/* ── AI Employee Evolution ~ shows on segment 05 (AI employees) ── */}
+        {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
         {seg.num === '05' && (
-          <AIEmployeeEvolution C={C} mono={mono} sans={sans} serif={serif} />
+          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
