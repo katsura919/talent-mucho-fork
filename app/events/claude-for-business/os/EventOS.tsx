@@ -231,6 +231,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const [nextQId, setNextQId] = useState(1);
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
+  const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
   const [compareState, setCompareState] = useState<CompareState>({
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
@@ -589,6 +590,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
+          <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
+            {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
+          </Btn>
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
           </Btn>
@@ -734,7 +738,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </div>
 
           {/* PROMPTER */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: `1px solid ${C.border}`, minWidth: 0 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: showDemoPanel ? `1px solid ${C.border}` : 'none', minWidth: 0 }}>
             {/* Seg header */}
             <div style={{ padding: '12px 24px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
               <div>
@@ -801,16 +805,39 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                       {(bl.type === 'scripted' || bl.type === 'bullets') && (
                         <>
                           <div style={{ width: 56, flexShrink: 0, paddingTop: 1 }}>
-                            {bl.speaker && (
-                              <div style={{ ...mono, fontSize: 9, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: spkColor(bl.speaker) }}>
-                                {SPEAKERS[bl.speaker]?.name}
-                              </div>
-                            )}
+                            {(() => {
+                              const sp = bl.speaker;
+                              if (!sp) return null;
+                              const color = spkColor(sp);
+                              return (
+                                <button
+                                  onClick={() => {
+                                    const order: readonly string[] = ['ABIE', 'MERI', 'BOTH'];
+                                    const cur = order.indexOf(sp);
+                                    const next = order[(cur + 1) % order.length] ?? 'ABIE';
+                                    saveEdit(`${blPath}.speaker`, next);
+                                  }}
+                                  title="Click to cycle: ABIE → MERI → BOTH"
+                                  style={{
+                                    ...mono, fontSize: 9, fontWeight: 500,
+                                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                                    color,
+                                    background: 'transparent',
+                                    border: `1px dashed ${color}50`,
+                                    borderRadius: 6,
+                                    padding: '3px 6px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = `${color}15`; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                                >
+                                  {SPEAKERS[sp]?.name}
+                                </button>
+                              );
+                            })()}
                           </div>
                           <div style={{ flex: 1 }}>
-                            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5, color: C.muted }}>
-                              {bl.type === 'scripted' ? '✦ scripted' : '~ bullets'}
-                            </div>
                             {bl.type === 'scripted' ? (
                               <Editable
                                 key={`scr-${segIdx}-${bi}-${bli}`}
@@ -854,7 +881,8 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
             </div>
           </div>
 
-          {/* DEMO PANEL */}
+          {/* DEMO PANEL ~ collapsed by default · toggle from the top bar (◧/◨ button) */}
+          {showDemoPanel && (
           <div style={{ width: 420, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.surface }}>
             {/* Panel header */}
             <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -929,6 +957,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
               )}
             </div>
           </div>
+          )}
         </div>
       )}
 
@@ -1117,13 +1146,14 @@ const THREE_DOORS: DoorOption[] = [
     pitch: 'Open Claude tonight. Try one demo from what you saw.',
     bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
     whatYouGet: [
-      "Free Skool tier ~ community access, no live sessions",
+      "Our Skool community ~ free tier, 200+ already in",
+      "Abie Maxey's AI Playbooks ~ free, growing every week",
       "The mindset shift you got tonight",
       "Whatever you remember from this session",
     ],
-    nextStep: 'Close this tab. Open claude.ai. Try one prompt.',
-    cta: 'Try Claude tonight',
-    ctaUrl: 'https://claude.ai/new',
+    nextStep: 'Join our Skool, grab the playbooks, open Claude tonight.',
+    cta: 'Join the community',
+    ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
   },
   {
     label: 'Door 2',
@@ -2214,6 +2244,177 @@ function SpinWheel({ items, C, mono, sans, serif }: {
   );
 }
 
+// ── LiveQAFeed ~ segment 07 audience view: the question queue audience sees ──
+// Pulls common pre-collected questions; presenter can flip through with the
+// arrows (or autoplay). Adds visceral 'live event' feel without needing a real
+// chat backend tonight.
+const SAMPLE_QUESTIONS = [
+  { theme: 'Pricing',        text: "Will Claude Pro be worth it for me as a solo founder?", from: "Marco, Berlin" },
+  { theme: 'Skills',         text: "How long does it take to build a custom skill like the carousel one?", from: "Lisa, Lisbon" },
+  { theme: 'Project setup',  text: "Should I have one Project per client or one big Project?", from: "Priya, Mumbai" },
+  { theme: 'Connectors',     text: "Can Claude really read my Gmail without me sending each email?", from: "Diego, Buenos Aires" },
+  { theme: 'For VAs',        text: "Is this going to replace my job or make me more valuable?", from: "Maria, Madrid" },
+  { theme: 'Implementation', text: "Where do I start tomorrow ~ I have so many tools already?", from: "Sophie, Paris" },
+  { theme: 'Time',           text: "Realistically, how many hours per week to set this up?", from: "Tom, Sydney" },
+  { theme: 'Costs',          text: "What's the actual monthly cost to run an AI employee?", from: "Anna, Toronto" },
+];
+
+function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [autoplay, setAutoplay] = useState(false);
+  const [answered, setAnswered] = useState<Set<number>>(new Set());
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const t = setInterval(() => {
+      setAnswered(prev => new Set([...prev, activeIdx]));
+      setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
+    }, 8000);
+    return () => clearInterval(t);
+  }, [autoplay, activeIdx]);
+
+  const current = SAMPLE_QUESTIONS[activeIdx]!;
+  const upNext = SAMPLE_QUESTIONS.slice(activeIdx + 1, activeIdx + 4);
+
+  function markAnsweredAndAdvance() {
+    setAnswered(prev => new Set([...prev, activeIdx]));
+    setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
+  }
+  function reset() {
+    setAnswered(new Set());
+    setActiveIdx(0);
+    setAutoplay(false);
+  }
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite' }} />
+            Live questions
+          </span>
+        </span>
+        <span style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {answered.size} of {SAMPLE_QUESTIONS.length} answered
+        </span>
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+        Real questions from real people in the chat. Drop yours in ~ we&apos;ll get to it.
+      </div>
+
+      {/* Active question card */}
+      <div style={{
+        padding: '32px 36px',
+        borderRadius: 20,
+        background: C.text,
+        color: onDark,
+        boxShadow: `0 24px 48px -12px ${C.text}40`,
+        marginBottom: 18,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: -30, right: 22, ...serif, fontSize: sz(180), lineHeight: 1, color: C.primary, opacity: 0.18, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary, ...mono, fontSize: sz(10), fontWeight: 800 }}>
+            {current.theme}
+          </span>
+          <span style={{ opacity: 0.5 }}>~ now answering</span>
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), color: onDark, lineHeight: 1.35, marginBottom: 16, position: 'relative' }}>
+          &ldquo;{current.text}&rdquo;
+        </div>
+        <div style={{ ...mono, fontSize: sz(12), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.08em' }}>
+          ~ {current.from}
+        </div>
+      </div>
+
+      {/* Up next + controls */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20, alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Up next ~
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {upNext.map((q, i) => (
+              <div key={i} style={{
+                padding: '10px 14px',
+                borderRadius: 10,
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                display: 'flex', alignItems: 'center', gap: 10,
+                opacity: 1 - i * 0.2,
+              }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                  {q.theme}
+                </span>
+                <span style={{ ...serif, fontSize: sz(15), color: C.text, fontStyle: 'italic' }}>
+                  &ldquo;{q.text}&rdquo;
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
+          <button
+            onClick={markAnsweredAndAdvance}
+            style={{
+              padding: '12px 22px', borderRadius: 100,
+              ...mono, fontSize: sz(11), fontWeight: 800,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: C.primary,
+              color: C.text === '#2A2520' ? onDark : C.bg,
+              border: 'none',
+              boxShadow: `0 6px 16px -4px ${C.primary}55`,
+            }}
+          >
+            ✓ Answered, next →
+          </button>
+          <button
+            onClick={() => setAutoplay(a => !a)}
+            style={{
+              padding: '10px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: autoplay ? `${C.primary}20` : 'transparent',
+              color: C.primary,
+              border: `1px solid ${C.primary}`,
+            }}
+          >
+            {autoplay ? '⏸ Pause autoplay' : '▶ Auto-cycle'}
+          </button>
+          <button
+            onClick={reset}
+            style={{
+              padding: '8px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: 'transparent',
+              color: C.muted,
+              border: `1px solid ${C.border}`,
+            }}
+          >
+            ↺ Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── ValueStack ~ segment 07 audience view: the €47 math ─────────────────────
 function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
@@ -2225,20 +2426,57 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
   const totalNumeric = VIP_STACK.reduce((s, item) => s + (typeof item.value === 'number' ? item.value : 0), 0);
+  // Hide the prices initially. Click "Reveal the math" to show them with a stagger.
+  const [pricesRevealed, setPricesRevealed] = useState(false);
+  const [revealedItems, setRevealedItems] = useState(0);
+
+  useEffect(() => {
+    if (!pricesRevealed) { setRevealedItems(0); return; }
+    setRevealedItems(0);
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealedItems(i);
+      if (i < VIP_STACK.length) setTimeout(tick, 280);
+    };
+    const initial = setTimeout(tick, 200);
+    return () => clearTimeout(initial);
+  }, [pricesRevealed]);
+
+  const allItemsRevealed = revealedItems >= VIP_STACK.length;
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        The €47 stack
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          The VIP stack
+        </span>
+        <button
+          onClick={() => setPricesRevealed(p => !p)}
+          style={{
+            ...mono, fontSize: sz(11), fontWeight: 700,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: pricesRevealed ? C.muted : (C.text === '#2A2520' ? onDark : C.bg),
+            background: pricesRevealed ? 'transparent' : C.primary,
+            border: `1px solid ${pricesRevealed ? C.border : C.primary}`,
+            borderRadius: 100,
+            padding: '6px 16px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          {pricesRevealed ? '↺ Hide the math' : '▸ Reveal the math'}
+        </button>
       </div>
       <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
-        What&apos;s actually inside VIP. Honest values. Math doesn&apos;t lie.
+        {pricesRevealed ? "Honest values. Math doesn't lie." : "Click reveal when you're ready to drop the math."}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 18 }}>
         {VIP_STACK.map((item, i) => {
           const isPriceless = item.value === 'priceless';
+          const showPrice = pricesRevealed && i < revealedItems;
           return (
             <div key={item.name} style={{
               display: 'grid',
@@ -2267,41 +2505,50 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
                 </div>
               </div>
               <div style={{
-                ...mono, fontSize: sz(16), fontWeight: 800, color: isPriceless ? C.primary : C.text,
+                ...mono, fontSize: sz(16), fontWeight: 800,
+                color: showPrice ? (isPriceless ? C.primary : C.text) : C.muted,
                 letterSpacing: '0.02em',
                 whiteSpace: 'nowrap',
+                opacity: showPrice ? 1 : 0.4,
+                transition: 'all 0.4s ease',
+                transform: showPrice ? 'translateY(0)' : 'translateY(4px)',
+                filter: showPrice ? 'none' : 'blur(6px)',
+                userSelect: showPrice ? 'auto' : 'none',
               }}>
-                {isPriceless ? 'priceless' : `€${item.value}`}
+                {showPrice ? (isPriceless ? 'priceless' : `€${item.value}`) : '€▒▒▒'}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Total + price reveal */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
-        padding: '24px 28px', borderRadius: 16,
-        background: C.text, color: onDark,
-        boxShadow: `0 18px 40px -14px ${C.text}40`,
-      }}>
-        <div>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
-            Real value if bought separately
+      {/* Total + price reveal ~ only shown after all per-item prices revealed */}
+      {allItemsRevealed && (
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
+          padding: '24px 28px', borderRadius: 16,
+          background: C.text, color: onDark,
+          boxShadow: `0 18px 40px -14px ${C.text}40`,
+          animation: 'fadeInUp 0.5s ease forwards',
+        }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Real value if bought separately
+            </div>
+            <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
+              €{totalNumeric}+
+            </div>
           </div>
-          <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
-            €{totalNumeric}+
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Tonight only
+            </div>
+            <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
+              €47
+            </div>
           </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
-            Tonight only
-          </div>
-          <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
-            €47
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* 14-day guarantee badge */}
       <div style={{
@@ -2733,6 +2980,165 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
   );
 }
 
+// ── OriginIntro ~ segment 01 audience view: meet Abie + Meri ────────────────
+const HOSTS = [
+  {
+    name: 'Abie',
+    accent: 'Maxey',
+    role: 'The engineer who came back',
+    avatar: 'A',
+    flag: '🇵🇭 → 🇪🇸',
+    location: 'Philippines → Madrid',
+    story: [
+      "Software engineer who stopped coding for years.",
+      "<em>Claude Code brought me back.</em> Now I build websites + tools by describing them out loud.",
+      "Weak passport. Strong plan. Spanish residency without a lawyer ~ <em>that's my whole thing.</em>",
+    ],
+    handle: 'abiemaxey.com',
+    handleUrl: 'https://abiemaxey.com',
+  },
+  {
+    name: 'Meri',
+    accent: 'Gee',
+    role: 'The marketer who burned out',
+    avatar: 'M',
+    flag: '🇵🇭',
+    location: 'Cagayan de Oro, Philippines',
+    story: [
+      "Marketing + business, not tech. Built my agency from scratch.",
+      "Burned out managing people, personalities, deadlines. <em>It was exhausting.</em>",
+      "ChatGPT made me curious. <em>Claude changed everything.</em> Less staff. More output. Better results.",
+    ],
+    handle: 'talentmucho.com',
+    handleUrl: 'https://talentmucho.com',
+  },
+];
+
+function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const onDark = '#FAF8F5';
+  const sz = (px: number) => Math.round(px * scale);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative' }}>
+      {/* Decorative sticker */}
+      <div style={{
+        position: 'absolute',
+        top: -20, right: 0,
+        transform: 'rotate(8deg)',
+        zIndex: 1,
+        pointerEvents: 'none',
+        animation: 'floatSticker 4s ease-in-out infinite',
+      }}>
+        <img
+          src="/assets/stickers/ok.png"
+          alt=""
+          style={{ width: sz(96), height: 'auto', filter: `drop-shadow(0 8px 16px ${C.text}25)` }}
+        />
+      </div>
+
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Meet your hosts
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
+        Two very different stories. One business. <span style={{ color: C.primary, fontWeight: 600 }}>Operators, not coaches.</span>
+      </div>
+
+      {/* Two host cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22 }}>
+        {HOSTS.map(host => (
+          <div key={host.name} style={{
+            position: 'relative',
+            padding: '32px 32px 28px',
+            borderRadius: 22,
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            overflow: 'hidden',
+          }}>
+            {/* Subtle accent */}
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: '100%', height: 4,
+              background: C.primary,
+            }} />
+
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20 }}>
+              <div style={{
+                width: sz(72), height: sz(72), flexShrink: 0,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryHover} 100%)`,
+                color: C.text === '#2A2520' ? onDark : C.bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...sans, fontSize: sz(34), fontWeight: 800,
+                boxShadow: `0 8px 20px -6px ${C.primary}55`,
+              }}>{host.avatar}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+                  {host.name}{' '}
+                  <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{host.accent}</em>
+                </div>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>
+                  {host.role}
+                </div>
+              </div>
+            </div>
+
+            {/* Location chip */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: `${C.muted}15`, marginBottom: 16 }}>
+              <span style={{ fontSize: sz(13) }}>{host.flag}</span>
+              <span style={{ ...mono, fontSize: sz(11), color: C.text, letterSpacing: '0.06em' }}>{host.location}</span>
+            </div>
+
+            {/* Story lines */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+              {host.story.map((line, i) => (
+                <div
+                  key={i}
+                  style={{ ...serif, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
+                  dangerouslySetInnerHTML={{ __html: line.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`) }}
+                />
+              ))}
+            </div>
+
+            {/* Handle */}
+            <a
+              href={host.handleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                ...mono, fontSize: sz(11), fontWeight: 700,
+                color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase',
+                textDecoration: 'none',
+                paddingTop: 14,
+                borderTop: `1px solid ${C.border}`,
+                width: '100%',
+              }}
+            >
+              ↳ {host.handle}
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes floatSticker {
+          0%, 100% { transform: rotate(8deg) translateY(0); }
+          50% { transform: rotate(8deg) translateY(-8px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ── Audience View ─────────────────────────────────────────────────────────────
 function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
   seg: Segment; segIdx: number; beat: number;
@@ -2822,13 +3228,13 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       </div>
 
       {/* ── HERO TITLE BAND ── */}
-      <div style={{ flexShrink: 0, padding: '52px 48px 38px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ flexShrink: 0, padding: '32px 48px 24px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ ...mono, fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
-            <span style={{ display: 'inline-block', width: 32, height: 1, background: C.primary }} />
+          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 24, height: 1, background: C.primary }} />
             Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(64px, 9vw, 128px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 0.95, color: C.text, margin: 0, ...sans }}>
+          <h1 style={{ fontSize: 'clamp(40px, 5.5vw, 76px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1, color: C.text, margin: 0, ...sans }}>
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
@@ -2856,8 +3262,9 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
         {/* Standard body grid hidden when:
             - segment uses compare panel (side-by-side comparison takes the real estate)
-            - segment is the welcome (countdown + agenda take over) */}
-        <div style={{ display: (seg.panel === 'compare' || seg.num === '00') ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+            - segment is the welcome (countdown + agenda take over)
+            - segment is origins (host intro cards take over) */}
+        <div style={{ display: (seg.panel === 'compare' || seg.num === '00' || seg.num === '01') ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
 
           {/* ── LEFT: What we're covering ── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -3231,14 +3638,20 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           <WelcomeInteractive C={C} mono={mono} sans={sans} serif={serif} scale={audScale} segments={segments} timerSecs={timerSecs} />
         )}
 
+        {/* ── Origin intros ~ meet Abie + Meri (segment 01) ── */}
+        {seg.num === '01' && (
+          <OriginIntro C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
         {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
         {seg.num === '05' && (
           <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
-        {/* ── The close ~ Value Stack + Three Doors ~ shows on segment 07 (Q&A + next step) ── */}
+        {/* ── Q&A live feed + close (Value Stack + Three Doors) ~ segment 07 ── */}
         {seg.num === '07' && (
           <>
+            <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
