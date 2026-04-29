@@ -291,8 +291,8 @@ export const SEGMENTS: Segment[] = [
     id: 4, num: '04', title: 'Live', titleItalic: 'demos',
     subtitle: '06:40~07:05 ~ three real tasks, on screen',
     duration: '25 min', speakers: ['ABIE', 'MERI'], panel: 'demo', panelUrl: 'https://claude.ai/new',
-    audWhatTitle: 'Three <em>real</em> demos',
-    audWhatBody: "<p>This is the part you came for. Three real tasks ~ live, on screen ~ that you can copy tomorrow.</p><p><em>Time them in your head.</em> Notice how fast the second pass becomes when you bring context.</p>",
+    audWhatTitle: 'What we <em>demo</em> live',
+    audWhatBody: "<p>This is the part you came for. <em>Real tasks. Live, on screen.</em> Tools we use to run our actual business every day ~ from inbox triage to proposal writing to invoice chasing.</p><p>We brought a <em>spin wheel</em> with seven options. Whoever's most engaged in the chat picks the spinner. <em>Whatever it lands on, we build live.</em></p>",
     audTakeaway: 'Your job tonight: <em>copy one of these prompts</em> and try it tomorrow.',
     beats: [
       {

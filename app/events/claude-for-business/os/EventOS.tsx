@@ -1942,10 +1942,10 @@ function SpinWheel({ items, C, mono, sans, serif }: {
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
       <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        Spin the wheel
+        What we demo live
       </div>
       <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
-        ↓ Pick someone in chat to spin · we demo whatever it lands on
+        ↓ Pick someone in chat to spin · we build whatever it lands on
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
