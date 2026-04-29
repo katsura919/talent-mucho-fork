@@ -1945,7 +1945,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
         What we demo live
       </div>
       <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
-        ↓ Pick someone in chat to spin · we build whatever it lands on
+        ↓ Pick someone in chat to spin · we demo whatever it lands on
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
@@ -2038,7 +2038,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
                   Awaiting the spin
                 </div>
                 <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
-                  Wherever it lands, that&apos;s what we build live.
+                  Wherever it lands, that&apos;s what we demo live.
                 </div>
               </div>
             </div>
