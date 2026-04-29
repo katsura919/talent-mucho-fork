@@ -389,7 +389,7 @@ export const SEGMENTS: Segment[] = [
             "Afternoon ~ AI drafts the weekly report. VA edits + adds the human context",
             "<em>Result ~ same VA, 3x the client capacity.</em> Or same clients, half the hours.",
           ]},
-          { type: 'workbook', text: 'WORKBOOK ~ Pick ONE AI employee from the list that would change your week most. Write it down. Circle it.' },
+          { type: 'workbook', text: 'WORKBOOK ~ "The most annoying repetitive thing in my week is: ____."' },
         ],
       },
     ],
