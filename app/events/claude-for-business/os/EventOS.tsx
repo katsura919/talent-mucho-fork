@@ -1216,10 +1216,15 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
   const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
 
   // Compare-panel reveal stages for interactive Claude flow:
-  // 0 = Claude's questions only · 1 = + user reply · 2 = + Claude's final email
+  // 0 = Claude's questions only · 1 = + Claude's 3 draft variations
   const [compareStage, setCompareStage] = useState(0);
+  // User's selected draft index (after Claude shows variations)
+  const [selectedDraft, setSelectedDraft] = useState<number | null>(null);
   // Reset stages when segment changes
-  useEffect(() => { setCompareStage(0); }, [segIdx]);
+  useEffect(() => {
+    setCompareStage(0);
+    setSelectedDraft(null);
+  }, [segIdx]);
 
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
   const onDark = '#FAF8F5';
@@ -1486,34 +1491,65 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                       {/* Response (Claude's first response = the questions; ChatGPT's = the template) */}
                       <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
-                          {col.side === 'right' && p.rightUserReply ? 'Step 1 · Claude asks back' : 'The response'}
+                          {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
                         </div>
                         <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
                           {col.answer}
                         </div>
                       </div>
 
-                      {/* Step 2 ~ user provides context (Claude column only, when stage >= 1) */}
-                      {col.side === 'right' && p.rightUserReply && compareStage >= 1 && (
-                        <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, background: `${C.primary}10` }}>
-                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                            Step 2 · You reply with context
+                      {/* Step 2 ~ Claude offers multiple draft versions (Claude column only, when stage >= 1) */}
+                      {col.side === 'right' && p.rightDrafts && compareStage >= 1 && (
+                        <div style={{ padding: '18px 22px 16px', borderBottom: `1px solid ${C.border}`, background: `${C.primary}10` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 10 }}>
+                            Step 2 · Claude offers a selection
                           </div>
-                          <div style={{ ...serif, fontSize: 15, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap', fontStyle: 'italic', opacity: 0.95 }}>
-                            {p.rightUserReply}
+                          {p.rightBridge && (
+                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14, fontStyle: 'italic' }}>
+                              {p.rightBridge}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            {p.rightDrafts.map((draft, i) => {
+                              const isSelected = selectedDraft === i;
+                              return (
+                                <div
+                                  key={i}
+                                  onClick={() => setSelectedDraft(isSelected ? null : i)}
+                                  style={{
+                                    padding: '14px 16px',
+                                    borderRadius: 12,
+                                    border: `2px solid ${isSelected ? C.primary : C.border}`,
+                                    background: isSelected ? C.text : C.surface,
+                                    color: isSelected ? onDark : C.text,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: isSelected ? `0 8px 24px -6px ${C.primary}55` : 'none',
+                                    transform: isSelected ? 'translateY(-1px)' : 'none',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isSelected ? 10 : 0 }}>
+                                    <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: isSelected ? C.primary : C.text, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                      {draft.label}
+                                    </div>
+                                    <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: isSelected ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                                      {isSelected ? '✓ Selected' : 'Click to select'}
+                                    </div>
+                                  </div>
+                                  {isSelected && (
+                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                      {draft.body}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
-                        </div>
-                      )}
-
-                      {/* Step 3 ~ Claude's final answer (Claude column only, when stage >= 2) */}
-                      {col.side === 'right' && p.rightFinalAnswer && compareStage >= 2 && (
-                        <div style={{ padding: '18px 22px 16px', borderBottom: `1px solid ${C.border}`, background: C.text, color: onDark }}>
-                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
-                            Step 3 · Claude&apos;s final email
-                          </div>
-                          <div style={{ ...serif, fontSize: 16, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap' }}>
-                            {p.rightFinalAnswer}
-                          </div>
+                          {selectedDraft === null && (
+                            <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 12, textAlign: 'center', opacity: 0.7 }}>
+                              ↑ click any version to read it
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -1531,12 +1567,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                 })}
               </div>
 
-              {/* Reveal controls (only when there's a multi-step Claude flow defined) */}
-              {p.rightUserReply && p.rightFinalAnswer && (
+              {/* Reveal controls (only when Claude has draft variations defined) */}
+              {p.rightDrafts && (
                 <div style={{ marginTop: 22, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  {compareStage < 2 && (
+                  {compareStage === 0 && (
                     <button
-                      onClick={() => setCompareStage(s => Math.min(2, s + 1))}
+                      onClick={() => setCompareStage(1)}
                       style={{
                         padding: '12px 28px', borderRadius: 100,
                         ...mono, fontSize: 13, fontWeight: 700,
@@ -1545,15 +1581,14 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
                         background: C.primary, color: C.text === '#2A2520' ? '#FAF8F5' : C.bg,
                         border: 'none',
                         boxShadow: `0 6px 16px -4px ${C.primary}60`,
-                        transition: 'transform 0.15s, box-shadow 0.15s',
                       }}
                     >
-                      {compareStage === 0 ? '▸ Show what you reply with' : '▸ Reveal Claude\'s final email'}
+                      ▸ Show Claude&apos;s 3 versions
                     </button>
                   )}
-                  {compareStage === 2 && (
+                  {compareStage === 1 && (
                     <button
-                      onClick={() => setCompareStage(0)}
+                      onClick={() => { setCompareStage(0); setSelectedDraft(null); }}
                       style={{
                         padding: '12px 28px', borderRadius: 100,
                         ...mono, fontSize: 13, fontWeight: 700,
