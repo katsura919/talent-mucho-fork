@@ -1455,14 +1455,14 @@ function OpsManagerDay({ C, mono, sans, serif }: {
         ))}
       </div>
 
-      {/* ── Now ~ the Ops Manager visualisation ── */}
+      {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
       <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        Now ~ a day with your AI Ops Manager
+        A day with a Talent Mucho <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
       <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
-        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ same Claude underneath, trained on your business
-        (Project), plugged into your tools (Connectors), on a schedule.
+        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
+        Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
         <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
       </div>
 
@@ -1487,10 +1487,10 @@ function OpsManagerDay({ C, mono, sans, serif }: {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             ...mono, fontSize: 24, fontWeight: 800,
             boxShadow: `0 0 0 4px ${C.primary}30`,
-          }}>S</div>
+          }}>tm</div>
           <div>
             <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
-              AI Operations Manager
+              Talent Mucho ~ AI-Trained Ops Manager
             </div>
             <div style={{ ...sans, fontSize: 28, fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
               Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
@@ -1591,6 +1591,23 @@ function OpsManagerDay({ C, mono, sans, serif }: {
             >
               {autoplay ? '⏸ Pause autoplay' : '▶ Play her day'}
             </button>
+          </div>
+
+          {/* Brand stamp */}
+          <div style={{
+            marginTop: 26,
+            padding: '14px 16px',
+            borderRadius: 12,
+            background: `${C.primary}15`,
+            border: `1px solid ${C.primary}40`,
+            textAlign: 'center',
+          }}>
+            <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 5 }}>
+              ↳ This is the Operate pillar
+            </div>
+            <div style={{ ...serif, fontSize: 14, color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
+              We build, train, and place these inside our clients&apos; businesses.
+            </div>
           </div>
         </div>
 
