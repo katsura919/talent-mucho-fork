@@ -1396,6 +1396,92 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, C
           </div>
         </div>
 
+        {/* ── ChatGPT vs Claude side-by-side ~ shows when segment uses the compare panel ── */}
+        {seg.panel === 'compare' && seg.panelData && COMPARE_PRESETS[seg.panelData] && (() => {
+          const p = COMPARE_PRESETS[seg.panelData];
+          const cols = [
+            { side: 'left' as const, tag: p.leftTag, title: p.leftTitle, why: p.leftWhy, prompt: p.leftPrompt, answer: p.leftAnswer, annLbl: p.leftAnnLbl, annTxt: p.leftAnnTxt },
+            { side: 'right' as const, tag: p.rightTag, title: p.rightTitle, why: p.rightWhy, prompt: p.rightPrompt, answer: p.rightAnswer, annLbl: p.rightAnnLbl, annTxt: p.rightAnnTxt },
+          ];
+          return (
+            <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                Same prompt, two ways
+              </div>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+                {p.scenario}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22 }}>
+                {cols.map(col => {
+                  const isBad = col.side === 'left';
+                  const tagBg = isBad ? 'rgba(176,58,46,0.12)' : 'rgba(74,124,89,0.14)';
+                  const tagFg = isBad ? '#b03a2e' : '#1e8449';
+                  const tagBorder = isBad ? 'rgba(176,58,46,0.3)' : 'rgba(74,124,89,0.3)';
+                  return (
+                    <div key={col.side} style={{
+                      background: C.surface,
+                      borderRadius: 18,
+                      border: `1px solid ${C.border}`,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      {/* Header */}
+                      <div style={{ padding: '20px 22px 18px', borderBottom: `1px solid ${C.border}` }}>
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          padding: '5px 12px', borderRadius: 100,
+                          ...mono, fontSize: 11, fontWeight: 700,
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          background: tagBg, color: tagFg,
+                          border: `1px solid ${tagBorder}`,
+                          marginBottom: 12,
+                        }}>{col.tag}</div>
+                        <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
+                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-style:italic;font-weight:400;color:${C.primary}">`) }} />
+                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                          {col.why}
+                        </div>
+                      </div>
+                      {/* Prompt */}
+                      <div style={{ padding: '14px 22px', background: C.surface2, borderBottom: `1px solid ${C.border}` }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                          The prompt
+                        </div>
+                        <div style={{ ...mono, fontSize: 14, lineHeight: 1.55, color: C.text, whiteSpace: 'pre-wrap' }}>
+                          {col.prompt}
+                        </div>
+                      </div>
+                      {/* Annotation ~ what this teaches */}
+                      <div style={{ padding: '16px 22px 20px' }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                          {col.annLbl}
+                        </div>
+                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.55 }}>
+                          {col.annTxt}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Landing line */}
+              <div style={{
+                marginTop: 26,
+                padding: '20px 28px',
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                borderRadius: 14,
+                textAlign: 'center',
+              }}>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.text, lineHeight: 1.5 }}
+                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── 4 Claudes grid ~ shows when segment uses the products panel ── */}
         {seg.panel === 'products' && (
           <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
