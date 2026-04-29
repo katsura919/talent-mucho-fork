@@ -1068,9 +1068,10 @@ interface StackItem {
   value: number | 'priceless';
 }
 const VIP_STACK: StackItem[] = [
-  { name: 'Full recording of tonight',     desc: 'Rewatch any demo · copy any prompt · keep forever', value: 97 },
-  { name: 'The Claude Vault',              desc: '30+ proprietary skills ~ Carousel, Voice Memory, Inbox Triage, Proposals + more', value: 297 },
-  { name: '30 days premium Skool',         desc: "Closed mentorship · weekly Vibe Coding sessions · the receipts", value: 47 },
+  { name: 'Full recording of tonight',     desc: 'Rewatch any demo · copy any prompt · 30-day access', value: 97 },
+  { name: 'The Claude Vault',              desc: 'Premium proprietary skills ~ Carousel, Voice Memory, Inbox Triage, Proposals + more', value: 297 },
+  { name: 'Premium Skool ~ first month free', desc: "Closed mentorship · weekly Vibe Coding · €47/mo after · cancel anytime", value: 47 },
+  { name: '50% off the upcoming Bootcamp', desc: '3-day intensive · small group · live builds · normally €147 → €74 for VIPs', value: 74 },
   { name: 'Monthly Build-With-Us calls',   desc: 'Small group · pick one workflow · we build it together · €200/call', value: 200 },
   { name: 'Direct access to Abie + Meri',  desc: "Ask anything · weekly Q&A · zero gatekeeping", value: 'priceless' },
 ];
@@ -1114,9 +1115,10 @@ const THREE_DOORS: DoorOption[] = [
     pitch: "The recording, the skill library, 30 days inside our community.",
     bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
     whatYouGet: [
-      "Full recording (€97 value)",
-      "The Claude Vault ~ 30+ proprietary skills (€297)",
-      "30 days premium Skool ~ weekly Vibe Coding (€47)",
+      "Full recording ~ 30-day access (€97)",
+      "The Claude Vault ~ premium proprietary skills (€297)",
+      "Premium Skool ~ first month free, €47/mo after (€47)",
+      "50% off the upcoming Bootcamp (€74 saved)",
       "Monthly Build-With-Us calls (€200 each)",
       "Direct access to Abie + Meri",
       "+ 14-day refund · no form · no questions",

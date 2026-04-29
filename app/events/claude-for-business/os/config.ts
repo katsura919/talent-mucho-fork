@@ -482,9 +482,10 @@ export const SEGMENTS: Segment[] = [
         id: 'q5', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
           { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. <em>One time. €47.</em> Here's exactly what's inside:" },
           { type: 'bullets', speaker: 'MERI', items: [
-            "<em>Full recording</em> of tonight ~ rewatch any demo, copy any prompt (€97 value)",
-            "<em>The Claude Vault</em> ~ our proprietary skill library: IG Carousel Generator, Competitor Analysis, Voice Memory, Inbox Triage ~ every skill you saw tonight + 30 more (€297 value)",
-            "<em>30 days inside premium Skool</em> ~ closed mentorship, weekly <em>Vibe Coding sessions</em> where we build skills live together (€47 value)",
+            "<em>Full recording</em> of tonight ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
+            "<em>The Claude Vault</em> ~ our <em>premium proprietary skill library</em>: IG Carousel Generator, Competitor Analysis, Voice Memory, Inbox Triage ~ every skill you saw tonight + more (€297 value)",
+            "<em>First month of premium Skool free</em> ~ closed mentorship, weekly <em>Vibe Coding sessions</em>. €47/mo after if you stay, cancel anytime (€47 value)",
+            "<em>50% off the upcoming Bootcamp</em> ~ €147 → €74 for VIPs only (€74 saved)",
             "<em>Monthly Build-With-Us calls</em> ~ small group, pick one workflow, build it with us (€200/call value)",
             "<em>Direct access to Abie + Meri</em> in chat ~ ask anything, weekly Q&A. <em>Not a group chat. Closed mentorship.</em>",
           ]},
@@ -516,7 +517,7 @@ export const SEGMENTS: Segment[] = [
           { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
             "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
-            "<em>Door 2 ~ €47 VIP.</em> Recording, Vault, 30 days premium Skool, monthly build-calls, direct access. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
+            "<em>Door 2 ~ €47 VIP.</em> Recording, Vault, first month of premium Skool free (€47/mo after), 50% off Bootcamp, monthly build-calls, direct access. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
             "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
           ]},
         ],
@@ -529,7 +530,7 @@ export const SEGMENTS: Segment[] = [
             "If you're a <em>founder</em> ~ we focus on your business systems + dashboards",
             "If you're <em>building something</em> ~ we vibe-code it with you live",
           ]},
-          { type: 'scripted', speaker: 'MERI', text: "<em>Bootcamp is included free</em> with VIP. Limited spots ~ small on purpose, because we want to actually mentor you, not teach at you." },
+          { type: 'scripted', speaker: 'MERI', text: "<em>VIPs get 50% off the upcoming Bootcamp</em> ~ €147 down to €74. Limited spots ~ small on purpose, because we want to actually mentor you, not teach at you." },
           { type: 'scripted', speaker: 'ABIE', text: "Drop <em>BOOTCAMP</em> in the chat if you want details. We'll DM you tomorrow." },
         ],
       },
