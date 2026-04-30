@@ -104,7 +104,7 @@ export const SEGMENTS: Segment[] = [
   // 00 ~ Welcome
   {
     id: 0, num: '00', title: 'Welcome', titleItalic: '',
-    subtitle: '12:00~12:05 AM ~ open warm, land the promise',
+    subtitle: '6:00~6:05 PM ~ open warm, land the promise',
     duration: '5 min', speakers: ['BOTH'], panel: 'demo',
     audWhatTitle: '<em>This</em> is where you start.',
     audWhatBody: "<p>You signed up because you've been saying <em>\"I need to learn AI\"</em> for months. Tonight you actually do it ~ in a small group, with two operators who run businesses on this stack every day.</p><p>By the end, you'll have a <em>clear starting point</em>, not more overwhelm. That's the deal.</p>",
@@ -116,7 +116,7 @@ export const SEGMENTS: Segment[] = [
           { type: 'scripted', speaker: 'BOTH', text: "Hey everyone ~ welcome. I'm Abie, this is Meri. Before we do anything else ~ <em>thank you</em> for showing up. You could be doing a hundred other things tonight." },
           { type: 'scripted', speaker: 'BOTH', text: "Quick promise so you know what you're in for. You signed up because you've been saying <em>\"I need to learn AI\"</em> for months. Tonight, that ends." },
           { type: 'bullets', speaker: 'BOTH', items: [
-            "By 2 AM, you'll <em>finally understand</em> what AI can actually do for your business",
+            "By 8 PM, you'll <em>finally understand</em> what AI can actually do for your business",
             "You'll get hands-on with Claude in a small group setting ~ <em>no experience required</em>",
             "And you'll leave with a <em>clear starting point</em> ~ not 47 tabs and more overwhelm",
           ]},
@@ -141,7 +141,7 @@ export const SEGMENTS: Segment[] = [
   // 01 ~ Origin stories
   {
     id: 1, num: '01', title: 'How we', titleItalic: 'got here',
-    subtitle: '12:05~12:15 AM ~ Abie + Meri intros, why we don\'t gatekeep',
+    subtitle: '6:05~6:15 PM ~ Abie + Meri intros, why we don\'t gatekeep',
     duration: '10 min', speakers: ['BOTH'], panel: 'showcase',
     audWhatTitle: 'How we <em>got here</em>',
     audWhatBody: "<p>Two very different stories. One business. <em>You're learning from two operators</em> who actually run what they teach ~ not from coaches selling a course.</p><p>Abie's the engineer who came back to building. Meri's the marketer who burned out hiring people and figured out AI was the answer.</p>",
@@ -182,7 +182,7 @@ export const SEGMENTS: Segment[] = [
   // 02 ~ What is Claude
   {
     id: 2, num: '02', title: 'What is', titleItalic: 'Claude',
-    subtitle: '12:15~12:27 AM ~ Claude vs ChatGPT, the mindset shift',
+    subtitle: '6:15~6:27 PM ~ Claude vs ChatGPT, the mindset shift',
     duration: '15 min', speakers: ['MERI', 'ABIE'], panel: 'compare', panelData: 'chatgpt-vs-claude',
     audWhatTitle: 'What is <em>Claude</em> ~ and how is it different?',
     audWhatBody: "<p>Most of you opened ChatGPT first. So the real question isn't <em>\"what is Claude?\"</em> ~ it's <em>\"what's actually different, and why should I care?\"</em></p><p>We'll show you ~ live, side by side ~ what changes when you stop using AI like a search engine.</p>",
@@ -231,7 +231,7 @@ export const SEGMENTS: Segment[] = [
   // 03 ~ The Claudes + Models
   {
     id: 3, num: '03', title: 'The four', titleItalic: 'Claudes',
-    subtitle: '12:27~12:40 AM ~ the four products + the three models',
+    subtitle: '6:27~6:40 PM ~ the four products + the three models',
     duration: '13 min', speakers: ['MERI', 'ABIE'], panel: 'products',
     audWhatTitle: 'The four <em>Claudes</em> + three models',
     audWhatBody: "<p>The confusing thing about Claude ~ there are <em>four products</em> and <em>three model sizes</em>. Same brain underneath. Different doors depending on what you're doing.</p><p>You only need Chat for your first month. We'll show you the others so you know what's out there ~ then we land on what matters.</p>",
@@ -289,7 +289,7 @@ export const SEGMENTS: Segment[] = [
   // 04 ~ Live demos
   {
     id: 4, num: '04', title: 'Live', titleItalic: 'demos',
-    subtitle: '12:40~01:05 AM ~ three real tasks, on screen',
+    subtitle: '6:40~7:05 PM ~ three real tasks, on screen',
     duration: '25 min', speakers: ['ABIE', 'MERI'], panel: 'demo', panelUrl: 'https://claude.ai/new',
     audWhatTitle: 'What we <em>demo</em> live',
     audWhatBody: "<p>This is the part you came for. <em>Real tasks. Live, on screen.</em> Tools we use to run our actual business every day ~ from inbox triage to proposal writing to invoice chasing.</p><p>We brought a <em>spin wheel</em> with seven options. Whoever's most engaged in the chat picks the spinner. <em>Whatever it lands on, we build live.</em></p>",
@@ -355,7 +355,7 @@ export const SEGMENTS: Segment[] = [
   // 05 ~ AI employees
   {
     id: 5, num: '05', title: 'AI', titleItalic: 'employees',
-    subtitle: '01:05~01:20 AM ~ Meri\'s side ~ how we multiply VA work with AI',
+    subtitle: '7:05~7:20 PM ~ Meri\'s side ~ how we multiply VA work with AI',
     duration: '15 min', speakers: ['MERI'], panel: 'showcase',
     audWhatTitle: 'AI <em>employees</em> ~ the Operate pillar',
     audWhatBody: "<p>This is the <em>Operate</em> pillar at Talent Mucho. We don't replace VAs ~ <em>we multiply them.</em></p><p>You'll see how an \"AI employee\" gets built, what one does day-to-day, and how a VA + AI together does the work of three.</p>",
@@ -398,7 +398,7 @@ export const SEGMENTS: Segment[] = [
   // 06 ~ Live build
   {
     id: 6, num: '06', title: 'Live', titleItalic: 'build',
-    subtitle: "01:20~01:35 AM ~ pick a real problem from the audience, solve it with Claude on the spot",
+    subtitle: "7:20~7:35 PM ~ pick a real problem from the audience, solve it with Claude on the spot",
     duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'showcase',
     audWhatTitle: 'Live <em>build</em>',
     audWhatBody: "<p>This is hands-on. We pick <em>a real problem from someone in the room</em> and build a solution with Claude ~ right here, right now.</p><p>No prep. No slides. Just a screen share and a problem worth solving.</p>",
@@ -446,7 +446,7 @@ export const SEGMENTS: Segment[] = [
   // 07 ~ Q&A
   {
     id: 7, num: '07', title: 'Open', titleItalic: 'Q&A',
-    subtitle: '01:35~01:50 AM ~ pre-screened Q&A with real demos',
+    subtitle: '7:35~7:50 PM ~ pre-screened Q&A with real demos',
     duration: '15 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Open <em>Q&amp;A</em>',
     audWhatBody: "<p>Meri's been collecting your questions all hour. We're going to take the top ones and answer them with real demos ~ not generic advice.</p>",
@@ -469,7 +469,7 @@ export const SEGMENTS: Segment[] = [
   // 08 ~ Next step
   {
     id: 8, num: '08', title: 'Next', titleItalic: 'step',
-    subtitle: '01:50~02:00 AM ~ recap, VIP, bootcamp waitlist, close',
+    subtitle: '7:50~8:00 PM ~ recap, VIP, bootcamp waitlist, close',
     duration: '10 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Your <em>next step</em>',
     audWhatBody: "<p>We delivered what we promised. Now here's <em>what comes next</em> ~ whether you go free, grab VIP, or join the Bootcamp.</p>",
