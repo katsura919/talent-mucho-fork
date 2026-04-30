@@ -4180,12 +4180,12 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
 
   return (
-    <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
+    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
       {/* Subtle texture overlay */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.5, background: `radial-gradient(ellipse at top, ${C.primary}15 0%, transparent 60%), radial-gradient(ellipse at bottom right, ${C.peach} 0%, transparent 50%)` }} />
 
       {/* ── HERO TOP STRIP ── */}
-      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, position: 'relative', zIndex: 2 }}>
+      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 800, color: C.text }}>
             {theme === 'tm' ? 'tm' : 'am'}
@@ -4202,13 +4202,13 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       </div>
 
       {/* ── HERO TITLE BAND ── */}
-      <div style={{ flexShrink: 0, padding: '32px 48px 24px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ padding: '32px 48px 24px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ display: 'inline-block', width: 24, height: 1, background: C.primary }} />
             Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(40px, 5.5vw, 76px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1, color: C.text, margin: 0, ...sans }}>
+          <h1 style={{ fontSize: 'clamp(22px, 2.8vw, 38px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1, color: C.text, margin: 0, ...sans }}>
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
@@ -4233,7 +4233,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
       </div>
 
       {/* ── BODY ── */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
+      <div style={{ flex: 1, padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
         {/* Standard body grid hidden when:
             - segment uses compare panel (side-by-side comparison takes the real estate)
             - segment is the welcome (countdown + agenda take over)
