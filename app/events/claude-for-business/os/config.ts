@@ -395,57 +395,62 @@ export const SEGMENTS: Segment[] = [
     ],
   },
 
-  // 06 ~ Behind the scenes
+  // 06 ~ Live build
   {
-    id: 6, num: '06', title: 'Behind the', titleItalic: 'scenes',
-    subtitle: "07:20~07:35 ~ live tour of Abie's vibe-coded stack",
+    id: 6, num: '06', title: 'Live', titleItalic: 'build',
+    subtitle: "07:20~07:35 ~ pick a real problem from the audience, solve it with Claude on the spot",
     duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'showcase',
-    audWhatTitle: 'Behind the <em>scenes</em>',
-    audWhatBody: "<p>Quick tour. Abie's <em>actual</em> operating system. The CLI, the dashboard, the auto-deploys. <em>Real screens, no slides.</em></p><p>This is the proof segment. Everything we taught tonight is also <em>how we run our days.</em></p>",
-    audTakeaway: "<em>Don't try to build it all at once.</em> Pick the most annoying weekly task. Build that one thing first.",
+    audWhatTitle: 'Live <em>build</em>',
+    audWhatBody: "<p>This is hands-on. We pick <em>a real problem from someone in the room</em> and build a solution with Claude ~ right here, right now.</p><p>No prep. No slides. Just a screen share and a problem worth solving.</p>",
+    audTakeaway: "You just watched us <em>build something real</em> in 15 minutes. Imagine what you could do in a week.",
     beats: [
       {
-        id: 'bts1', title: "Why we're showing you this", speaker: 'BOTH', blocks: [
-          { type: 'stage', text: 'Both on cam. Tone shifts ~ proof segment.' },
-          { type: 'scripted', speaker: 'BOTH', text: "Quick one before Q&A. <em>This isn't theory for us.</em> Everything we taught tonight, we run ourselves. We want to show you what that actually looks like behind the curtain." },
+        id: 'lb1', title: 'Set the stage', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: 'Both on cam. Energy up ~ this is the moment they see it click.' },
+          { type: 'scripted', speaker: 'BOTH', text: "Okay ~ <em>this is the part that makes tonight different.</em> We're not showing you another demo. We're going to pick a real problem from one of you and solve it live." },
+          { type: 'scripted', speaker: 'MERI', text: "Drop your problem in the chat. One sentence. <em>\"I spend 3 hours a week doing X.\"</em> We'll pick one and build it on screen." },
+          { type: 'stage', text: 'Meri scans chat. Pick something concrete ~ email drafting, content repurposing, client onboarding, data entry. Avoid anything too niche.' },
         ],
       },
       {
-        id: 'bts2', title: "Abie's CLI runs the day", speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "My side. <em>Most days I don't open Gmail.</em> I open my terminal." },
-          { type: 'stage', text: 'Switch to actual terminal screen-share. Run the email co-pilot CLI live.' },
+        id: 'lb2', title: 'Pick the problem', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "Alright ~ we've got a good one. Let me read it out." },
+          { type: 'stage', text: 'Read the chosen problem out loud. Acknowledge the person by name.' },
+          { type: 'scripted', speaker: 'MERI', text: "This is <em>exactly</em> the kind of thing we were talking about earlier. Repetitive, time-consuming, and Claude can eat it for breakfast." },
+          { type: 'workbook', text: "WORKBOOK ~ Write down: what's YOUR version of this problem? What's the task you'd want Claude to solve first?" },
+        ],
+      },
+      {
+        id: 'lb3', title: 'Build it live', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: 'Abie shares screen. Open Claude. Walk through the build step by step. Narrate everything.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Watch the screen. I'm going to <em>think out loud</em> so you can follow the process, not just the output." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            'CLI checks inbox, summarises, drafts replies in <em>my voice</em>',
-            'Website edits ~ I describe the change, Claude Code writes + commits + deploys ~ <em>that\'s vibe coding</em>',
-            'No Gmail tab. No Notion. <em>Everything I need is one command away.</em>',
+            'Step 1 ~ <em>Define the problem</em> in plain language. What goes in, what comes out.',
+            'Step 2 ~ <em>Give Claude context.</em> Paste an example, describe the tone, set constraints.',
+            'Step 3 ~ <em>Run it.</em> Review the output. Tweak. Run again.',
           ]},
+          { type: 'stage', text: 'Keep it under 10 minutes. If the first output is good, show a refinement pass. If it\'s rough, show the correction loop ~ that\'s equally valuable.' },
+          { type: 'scripted', speaker: 'ABIE', text: "That took what ~ <em>8 minutes?</em> This person was spending 3 hours a week on this. <em>That's the compound effect we keep talking about.</em>" },
         ],
       },
       {
-        id: 'bts3', title: 'The personal dashboard', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "Inside my own website I have a dashboard that runs my whole life. <em>I used to use Notion, Coda, Asana.</em> Now it's all custom-built." },
-          { type: 'stage', text: 'Tour the dashboard ~ ADHD Command Centre, Carousel Studio, UGC Pipeline, Sales Pipeline, OKRs.' },
-          { type: 'scripted', speaker: 'ABIE', text: "My honest take: <em>everyone should have a system that's yours.</em> Not rented from someone else's tool. Claude Code makes that accessible to anyone now ~ even people who don't code." },
-          { type: 'scripted', speaker: 'ABIE', text: "<em>This is what AI has actually done for us.</em> Websites I didn't think I could build. Tools I didn't think I could create. <em>All done.</em>" },
-        ],
-      },
-      {
-        id: 'bts4', title: 'The point ~ start small', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "<em>We didn't build any of this in a weekend.</em> One tool at a time. Each one solved one annoying problem. Six months in, the compound is real." },
-          { type: 'scripted', speaker: 'BOTH', text: "Remember the answer you wrote down earlier ~ <em>the most annoying repetitive thing in your week?</em> That's what you build first. Not the dashboard. Not the AI employee. <em>One tool, one annoying problem.</em>" },
+        id: 'lb4', title: 'Land it', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'BOTH', text: "That's what it looks like. <em>No magic. No code. Just a clear problem and a good prompt.</em>" },
+          { type: 'scripted', speaker: 'BOTH', text: "Remember the answer you wrote down earlier ~ <em>the most annoying repetitive thing in your week?</em> You just watched us solve someone else's. <em>Yours is next.</em>" },
+          { type: 'poll', text: "POLL ~ After watching that live build, how confident are you that you could do this yourself?\n1 = I need more guidance\n2 = I could try it with some help\n3 = I'm ready to go\n4 = I'm already planning what to build" },
         ],
       },
     ],
   },
 
-  // 07 ~ Q&A + next step
+  // 07 ~ Q&A
   {
-    id: 7, num: '07', title: 'Q&A +', titleItalic: 'next step',
-    subtitle: '07:38~08:00 ~ pre-screened Q&A then the close',
-    duration: '22 min', speakers: ['BOTH'], panel: 'qa',
+    id: 7, num: '07', title: 'Open', titleItalic: 'Q&A',
+    subtitle: '07:35~07:50 ~ pre-screened Q&A with real demos',
+    duration: '15 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Open <em>Q&amp;A</em>',
-    audWhatBody: "<p>Meri's been collecting your questions all hour. We're going to take the top ones and answer them with real demos ~ not generic advice.</p><p>After Q&A: a 4-minute close on what to do next.</p>",
-    audTakeaway: "You got your <em>starting point</em>. The next step is whether you <em>actually take it.</em>",
+    audWhatBody: "<p>Meri's been collecting your questions all hour. We're going to take the top ones and answer them with real demos ~ not generic advice.</p>",
+    audTakeaway: "No question is too basic. <em>Ask now or ask in Skool later.</em>",
     beats: [
       {
         id: 'q1', title: 'Frame Q&A', speaker: 'BOTH', blocks: [
@@ -458,9 +463,21 @@ export const SEGMENTS: Segment[] = [
           { type: 'stage', text: 'Work the queue. Meri reads, Abie demos. Watch the clock ~ 15 min absolute max.' },
         ],
       },
+    ],
+  },
+
+  // 08 ~ Next step
+  {
+    id: 8, num: '08', title: 'Next', titleItalic: 'step',
+    subtitle: '07:50~08:00 ~ recap, VIP, bootcamp waitlist, close',
+    duration: '10 min', speakers: ['BOTH'], panel: 'qa',
+    audWhatTitle: 'Your <em>next step</em>',
+    audWhatBody: "<p>We delivered what we promised. Now here's <em>what comes next</em> ~ whether you go free, grab VIP, or join the Bootcamp.</p>",
+    audTakeaway: "The difference between tonight being <em>interesting</em> and tonight <em>changing your business</em> is what you do in the next 24 hours.",
+    beats: [
       {
-        id: 'q3', title: 'Recap the promise', speaker: 'BOTH', blocks: [
-          { type: 'stage', text: "Q&A is wrapping. Tone tightens ~ this is the most important 6 minutes of the night." },
+        id: 'ns1', title: 'Recap the promise', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "Tone tightens ~ this is the most important 10 minutes of the night." },
           { type: 'scripted', speaker: 'BOTH', text: "Quick recap before we close. <em>What did we promise you tonight?</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
             "You'd <em>finally understand</em> what AI can do for your business ~ ✓ done",
@@ -471,7 +488,7 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q4', title: 'The honest reframe', speaker: 'ABIE', blocks: [
+        id: 'ns2', title: 'The honest reframe', speaker: 'ABIE', blocks: [
           { type: 'scripted', speaker: 'ABIE', text: "But here's what's also true. Tonight you saw <em>what's possible.</em> The dashboard. The AI employees. The CLI that runs my day. The proposals." },
           { type: 'scripted', speaker: 'ABIE', text: "<em>What we didn't show you</em> ~ because 2 hours is 2 hours ~ is <em>how we built any of it.</em>" },
           { type: 'scripted', speaker: 'ABIE', text: "You got the destination tonight. <em>You didn't get the map.</em>" },
@@ -479,7 +496,7 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q5', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
+        id: 'ns3', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
           { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. <em>One time. €47.</em> Here's exactly what's inside:" },
           { type: 'bullets', speaker: 'MERI', items: [
             "<em>Full replay + transcript</em> ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
@@ -493,7 +510,7 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q6', title: 'Why this price, this once', speaker: 'MERI', blocks: [
+        id: 'ns4', title: 'Why this price, this once', speaker: 'MERI', blocks: [
           { type: 'scripted', speaker: 'MERI', text: "<em>I want to be honest about the price.</em> €47 isn't because we don't value our work. It's because <em>we want you in the room early.</em>" },
           { type: 'bullets', speaker: 'MERI', items: [
             "After tonight, premium Skool goes back to <em>€97/month</em>",
@@ -505,24 +522,7 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q7', title: 'Risk reversal', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "And because €47 still feels like a yes-or-no decision for some of you ~ <em>here's our promise.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "Try the recording. Open the Vault. Sit in one Skool call. If in the first <em>14 days</em> you genuinely feel like you didn't get more than €47 of value ~ email us. <em>Full refund.</em> No form. No \"sorry to see you go\" survey. Just gone." },
-          { type: 'scripted', speaker: 'ABIE', text: "<em>The only thing you risk is showing up.</em>" },
-        ],
-      },
-      {
-        id: 'q8', title: 'Three doors out', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
-          { type: 'bullets', speaker: 'BOTH', items: [
-            "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
-            "<em>Door 2 ~ €47 VIP.</em> Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
-            "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
-          ]},
-        ],
-      },
-      {
-        id: 'q8b', title: 'Bootcamp teaser', speaker: 'MERI', blocks: [
+        id: 'ns5', title: 'Bootcamp waitlist', speaker: 'MERI', blocks: [
           { type: 'scripted', speaker: 'MERI', text: "<em>One more thing</em> ~ for the people who really want to go deep. We're running an <em>intensive bootcamp</em> in 2 weeks. Hands-on. Small groups. <em>Not one-size-fits-all.</em>" },
           { type: 'bullets', speaker: 'MERI', items: [
             "If you're a <em>VA</em> ~ we focus on VA workflows + AI employees",
@@ -534,7 +534,17 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'q9', title: 'The starting point', speaker: 'BOTH', blocks: [
+        id: 'ns6', title: 'Three doors out', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
+          { type: 'bullets', speaker: 'BOTH', items: [
+            "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
+            "<em>Door 2 ~ €47 VIP.</em> Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
+            "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
+          ]},
+        ],
+      },
+      {
+        id: 'ns7', title: 'The starting point', speaker: 'BOTH', blocks: [
           { type: 'scripted', speaker: 'BOTH', text: "Last thing. Then we let you go." },
           { type: 'scripted', speaker: 'BOTH', text: "When you signed up, the landing page said <em>\"This is where you start.\"</em>" },
           { type: 'scripted', speaker: 'BOTH', text: "Tonight you got a starting point. <em>The only thing left is whether you actually take it.</em>" },

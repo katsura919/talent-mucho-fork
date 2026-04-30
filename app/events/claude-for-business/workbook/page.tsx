@@ -116,6 +116,27 @@ const SEGMENTS: Segment[] = [
       },
     ],
   },
+  {
+    num: '06',
+    title: 'Live build',
+    items: [
+      {
+        kind: 'workbook',
+        prompt: "What's YOUR version of this problem? What's the task you'd want Claude to solve first?",
+      },
+      {
+        kind: 'poll',
+        prompt:
+          'After watching that live build, how confident are you that you could do this yourself?',
+        options: [
+          { value: 1, label: 'I need more guidance' },
+          { value: 2, label: 'I could try it with some help' },
+          { value: 3, label: "I'm ready to go" },
+          { value: 4, label: "I'm already planning what to build" },
+        ],
+      },
+    ],
+  },
 ];
 
 const TOTAL_ITEMS = SEGMENTS.reduce((n, s) => n + s.items.length, 0);

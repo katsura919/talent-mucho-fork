@@ -1169,7 +1169,6 @@ const THREE_DOORS: DoorOption[] = [
       "VIP-only group follow-up ~ 45 min with Abie + Meri",
       "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
       "Early access to the upcoming Bootcamp",
-      "+ 14-day refund · no form · no questions",
     ],
     nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
     cta: 'Join VIP — €47',
@@ -1556,6 +1555,276 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+
+// ── LiveBuildGuide ~ segment 06 audience view: the 3-step process card ────────
+const BUILD_STEPS = [
+  { num: '01', label: 'DEFINE', title: 'Name the problem', desc: 'What goes in, what comes out. One sentence.' },
+  { num: '02', label: 'CONTEXT', title: 'Feed Claude', desc: 'Paste an example. Describe the tone. Set constraints.' },
+  { num: '03', label: 'RUN', title: 'Execute + refine', desc: 'Review the output. Tweak. Run again. Ship it.' },
+];
+
+function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 28 }}>
+
+      {/* Call to action */}
+      <div style={{
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.text,
+        color: '#FAF8F5',
+        textAlign: 'center',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
+          Your turn
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(24), color: '#FAF8F5', lineHeight: 1.45, marginBottom: 12 }}>
+          Drop your problem in the chat.
+        </div>
+        <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.6)', lineHeight: 1.6 }}>
+          One sentence. &quot;I spend 3 hours a week doing X.&quot; We&apos;ll pick one and build it live.
+        </div>
+      </div>
+
+      {/* 3-step process */}
+      <div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          The process ~ every time
+        </div>
+        <div style={{ marginBottom: 22 }}>
+          <span style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: C.text }}>3 steps to solve </span>
+          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(26), fontWeight: 400, color: C.text }}>any problem with Claude.</span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {BUILD_STEPS.map((step, i) => (
+            <div key={step.num} style={{
+              padding: '28px 24px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(48), color: C.primary, opacity: 0.12, position: 'absolute', top: 12, right: 18, lineHeight: 1 }}>{step.num}</div>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 10 }}>{step.label}</div>
+              <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, marginBottom: 8 }}>{step.title}</div>
+              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{step.desc}</div>
+              {i < BUILD_STEPS.length - 1 && (
+                <div style={{
+                  position: 'absolute', right: -12, top: '50%', transform: 'translateY(-50%)',
+                  ...mono, fontSize: sz(18), color: C.primary, opacity: 0.4, zIndex: 2,
+                }}>
+                  &rarr;
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Key message */}
+      <div style={{
+        padding: '24px 30px',
+        borderRadius: 16,
+        background: `${C.primary}10`,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 20,
+      }}>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(36), color: C.primary, opacity: 0.3, flexShrink: 0 }}>&#9733;</div>
+        <div>
+          <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
+            No magic. No code. Just a clear problem and a good prompt.
+          </div>
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginTop: 4, lineHeight: 1.5 }}>
+            The most annoying repetitive thing in your week? That&apos;s what you build first.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ── AIEmployeeLayers ~ segment 05 audience view: 4 capabilities + 4 levels ───
+const AI_CAPABILITIES = [
+  { num: '01', title: 'Knowledge', subtitle: 'THE BRAIN', body: 'What it knows about your business.', detail: 'Claude Project loaded with your playbook, ICP, voice, processes, customer data, brand guidelines.' },
+  { num: '02', title: 'Skills', subtitle: 'WHAT IT DOES', body: 'The prompts that execute the work.', detail: 'Call analysis, proposal writing, content repurposing, expense categorization.' },
+  { num: '03', title: 'Connectors', subtitle: 'WHERE IT REACHES', body: 'Notion, Gmail, Slack, your CRM, Drive.', detail: "The AI doesn't just talk ~ it works inside the tools you already use." },
+  { num: '04', title: 'Memory', subtitle: 'WHAT IT LEARNS', body: 'Every interaction trains it.', detail: 'Every correction sharpens it. The longer it works for you, the more valuable it becomes.' },
+];
+
+const AI_LEVELS = [
+  {
+    q: 'Q1', title: 'The Foundation', question: 'What do you do repetitively?', action: 'Save it as a skill.',
+    no: null,
+    yes: null,
+  },
+  {
+    q: 'Q2', title: 'Context?', question: 'Does this job need living context that changes over time?',
+    detail: 'ICP, brand voice, pricing, objection library, case studies, files, transcripts.',
+    no: { level: 1, name: 'CONTRACTOR', desc: 'Just a skill in chat.' },
+    yes: { level: 2, name: 'TRAINED EMPLOYEE', desc: '+ Brain. Skill running inside a workspace loaded with your context.' },
+  },
+  {
+    q: 'Q3', title: 'Tools?', question: 'Does it need to pull from ~ or push into ~ other tools?',
+    detail: 'Notion, Gmail, Slack, CRM, Drive, calendar.',
+    no: { level: 2, name: 'TRAINED EMPLOYEE', desc: 'Brain is enough.' },
+    yes: { level: 3, name: 'CONNECTED EMPLOYEE', desc: '+ Connectors. Reads from and writes to the apps you already use.' },
+  },
+  {
+    q: 'Q4', title: 'Autonomy?', question: 'Should ~ and could ~ this run without you?',
+    detail: 'Only after extensive testing at Level 3.',
+    no: { level: 3, name: 'CONNECTED EMPLOYEE', desc: 'You stay in the loop.' },
+    yes: { level: 4, name: 'AUTONOMOUS EMPLOYEE', desc: '+ Schedule. "It just ran."' },
+  },
+];
+
+function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette;
+  mono: React.CSSProperties;
+  sans: React.CSSProperties;
+  serif: React.CSSProperties;
+  scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const onDark = '#FAF8F5';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 36 }}>
+
+      {/* ── Section 1: The 4 Capabilities ── */}
+      <div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          An AI employee, in four layers
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>The 4 Capabilities of </span>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
+          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
+        </div>
+        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          {AI_CAPABILITIES.map(cap => (
+            <div key={cap.num} style={{
+              padding: '24px 22px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}>
+              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
+              </div>
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...sans, fontSize: sz(13), color: C.text, fontWeight: 600, lineHeight: 1.5, marginBottom: 4 }}>{cap.body}</div>
+                <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.5 }}>{cap.detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Section 2: The 4 Levels ladder ── */}
+      <div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Four questions. Each yes climbs one rung.
+        </div>
+        <div style={{ marginBottom: 22 }}>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>How to pick the right level </span>
+          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), fontWeight: 400, color: C.text }}>for the job.</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {AI_LEVELS.map((lvl, i) => (
+            <div key={lvl.q} style={{
+              padding: '22px 28px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 24,
+            }}>
+              {/* Left: Q number + title */}
+              <div style={{ flexShrink: 0, minWidth: sz(110) }}>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
+              </div>
+
+              {/* Middle: Question + detail */}
+              <div style={{ flex: 1 }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.5 }}>
+                  {lvl.question} {i === 0 && <strong>Save it as a skill.</strong>}
+                </div>
+                {lvl.detail && (
+                  <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 4 }}>{lvl.detail}</div>
+                )}
+              </div>
+
+              {/* Right: NO/YES outcomes */}
+              {(lvl.no || lvl.yes) && (
+                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10, minWidth: sz(300) }}>
+                  {lvl.no && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.muted}20`, color: C.muted,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>NO · STAY</span>
+                      <div>
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
+                          LEVEL {lvl.no.level} · {lvl.no.name}
+                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.no.desc}</div>
+                      </div>
+                    </div>
+                  )}
+                  {lvl.yes && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>YES · CLIMB</span>
+                      <div>
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
+                          LEVEL {lvl.yes.level} · {lvl.yes.name}
+                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.yes.desc}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -2551,30 +2820,6 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
         </div>
       )}
 
-      {/* 14-day guarantee badge */}
-      <div style={{
-        marginTop: 14,
-        padding: '14px 22px',
-        borderRadius: 100,
-        background: `${C.primary}15`,
-        border: `1px solid ${C.primary}40`,
-        display: 'flex', alignItems: 'center', gap: 14,
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          width: sz(28), height: sz(28),
-          borderRadius: '50%',
-          background: C.primary, color: C.text,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          ...mono, fontSize: sz(14), fontWeight: 800,
-        }}>✓</div>
-        <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-          14-day refund
-        </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.text }}>
-          No form. No questions. The only thing you risk is showing up.
-        </div>
-      </div>
     </div>
   );
 }
@@ -4268,20 +4513,27 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           <OriginIntro C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
-        {/* ── AI Ops Manager day visualisation ~ shows on segment 05 (AI employees) ── */}
+        {/* ── AI Employee layers + Ops Manager day ~ segment 05 (AI employees) ── */}
         {seg.num === '05' && (
-          <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-        )}
-
-        {/* ── Community data viz ~ shows on segment 06 (behind the scenes) ── */}
-        {seg.num === '06' && (
-          <CommunityPulse C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-        )}
-
-        {/* ── Q&A live feed + close (Value Stack + Three Doors) ~ segment 07 ── */}
-        {seg.num === '07' && (
           <>
-            <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <AIEmployeeLayers C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+          </>
+        )}
+
+        {/* ── Live build process ~ segment 06 (hands-on) ── */}
+        {seg.num === '06' && (
+          <LiveBuildGuide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── Q&A live feed ~ segment 07 ── */}
+        {seg.num === '07' && (
+          <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
+
+        {/* ── Next step ~ Value Stack + Bootcamp + Three Doors ~ segment 08 ── */}
+        {seg.num === '08' && (
+          <>
             <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
