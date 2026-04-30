@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase-browser";
 
 const ALLOWED_EMAILS = ["hello@abiemaxey.com"];
 
@@ -13,37 +12,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    async function check() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        router.replace("/admin/login");
-        return;
-      }
-
-      const email = session.user.email;
-      if (email && ALLOWED_EMAILS.includes(email)) {
-        setStatus("authenticated");
-      } else {
-        // For now, allow any authenticated session through
-        // (Meri's email will be added to ALLOWED_EMAILS later)
-        setStatus("authenticated");
-      }
+    const stored = localStorage.getItem("admin_auth");
+    if (stored && ALLOWED_EMAILS.includes(stored)) {
+      setStatus("authenticated");
+    } else {
+      router.replace("/admin/login");
     }
-
-    check();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        router.replace("/admin/login");
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [router]);
 
   if (status === "loading") {
