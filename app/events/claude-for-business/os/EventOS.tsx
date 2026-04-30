@@ -2946,7 +2946,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
 }
 
 // ── WelcomeInteractive ~ segment 00 audience view: countdown + agenda + cities
-const EVENT_START_LOCAL = '2026-05-01T00:00:00'; // edit if the event time changes
+const EVENT_START_LOCAL = '2026-05-01T00:00:00-04:00'; // May 1st midnight EST (EDT = UTC-4)
 function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSecs }: {
   C: Palette;
   mono: React.CSSProperties;
@@ -3076,7 +3076,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                   ))}
                 </div>
                 <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
-                  May 1st · 12 AM · grab a drink, get comfy
+                  May 1st · 12 AM EST · grab a drink, get comfy
                 </div>
               </>
             )}
@@ -3188,7 +3188,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             Tonight&apos;s agenda
           </div>
           <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
-            Two hours. Eight beats. No filler.
+            Two hours. Nine beats. No filler.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {segments.map((s) => (
