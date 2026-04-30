@@ -3912,14 +3912,14 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
     return { updated, added };
   }, []);
 
+  const wbChId = useRef(`wb-${segmentNum}-${Date.now()}`);
+  const pollChId = useRef(`poll-${segmentNum}-${Date.now()}`);
   useEffect(() => {
     let cancelled = false;
 
-    // Dynamic import so the component works even if supabase-browser isn't available at build
     const init = async () => {
       const { supabase } = await import('@/lib/supabase-browser');
 
-      // Fetch existing workbook responses
       const { data: wbRows } = await supabase
         .from('workbook_responses')
         .select('response_text')
@@ -3934,7 +3934,6 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
         setWordFreq(freq);
       }
 
-      // Fetch existing poll responses
       const { data: pollRows } = await supabase
         .from('poll_responses')
         .select('choice_label')
@@ -3948,9 +3947,10 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
         setPollVotes(votes);
       }
 
-      // Subscribe to new workbook inserts
+      if (cancelled) return () => {};
+
       const wbChannel = supabase
-        .channel(`wb-${segmentNum}`)
+        .channel(wbChId.current)
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: `segment_num=eq.${segmentNum}` },
@@ -3968,9 +3968,8 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
         )
         .subscribe();
 
-      // Subscribe to new poll inserts
       const pollChannel = supabase
-        .channel(`poll-${segmentNum}`)
+        .channel(pollChId.current)
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'poll_responses', filter: `segment_num=eq.${segmentNum}` },
@@ -3992,7 +3991,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
     };
 
     let cleanup: (() => void) | undefined;
-    init().then(fn => { cleanup = fn; });
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
     return () => { cancelled = true; cleanup?.(); };
   }, [segmentNum, mergeWords]);
 
