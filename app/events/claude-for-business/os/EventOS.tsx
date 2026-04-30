@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset } from './config';
@@ -17,11 +17,11 @@ interface ThemeFonts {
 const FONTS: Record<ThemeKey, ThemeFonts> = {
   tm: {
     sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
+    serif: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
   },
   am: {
     sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-instrument-serif, ui-serif, Georgia, serif)',
+    serif: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
   },
 };
 
@@ -748,11 +748,11 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: C.text, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
                   <Editable key={`title-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.title`, v)} />
-                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
                     <Editable key={`titleI-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => saveEdit(`${segIdx}.titleItalic`, v)} />
                   </em></>}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginTop: 3 }}>
+                <div style={{ ...serif, fontSize: 12, color: C.muted, marginTop: 3 }}>
                   <Editable key={`sub-${segIdx}`} value={seg.subtitle} editMode={editMode} onSave={v => saveEdit(`${segIdx}.subtitle`, v)} />
                 </div>
                 <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
@@ -843,7 +843,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                               <Editable
                                 key={`scr-${segIdx}-${bi}-${bli}`}
                                 tagName="div"
-                                value={(bl.text ?? '').replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                value={(bl.text ?? '').replace(/<em>/g, `<em style="color:${C.primary}">`)}
                                 editMode={editMode}
                                 onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em [^>]*>/g, '<em>'))}
                                 style={{ ...serif, fontSize, lineHeight: 1.75, fontWeight: 400, color: C.text }}
@@ -855,7 +855,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                                     <span style={{ ...mono, fontSize: 12, color: C.primary, flexShrink: 0, paddingTop: 3 }}>~</span>
                                     <Editable
                                       key={`b-${segIdx}-${bi}-${bli}-${ii}`}
-                                      value={item.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`)}
+                                      value={item.replace(/<em>/g, `<em style="color:${C.primary}">`)}
                                       editMode={editMode}
                                       onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em [^>]*>/g, '<em>'))}
                                       style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
@@ -915,7 +915,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 24 }}>
                       <div style={{ fontSize: 28, opacity: 0.3 }}>↗</div>
-                      <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
+                      <div style={{ ...serif, fontSize: 14, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
                         Switch to compare, products,<br />or showcase for this segment
                       </div>
                     </div>
@@ -934,7 +934,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                 />
               )}
               {mode === 'compare' && !activePreset && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...serif, fontSize: 14, color: C.muted }}>
                   No compare preset for this segment
                 </div>
               )}
@@ -1053,8 +1053,8 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
                 {col.tag}
               </div>
               <div style={{ fontSize: 11, fontWeight: 800, color: C.text, letterSpacing: '-0.01em', textTransform: 'uppercase' }}
-                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-style:italic;font-weight:400;color:${C.primary};text-transform:none">`) }} />
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
+                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary};text-transform:none">`) }} />
+              <div style={{ ...serif, fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
             <div style={{ padding: '6px 12px', background: C.surface2, flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 3 }}>Prompt</div>
@@ -1065,7 +1065,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px' }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 7 }}>Response</div>
               <div style={{ ...serif, fontSize: 12, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
-                {col.output || <span style={{ fontStyle: 'italic', opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
+                {col.output || <span style={{ opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
                 {((col.isLeft && state.step === 1) || (!col.isLeft && state.step === 2)) && !col.done && (
                   <span style={{ animation: 'blink 0.65s step-end infinite', color: C.primary }}>▋</span>
                 )}
@@ -1074,7 +1074,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             {col.done && (
               <div style={{ margin: '0 12px 10px', padding: '8px 12px', borderRadius: 7, border: `1px solid ${C.border}`, background: C.surface2 }}>
                 <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 4 }}>{col.annLbl}</div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 11, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
+                <div style={{ ...serif, fontSize: 11, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
               </div>
             )}
           </div>
@@ -1082,8 +1082,8 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
       </div>
       {state.step === 3 && (
         <div style={{ borderTop: `1px solid ${C.border}`, padding: '10px 14px', background: C.surface, flexShrink: 0 }}>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: 13, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
-            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+          <div style={{ ...serif, fontSize: 13, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
+            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em>/g, `<em style="color:${C.primary};">`) }} />
         </div>
       )}
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
@@ -1438,9 +1438,9 @@ function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: Re
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
-        The four <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
+        The four <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: 12, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
         Same brain. Four doors. Pick the one that matches what you&apos;re trying to do.
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1488,9 +1488,9 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
         ))}
       </div>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
-        {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
+        {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: 12, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: 12, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
         {showTab === 'abie' ? "Most days I don't open Gmail. I open my terminal." : "We don't replace VAs. We multiply what one VA can do."}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -1504,10 +1504,10 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...serif, fontStyle: 'italic', fontSize: 12, lineHeight: 1.55, textAlign: 'center' }}>
+      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...serif, fontSize: 12, lineHeight: 1.55, textAlign: 'center' }}>
         {showTab === 'abie'
-          ? <>Everyone should have <em style={{ color: C.text, fontStyle: 'italic' }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
-          : <>Same hours, more clients ~ <em style={{ color: C.text, fontStyle: 'italic' }}>or</em> same clients, less burnout.<br />The VA chooses.</>
+          ? <>Everyone should have <em style={{ color: C.text }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
+          : <>Same hours, more clients ~ <em style={{ color: C.text }}>or</em> same clients, less burnout.<br />The VA chooses.</>
         }
       </div>
     </div>
@@ -1534,7 +1534,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px 14px' }}>
         {live.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10, opacity: 0.45 }}>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted }}>No questions yet</div>
+            <div style={{ ...serif, fontSize: 14, color: C.muted }}>No questions yet</div>
             <div style={{ ...mono, fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Meri pulls from chat</div>
           </div>
         ) : live.map(q => (
@@ -1591,7 +1591,7 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
           Your turn
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(24), color: '#FAF8F5', lineHeight: 1.45, marginBottom: 12 }}>
+        <div style={{ ...serif, fontSize: sz(24), color: '#FAF8F5', lineHeight: 1.45, marginBottom: 12 }}>
           Drop your problem in the chat.
         </div>
         <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.6)', lineHeight: 1.6 }}>
@@ -1607,7 +1607,7 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
         </div>
         <div style={{ marginBottom: 22 }}>
           <span style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: C.text }}>3 steps to solve </span>
-          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(26), fontWeight: 400, color: C.text }}>any problem with Claude.</span>
+          <span style={{ ...serif, fontSize: sz(26), fontWeight: 400, color: C.text }}>any problem with Claude.</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
@@ -1620,7 +1620,7 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
               position: 'relative',
               overflow: 'hidden',
             }}>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(48), color: C.primary, opacity: 0.12, position: 'absolute', top: 12, right: 18, lineHeight: 1 }}>{step.num}</div>
+              <div style={{ ...serif, fontSize: sz(48), color: C.primary, opacity: 0.12, position: 'absolute', top: 12, right: 18, lineHeight: 1 }}>{step.num}</div>
               <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 10 }}>{step.label}</div>
               <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, marginBottom: 8 }}>{step.title}</div>
               <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{step.desc}</div>
@@ -1647,7 +1647,7 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
         alignItems: 'center',
         gap: 20,
       }}>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(36), color: C.primary, opacity: 0.3, flexShrink: 0 }}>&#9733;</div>
+        <div style={{ ...serif, fontSize: sz(36), color: C.primary, opacity: 0.3, flexShrink: 0 }}>&#9733;</div>
         <div>
           <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
             No magic. No code. Just a clear problem and a good prompt.
@@ -1718,9 +1718,9 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ marginBottom: 8 }}>
           <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>The 4 Capabilities of </span>
           <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
-          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
+          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+        <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
           Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
         </div>
 
@@ -1735,7 +1735,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
               flexDirection: 'column',
               gap: 12,
             }}>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
+              <div style={{ ...serif, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
               <div>
                 <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
                 <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
@@ -1757,7 +1757,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
         </div>
         <div style={{ marginBottom: 22 }}>
           <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>How to pick the right level </span>
-          <span style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), fontWeight: 400, color: C.text }}>for the job.</span>
+          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>for the job.</span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1774,7 +1774,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
               {/* Left: Q number + title */}
               <div style={{ flexShrink: 0, minWidth: sz(110) }}>
                 <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
+                <div style={{ ...serif, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
               </div>
 
               {/* Middle: Question + detail */}
@@ -1879,7 +1879,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
         Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
       <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
@@ -1916,7 +1916,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
                 {b.name}
               </div>
-              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text, fontStyle: 'italic' }}>
+              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
                 {b.desc}
               </div>
 
@@ -2020,9 +2020,9 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
       {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
       <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        A day with a Talent Mucho <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
+        A day with a Talent Mucho <em style={{ ...serif, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
         Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
         <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
@@ -2055,9 +2055,9 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               Talent Mucho ~ AI-Trained Ops Manager
             </div>
             <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
-              Sarah <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
+              Sarah <em style={{ ...serif, fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
             </div>
-            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8, fontStyle: 'italic' }}>
+            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8 }}>
               Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
@@ -2129,7 +2129,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
                     <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
                       {ev.title}
                     </div>
-                    <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                    <div style={{ ...serif, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                       {ev.oneLiner}
                     </div>
                   </div>
@@ -2167,7 +2167,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               ↳ This is the Operate pillar
             </div>
-            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5, fontStyle: 'italic' }}>
+            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5 }}>
               We build, train, and place these inside our clients&apos; businesses.
             </div>
           </div>
@@ -2200,7 +2200,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             </div>
           </div>
 
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
+          <div style={{ ...serif, fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
             {active.oneLiner}
           </div>
 
@@ -2218,7 +2218,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
               Sample output ~
             </div>
-            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text, fontStyle: 'italic' }}>
+            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text }}>
               {active.sample}
             </div>
           </div>
@@ -2440,7 +2440,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
                 <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
                   Awaiting the spin
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
+                <div style={{ ...serif, fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
                   Wherever it lands, that&apos;s what we demo live.
                 </div>
               </div>
@@ -2578,7 +2578,7 @@ function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
           {answered.size} of {SAMPLE_QUESTIONS.length} answered
         </span>
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
         Real questions from real people in the chat. Drop yours in ~ we&apos;ll get to it.
       </div>
 
@@ -2593,14 +2593,14 @@ function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', top: -30, right: 22, ...serif, fontSize: sz(180), lineHeight: 1, color: C.primary, opacity: 0.18, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+        <div style={{ position: 'absolute', top: -30, right: 22, ...serif, fontSize: sz(180), lineHeight: 1, color: C.primary, opacity: 0.18, userSelect: 'none' }}>"</div>
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary, ...mono, fontSize: sz(10), fontWeight: 800 }}>
             {current.theme}
           </span>
           <span style={{ opacity: 0.5 }}>~ now answering</span>
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(28), color: onDark, lineHeight: 1.35, marginBottom: 16, position: 'relative' }}>
+        <div style={{ ...serif, fontSize: sz(28), color: onDark, lineHeight: 1.35, marginBottom: 16, position: 'relative' }}>
           &ldquo;{current.text}&rdquo;
         </div>
         <div style={{ ...mono, fontSize: sz(12), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.08em' }}>
@@ -2627,7 +2627,7 @@ function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
                 <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   {q.theme}
                 </span>
-                <span style={{ ...serif, fontSize: sz(15), color: C.text, fontStyle: 'italic' }}>
+                <span style={{ ...serif, fontSize: sz(15), color: C.text }}>
                   &ldquo;{q.text}&rdquo;
                 </span>
               </div>
@@ -2739,7 +2739,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
           {pricesRevealed ? '↺ Hide the math' : '▸ Reveal the math'}
         </button>
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
         {pricesRevealed ? "Honest values. Math doesn't lie." : "Click reveal when you're ready to drop the math."}
       </div>
 
@@ -2770,7 +2770,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
                   {item.name}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                <div style={{ ...serif, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                   {item.desc}
                 </div>
               </div>
@@ -2842,7 +2842,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Three doors out
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
       </div>
 
@@ -2887,13 +2887,13 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
                 {door.name}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
+              <div style={{ ...serif, fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
                 ~ {door.italic}
               </div>
               <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
                 {door.pitch}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+              <div style={{ ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
                 <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
                 {door.bestFor}
               </div>
@@ -2913,7 +2913,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Next step ~
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
+                <div style={{ ...serif, fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
                   {door.nextStep}
                 </div>
                 <a
@@ -3052,7 +3052,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                 <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: onDark, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
                   {fmtLiveTime(timerSecs)}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
+                <div style={{ ...serif, fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
                   Workshop time remaining
                 </div>
               </>
@@ -3075,7 +3075,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                     </div>
                   ))}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
+                <div style={{ ...serif, fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
                   May 1st · 6 PM EST · grab a drink, get comfy
                 </div>
               </>
@@ -3094,7 +3094,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
               Drop your city in chat
             </div>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
+            <div style={{ ...serif, fontSize: sz(13), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
               We&apos;re from everywhere tonight ~
             </div>
             <div style={{ minHeight: sz(28), display: 'flex', alignItems: 'center' }}>
@@ -3131,7 +3131,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What you told us
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+              <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
                 Real answers from your onboarding ~ this is why we&apos;re here.
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -3161,7 +3161,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                         {m.firstName.charAt(0)}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.45, fontStyle: 'italic' }}>
+                        <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.45 }}>
                           &ldquo;{m.painPoint}&rdquo;
                         </div>
                         <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
@@ -3187,7 +3187,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Tonight&apos;s agenda
           </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
             Two hours. Nine beats. No filler.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -3211,7 +3211,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                   ...mono, fontSize: sz(11), fontWeight: 800,
                 }}>{s.num}</div>
                 <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>
-                  {s.title}{s.titleItalic && <> <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{s.titleItalic}</em></>}
+                  {s.title}{s.titleItalic && <> <em style={{ ...serif, fontWeight: 400, color: C.primary }}>{s.titleItalic}</em></>}
                 </div>
                 <div style={{ ...mono, fontSize: sz(11), fontWeight: 600, color: C.muted, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                   {s.duration}
@@ -3259,7 +3259,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Join the workbook
           </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
             Scan to answer live ~ your responses appear on screen
           </div>
           <div style={{
@@ -3366,7 +3366,7 @@ function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Where you&apos;re joining from
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+      <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
         {sorted.reduce((s, [, n]) => s + n, 0)} response{sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? 's' : ''} from {sorted.length} location{sorted.length !== 1 ? 's' : ''} ~ updating live
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'baseline', minHeight: sz(60) }}>
@@ -3465,7 +3465,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Meet your hosts
       </div>
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
+      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
         Two very different stories. One business. <span style={{ color: C.primary, fontWeight: 600 }}>Operators, not coaches.</span>
       </div>
 
@@ -3502,7 +3502,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
               <div>
                 <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
                   {host.name}{' '}
-                  <em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary }}>{host.accent}</em>
+                  <em style={{ ...serif, fontWeight: 400, color: C.primary }}>{host.accent}</em>
                 </div>
                 <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>
                   {host.role}
@@ -3522,7 +3522,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
                 <div
                   key={i}
                   style={{ ...serif, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
-                  dangerouslySetInnerHTML={{ __html: line.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary}">`) }}
+                  dangerouslySetInnerHTML={{ __html: line.replace(/<em>/g, `<em style="color:${C.primary}">`) }}
                 />
               ))}
             </div>
@@ -3699,7 +3699,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
           <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
           What keeps them up at night
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
+        <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
           Self-reported pain points from Skool onboarding
         </div>
 
@@ -3728,7 +3728,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                   }} />
                 </div>
                 {isActive && (
-                  <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
+                  <div style={{ ...serif, fontSize: sz(13), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
                     {count} members need help with {key.toLowerCase()} ~ prime mentoring opportunity
                   </div>
                 )}
@@ -3753,7 +3753,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
             AI experience levels
           </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
+          <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
             Where they are on their AI journey
           </div>
 
@@ -3802,7 +3802,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {((stats.ghlOnly / (stats.ghlOnly + stats.both)) * 100).toFixed(0)}%
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   of your GHL leads haven&apos;t joined Skool yet
                 </div>
               </div>
@@ -3813,7 +3813,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {painEntries[0]?.[0]}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   is the #1 pain point ~ {painEntries[0]?.[1]} members need help here
                 </div>
               </div>
@@ -3824,7 +3824,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {aiEntries[0]?.[0]}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   is the most common AI level ~ {aiEntries[0]?.[1]} members
                 </div>
               </div>
@@ -3867,7 +3867,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{t.pct}</span>
               </div>
               <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{t.track}</div>
-              <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5, fontStyle: 'italic' }}>{t.desc}</div>
+              <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{t.desc}</div>
             </div>
           ))}
         </div>
@@ -4025,7 +4025,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live word cloud
           </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+          <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
             Words from your workbook responses ~ updating in real time
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', alignItems: 'baseline', minHeight: sz(60) }}>
@@ -4068,7 +4068,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live poll results
           </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+          <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
             {totalVotes} vote{totalVotes !== 1 ? 's' : ''} so far
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -4176,8 +4176,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   const footerLink = 'talentmucho.com';
 
   // Themed em rendering for body copy
-  const emRender = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
-  const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="font-style:italic;color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+  const emRender = (html: string) => html.replace(/<em>/g, `<em style="color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+  const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
 
   return (
     <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
@@ -4212,7 +4212,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
             <span style={{ textTransform: 'uppercase' }}>
               <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
-            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontStyle: 'italic', fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
               <Editable key={`av-ti-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.titleItalic`, v)} />
             </em></>}
           </h1>
@@ -4278,7 +4278,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 position: 'relative', overflow: 'hidden',
               }}>
                 {/* Decorative quote mark */}
-                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, fontStyle: 'italic', userSelect: 'none' }}>"</div>
+                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, userSelect: 'none' }}>"</div>
 
                 <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
                   <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
@@ -4290,7 +4290,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                   value={emOnDark(seg.audTakeaway)}
                   editMode={editMode}
                   onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                  style={{ ...serif, fontStyle: 'italic', fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
+                  style={{ ...serif, fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
                 />
               </div>
             )}
@@ -4321,7 +4321,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
                         <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                           {row.claude}
-                          <span style={{ ...serif, fontStyle: 'italic', fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+                          <span style={{ ...serif, fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
                             ~ {row.desc}
                           </span>
                         </div>
@@ -4354,7 +4354,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 </div>
                 <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
+                <div style={{ ...serif, fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
                   Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
@@ -4405,7 +4405,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+              <div style={{ ...serif, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
                 {p.scenario}
               </div>
 
@@ -4455,8 +4455,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                           marginBottom: 12,
                         }}>{col.tag}</div>
                         <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
-                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-style:italic;font-weight:400;color:${C.primary}">`) }} />
-                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-weight:400;color:${C.primary}">`) }} />
+                        <div style={{ ...serif, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
                           {col.why}
                         </div>
                       </div>
@@ -4488,7 +4488,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                             Step 2 · Claude offers a selection
                           </div>
                           {p.rightBridge && (
-                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14, fontStyle: 'italic' }}>
+                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
                               {p.rightBridge}
                             </div>
                           )}
@@ -4541,7 +4541,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                           {col.annLbl}
                         </div>
-                        <div style={{ ...serif, fontStyle: 'italic', fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                        <div style={{ ...serif, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
                           {col.annTxt}
                         </div>
                       </div>
@@ -4595,8 +4595,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 borderRadius: 14,
                 textAlign: 'center',
               }}>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
-                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};font-style:italic">`) }} />
+                <div style={{ ...serif, fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
+                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};">`) }} />
               </div>
             </div>
           );
