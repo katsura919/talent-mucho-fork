@@ -3309,6 +3309,7 @@ function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
     return { updated, added: existing[key] ? '' : key };
   }, []);
 
+  const channelId = useRef(`loc-cloud-00-${Date.now()}`);
   useEffect(() => {
     let cancelled = false;
     const init = async () => {
@@ -3325,8 +3326,9 @@ function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
         }
         setLocations(freq);
       }
+      if (cancelled) return () => {};
       const ch = supabase
-        .channel('loc-cloud-00')
+        .channel(channelId.current)
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: 'segment_num=eq.00' },
@@ -3346,7 +3348,7 @@ function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
       return () => { cancelled = true; supabase.removeChannel(ch); };
     };
     let cleanup: (() => void) | undefined;
-    init().then(fn => { cleanup = fn; });
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
     return () => { cancelled = true; cleanup?.(); };
   }, [mergeLocation]);
 
