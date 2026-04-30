@@ -3292,6 +3292,113 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
   );
 }
 
+// ── LocationCloud ~ real-time word cloud of audience locations (segment 00) ──
+function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const [locations, setLocations] = useState<Record<string, number>>({});
+  const [fresh, setFresh] = useState<Set<string>>(new Set());
+
+  const mergeLocation = useCallback((text: string, existing: Record<string, number>) => {
+    const loc = text.trim().replace(/[^\p{L}\p{N}\s,.-]/gu, '').replace(/\s+/g, ' ');
+    if (!loc || loc.length < 2) return { updated: existing, added: '' };
+    const key = loc.charAt(0).toUpperCase() + loc.slice(1);
+    const updated = { ...existing, [key]: (existing[key] || 0) + 1 };
+    return { updated, added: existing[key] ? '' : key };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const init = async () => {
+      const { supabase } = await import('@/lib/supabase-browser');
+      const { data: rows } = await supabase
+        .from('workbook_responses')
+        .select('response_text')
+        .eq('segment_num', '00');
+      if (!cancelled && rows) {
+        let freq: Record<string, number> = {};
+        for (const r of rows) {
+          const { updated } = mergeLocation(r.response_text, freq);
+          freq = updated;
+        }
+        setLocations(freq);
+      }
+      const ch = supabase
+        .channel('loc-cloud-00')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: 'segment_num=eq.00' },
+          (payload: { new: { response_text: string } }) => {
+            if (cancelled) return;
+            setLocations(prev => {
+              const { updated, added } = mergeLocation(payload.new.response_text, prev);
+              if (added) {
+                setFresh(new Set([added]));
+                setTimeout(() => setFresh(new Set()), 2000);
+              }
+              return updated;
+            });
+          }
+        )
+        .subscribe();
+      return () => { cancelled = true; supabase.removeChannel(ch); };
+    };
+    let cleanup: (() => void) | undefined;
+    init().then(fn => { cleanup = fn; });
+    return () => { cancelled = true; cleanup?.(); };
+  }, [mergeLocation]);
+
+  const sorted = Object.entries(locations).sort((a, b) => b[1] - a[1]).slice(0, 60);
+  const maxFreq = sorted[0]?.[1] || 1;
+  const brandColors = [C.primary, C.text, C.muted, C.primaryHover ?? C.primary];
+
+  if (sorted.length === 0) return null;
+
+  return (
+    <div style={{
+      maxWidth: 1280, margin: '26px auto 0',
+      padding: '28px 30px', borderRadius: 18,
+      background: C.surface, border: `1px solid ${C.border}`,
+    }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        Where you&apos;re joining from
+      </div>
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+        {sorted.reduce((s, [, n]) => s + n, 0)} response{sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? 's' : ''} from {sorted.length} location{sorted.length !== 1 ? 's' : ''} ~ updating live
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'baseline', minHeight: sz(60) }}>
+        {sorted.map(([loc, freq], i) => {
+          const ratio = freq / maxFreq;
+          const size = sz(15 + Math.round(ratio * 30));
+          const isNew = fresh.has(loc);
+          return (
+            <span key={loc} style={{
+              ...sans, fontSize: size,
+              fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
+              color: brandColors[i % brandColors.length],
+              opacity: 0.45 + ratio * 0.55,
+              transition: 'all 0.5s ease',
+              animation: isNew ? 'locFadeIn 0.6s ease' : undefined,
+              lineHeight: 1.4,
+            }}>
+              {loc}
+            </span>
+          );
+        })}
+      </div>
+      <style>{`
+        @keyframes locFadeIn {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 // ── OriginIntro ~ segment 01 audience view: meet Abie + Meri ────────────────
 const HOSTS = [
   {
@@ -4500,10 +4607,11 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
-        {/* ── Welcome interactive ~ countdown + agenda + cities (segment 00) ── */}
+        {/* ── Welcome interactive ~ countdown + agenda + cities + location cloud (segment 00) ── */}
         {seg.num === '00' && (
           <>
             <WelcomeInteractive C={C} mono={mono} sans={sans} serif={serif} scale={audScale} segments={segments} timerSecs={timerSecs} />
+            <LocationCloud C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <CommunityPulse C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}

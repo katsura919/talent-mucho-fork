@@ -43,6 +43,10 @@ const SEGMENTS: Segment[] = [
     title: 'Welcome',
     items: [
       {
+        kind: 'workbook',
+        prompt: 'Where are you joining from tonight? Drop your city or country.',
+      },
+      {
         kind: 'poll',
         prompt:
           'Drop a 1, 2, 3, or 4 in chat:\n1 = I run my own business\n2 = I work in a company but want my own thing\n3 = I freelance / side hustle\n4 = Just curious about AI',

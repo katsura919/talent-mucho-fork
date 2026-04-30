@@ -132,6 +132,7 @@ export const SEGMENTS: Segment[] = [
             "You'll see a workbook on screen ~ that's your live companion, use it",
             "<em>This is a workshop, not a webinar.</em> Be present ~ you'll get 10x more out of it",
           ]},
+          { type: 'workbook', text: "WORKBOOK ~ Where are you joining from tonight? Drop your city or country." },
           { type: 'poll', text: "POLL ~ Drop a 1, 2, 3, or 4 in chat:\n1 = I run my own business\n2 = I work in a company but want my own thing\n3 = I freelance / side hustle\n4 = Just curious about AI" },
         ],
       },
