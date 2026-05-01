@@ -1187,7 +1187,7 @@ const THREE_DOORS: DoorOption[] = [
   },
   {
     label: 'Door 2',
-    name: 'Community',
+    name: 'Inner Circle',
     italic: '€49/mo ~ accountability',
     price: '€49/mo',
     pitch: "Stay close. Monthly workshops, replay vault, 30% off every bootcamp.",
