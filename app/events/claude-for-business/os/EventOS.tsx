@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Brain, Zap, Network, Database, FolderOpen, Users, FileCode2, Coffee, Mail, BarChart2, Target, Handshake, FileText, AlertCircle, Send } from 'lucide-react';
 import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset } from './config';
 import communityData from '@/data/community-combined.json';
 
@@ -2054,122 +2055,142 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
 }) {
   const sz = (px: number) => Math.round(px * scale);
   const onDark = '#FAF8F5';
+  const capIcons = [Brain, Zap, Network, Database] as const;
 
   return (
-    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 36 }}>
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 52 }}>
 
-      {/* ── Section 1: The 4 Capabilities ── */}
+      {/* ── Section 1: 4 Layers ~ 2×2 icon grid ── */}
       <div>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-          An AI employee, in four layers
+          What an AI employee is made of
         </div>
-        <div style={{ marginBottom: 8 }}>
-          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>The 4 Capabilities of </span>
-          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
-          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
+        <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 6 }}>
+          Four layers. Most people only build two.
         </div>
-        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
-          Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
+        <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 28, lineHeight: 1.5 }}>
+          Not a chatbot. A trained team member with four distinct layers.
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          {AI_CAPABILITIES.map(cap => (
-            <div key={cap.num} style={{
-              padding: '24px 22px',
-              borderRadius: 16,
-              background: C.surface,
-              border: `1px solid ${C.border}`,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-            }}>
-              <div style={{ ...sans, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
-              <div>
-                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
-                <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
+          {AI_CAPABILITIES.map((cap, i) => {
+            const Icon = capIcons[i];
+            return (
+              <div key={cap.num} style={{
+                padding: '30px 32px',
+                borderRadius: 20,
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                display: 'flex',
+                gap: 24,
+                alignItems: 'flex-start',
+              }}>
+                <div style={{
+                  width: sz(56), height: sz(56), flexShrink: 0,
+                  borderRadius: 16,
+                  background: `${C.primary}18`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={sz(28)} color={C.primary} strokeWidth={1.75} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.primary, marginBottom: 8 }}>
+                    Layer {cap.num} ~ {cap.subtitle}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(24), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 10, lineHeight: 1.2 }}>
+                    {cap.title}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(15), color: C.text, fontWeight: 600, lineHeight: 1.55, marginBottom: 6 }}>{cap.body}</div>
+                  <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.6 }}>{cap.detail}</div>
+                </div>
               </div>
-              <div style={{ marginTop: 'auto' }}>
-                <div style={{ ...sans, fontSize: sz(13), color: C.text, fontWeight: 600, lineHeight: 1.5, marginBottom: 4 }}>{cap.body}</div>
-                <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.5 }}>{cap.detail}</div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* ── Section 2: The 4 Levels ladder ── */}
+      {/* ── Section 2: 4 Levels ~ vertical stepper ── */}
       <div>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-          Four questions. Each yes climbs one rung.
+          How to pick the right level
         </div>
-        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 22 }}>
-          How to pick the right level <span style={{ color: C.primary, fontWeight: 500 }}>for the job.</span>
+        <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 6 }}>
+          Answer four questions. Each yes climbs a rung.
+        </div>
+        <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+          Start at Q1 ~ your answer tells you which employee to build.
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
           {AI_LEVELS.map((lvl, i) => (
-            <div key={lvl.q} style={{
-              padding: '22px 28px',
-              borderRadius: 16,
-              background: C.surface,
-              border: `1px solid ${C.border}`,
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 24,
-            }}>
-              {/* Left: Q number + title */}
-              <div style={{ flexShrink: 0, minWidth: sz(110) }}>
-                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
-                <div style={{ ...sans, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
-              </div>
-
-              {/* Middle: Question + detail */}
-              <div style={{ flex: 1 }}>
-                <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.5 }}>
-                  {lvl.question} {i === 0 && <strong>Save it as a skill.</strong>}
+            <div key={lvl.q} style={{ display: 'flex', gap: 0, alignItems: 'stretch' }}>
+              {/* Connector column */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: sz(56), flexShrink: 0 }}>
+                <div style={{
+                  width: sz(44), height: sz(44), borderRadius: '50%',
+                  background: C.primary,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                  color: C.text === '#2A2520' ? onDark : C.bg,
+                  flexShrink: 0, zIndex: 1,
+                  boxShadow: `0 0 0 4px ${C.primary}25`,
+                }}>
+                  {lvl.q}
                 </div>
-                {lvl.detail && (
-                  <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 4 }}>{lvl.detail}</div>
+                {i < AI_LEVELS.length - 1 && (
+                  <div style={{ width: 2, flex: 1, minHeight: sz(28), background: `${C.primary}30`, marginTop: 2, marginBottom: 2 }} />
                 )}
               </div>
 
-              {/* Right: NO/YES outcomes */}
-              {(lvl.no || lvl.yes) && (
-                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10, minWidth: sz(300) }}>
-                  {lvl.no && (
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <span style={{
-                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
-                        padding: '4px 10px', borderRadius: 100, background: `${C.muted}20`, color: C.muted,
-                        whiteSpace: 'nowrap', flexShrink: 0,
-                      }}>NO · STAY</span>
-                      <div>
-                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
-                          LEVEL {lvl.no.level} · {lvl.no.name}
-                        </div>
-                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.no.desc}</div>
-                      </div>
-                    </div>
-                  )}
-                  {lvl.yes && (
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                      <span style={{
-                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
-                        padding: '4px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary,
-                        whiteSpace: 'nowrap', flexShrink: 0,
-                      }}>YES · CLIMB</span>
-                      <div>
-                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
-                          LEVEL {lvl.yes.level} · {lvl.yes.name}
-                        </div>
-                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.yes.desc}</div>
-                      </div>
-                    </div>
+              {/* Content column */}
+              <div style={{ flex: 1, paddingLeft: 24, paddingBottom: i < AI_LEVELS.length - 1 ? 28 : 0, paddingTop: 8 }}>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: 6 }}>
+                  {lvl.title}
+                </div>
+                <div style={{ ...sans, fontSize: sz(21), fontWeight: 700, color: C.text, lineHeight: 1.35, marginBottom: lvl.detail ? 6 : 14 }}>
+                  {lvl.question}
+                  {i === 0 && (
+                    <span style={{ ...sans, fontSize: sz(18), fontWeight: 500, color: C.primary }}> → Save it as a skill.</span>
                   )}
                 </div>
-              )}
+                {lvl.detail && (
+                  <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: 14, lineHeight: 1.55 }}>{lvl.detail}</div>
+                )}
+                {(lvl.no || lvl.yes) && (
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
+                    {lvl.no && (
+                      <div style={{
+                        padding: '10px 18px', borderRadius: 12,
+                        background: `${C.muted}10`,
+                        border: `1px solid ${C.border}`,
+                        display: 'flex', alignItems: 'center', gap: 12,
+                      }}>
+                        <span style={{ ...mono, fontSize: sz(9), fontWeight: 800, padding: '3px 9px', borderRadius: 100, background: `${C.muted}20`, color: C.muted, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>NO</span>
+                        <div>
+                          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.text, letterSpacing: '0.1em' }}>LEVEL {lvl.no.level} · {lvl.no.name}</div>
+                          <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 2, lineHeight: 1.4 }}>{lvl.no.desc}</div>
+                        </div>
+                      </div>
+                    )}
+                    {lvl.yes && (
+                      <div style={{
+                        padding: '10px 18px', borderRadius: 12,
+                        background: `${C.primary}12`,
+                        border: `1px solid ${C.primary}35`,
+                        display: 'flex', alignItems: 'center', gap: 12,
+                      }}>
+                        <span style={{ ...mono, fontSize: sz(9), fontWeight: 800, padding: '3px 9px', borderRadius: 100, background: `${C.primary}25`, color: C.primary, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>YES ↓</span>
+                        <div>
+                          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.text, letterSpacing: '0.1em' }}>LEVEL {lvl.yes.level} · {lvl.yes.name}</div>
+                          <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 2, lineHeight: 1.4 }}>{lvl.yes.desc}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -2189,16 +2210,14 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
 }) {
   const [activeIdx, setActiveIdx] = useState(1); // start at 7AM (skip the "still asleep" intro)
   const [autoplay, setAutoplay] = useState(false);
-  const [activeBlock, setActiveBlock] = useState<number | null>(null);
+  const [activeBlock, setActiveBlock] = useState<number>(0);
   const [blockSteps, setBlockSteps] = useState(0);
-  const [expandedExamples, setExpandedExamples] = useState<Set<number>>(new Set());
   const onDark = '#FAF8F5';
   const active = OPS_MANAGER_DAY[activeIdx];
   const sz = (px: number) => Math.round(px * scale);
 
   // Stagger reveal of simulation steps for the active building block
   useEffect(() => {
-    if (activeBlock === null) { setBlockSteps(0); return; }
     const total = CLAUDE_BUILDING_BLOCKS[activeBlock].simulation.steps.length;
     setBlockSteps(0);
     let i = 0;
@@ -2222,140 +2241,110 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
 
   return (
     <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
-      {/* ── Building blocks ~ the concepts that make Sarah possible ── */}
-      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-        First, the building blocks
-      </div>
-      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
-        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
-      </div>
-      <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
-        ↓ click any block to see it run live
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
-        {CLAUDE_BUILDING_BLOCKS.map((b, i) => {
-          const isActive = activeBlock === i;
+      {/* ── Building blocks ~ tab-panel layout ── */}
+      <div style={{ marginBottom: 60 }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          First, the building blocks
+        </div>
+        <div style={{ ...sans, fontSize: sz(30), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: 6 }}>
+          Three Claude features that make it work like an employee.
+        </div>
+        <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 28, lineHeight: 1.5 }}>
+          Select each one to see it run live.
+        </div>
+
+        {/* Tab strip */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          {CLAUDE_BUILDING_BLOCKS.map((b, i) => {
+            const BlockIcons = [FileCode2, FolderOpen, Users] as const;
+            const Icon = BlockIcons[i];
+            const isActive = activeBlock === i;
+            return (
+              <button
+                key={b.name}
+                onClick={() => setActiveBlock(i)}
+                style={{
+                  flex: 1,
+                  padding: `${sz(14)}px ${sz(18)}px`,
+                  borderRadius: 14,
+                  border: `2px solid ${isActive ? C.primary : C.border}`,
+                  background: isActive ? C.primary : C.surface,
+                  color: isActive ? (C.text === '#2A2520' ? onDark : C.bg) : C.text,
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)',
+                  boxShadow: isActive ? `0 8px 24px -8px ${C.primary}55` : 'none',
+                }}
+              >
+                <Icon size={sz(18)} color={isActive ? (C.text === '#2A2520' ? onDark : C.bg) : C.primary} strokeWidth={2} />
+                <span style={{ ...sans, fontSize: sz(15), fontWeight: 700, letterSpacing: '-0.01em' }}>{b.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active panel */}
+        {(() => {
+          const b = CLAUDE_BUILDING_BLOCKS[activeBlock];
           return (
-            <div
-              key={b.name}
-              onClick={() => setActiveBlock(isActive ? null : i)}
-              style={{
-                padding: '26px 28px',
-                borderRadius: 16,
-                background: isActive ? C.text : C.surface,
-                color: isActive ? onDark : C.text,
-                border: `2px solid ${isActive ? C.primary : C.border}`,
-                position: 'relative',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                cursor: 'pointer',
-                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: isActive ? 'translateY(-2px)' : 'none',
-                boxShadow: isActive ? `0 18px 36px -12px ${C.primary}55` : 'none',
-              }}
-            >
-              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
-              <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-                {String(i + 1).padStart(2, '0')} · {b.short}
-              </div>
-              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
-                {b.name}
-              </div>
-              <div style={{ ...sans, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
-                {b.desc}
-              </div>
-
-              {/* How we use it ~ collapsed toggle */}
-              {(() => {
-                const isExpanded = expandedExamples.has(i);
-                return (
-                  <div style={{
-                    paddingTop: 10,
-                    borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}`,
-                  }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedExamples(prev => {
-                          const next = new Set(prev);
-                          if (next.has(i)) next.delete(i);
-                          else next.add(i);
-                          return next;
-                        });
-                      }}
-                      style={{
-                        ...mono, fontSize: sz(10), fontWeight: 700,
-                        color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase',
-                        background: 'transparent', border: 'none',
-                        cursor: 'pointer', padding: 0,
-                        display: 'flex', alignItems: 'center', gap: 6,
-                      }}
-                    >
-                      <span style={{
-                        display: 'inline-block',
-                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s',
-                      }}>▸</span>
-                      How we use it
-                    </button>
-                    {isExpanded && (
-                      <div style={{
-                        ...sans, fontSize: sz(17), lineHeight: 1.6,
-                        color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
-                        marginTop: 10,
-                        animation: 'fadeInUp 0.25s ease',
-                      }}>
-                        {b.example}
-                      </div>
-                    )}
+            <div style={{
+              borderRadius: 20,
+              border: `1px solid ${C.border}`,
+              overflow: 'hidden',
+              animation: 'fadeInUp 0.2s ease',
+            }}>
+              {/* Top: icon + description */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
+                borderBottom: `1px solid ${C.border}`,
+              }}>
+                <div style={{ padding: `${sz(30)}px ${sz(32)}px`, background: C.surface }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
+                    {String(activeBlock + 1).padStart(2, '0')} ~ {b.short}
                   </div>
-                );
-              })()}
+                  <div style={{ ...sans, fontSize: sz(26), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 14 }}>
+                    {b.desc}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.65 }}>
+                    {b.example}
+                  </div>
+                </div>
 
-              {/* Simulation log when active */}
-              {isActive && (
-                <div style={{
-                  marginTop: 6,
-                  padding: '14px 16px',
-                  background: 'rgba(250,248,245,0.06)',
-                  borderRadius: 10,
-                  border: '1px solid rgba(250,248,245,0.1)',
-                }}>
-                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                {/* Right: simulation terminal */}
+                <div style={{ padding: `${sz(30)}px ${sz(32)}px`, background: C.text }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 10 }}>
                     You ~
                   </div>
-                  <div style={{ ...mono, fontSize: sz(13), lineHeight: 1.5, color: onDark, marginBottom: 12 }}>
+                  <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: onDark, marginBottom: 18 }}>
                     &ldquo;{b.simulation.prompt}&rdquo;
                   </div>
-                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 10 }}>
                     Claude ~
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                     {b.simulation.steps.slice(0, blockSteps).map((step, si) => (
                       <div key={si} style={{
-                        ...mono, fontSize: sz(12), lineHeight: 1.5,
-                        color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                        ...mono, fontSize: sz(14), lineHeight: 1.5,
+                        color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.82)',
                         fontWeight: step.startsWith('✓') ? 700 : 400,
                         opacity: 0,
-                        animation: 'fadeInUp 0.4s ease forwards',
+                        animation: 'fadeInUp 0.35s ease forwards',
                       }}>
                         {step}
                       </div>
                     ))}
                     {blockSteps < b.simulation.steps.length && (
-                      <div style={{ ...mono, fontSize: sz(12), color: C.primary, opacity: 0.7 }}>
+                      <div style={{ ...mono, fontSize: sz(14), color: C.primary, opacity: 0.6 }}>
                         <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
                       </div>
                     )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
-        })}
+        })()}
       </div>
       <style>{`
         @keyframes fadeInUp {
@@ -2428,59 +2417,53 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
 
         {/* Timeline */}
         <div style={{ position: 'relative' }}>
-          <div style={{
-            position: 'absolute',
-            left: 23, top: 16, bottom: 16,
-            width: 2,
-            background: `linear-gradient(to bottom, ${C.primary}, ${C.muted}40)`,
-            borderRadius: 2,
-            zIndex: 0,
-          }} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {OPS_MANAGER_DAY.map((ev, i) => {
               const isActive = activeIdx === i;
               const isPast = i < activeIdx;
+              const TimelineIcons = [Coffee, Mail, BarChart2, Target, Handshake, FileText, AlertCircle, Send] as const;
+              const Icon = TimelineIcons[i] ?? Mail;
               return (
                 <div
                   key={ev.time}
                   onClick={() => { setActiveIdx(i); setAutoplay(false); }}
                   style={{
-                    position: 'relative',
-                    display: 'grid',
-                    gridTemplateColumns: '50px 1fr',
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: 14,
-                    padding: '14px 16px 14px 0',
+                    padding: `${sz(12)}px ${sz(14)}px`,
                     cursor: 'pointer',
                     borderRadius: 12,
-                    background: isActive ? `${C.primary}10` : 'transparent',
-                    transition: 'background 0.2s',
+                    background: isActive ? `${C.primary}12` : 'transparent',
+                    border: `1px solid ${isActive ? C.primary + '35' : 'transparent'}`,
+                    transition: 'all 0.2s',
                   }}
                 >
-                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
-                    <div style={{
-                      width: sz(40), height: sz(40),
-                      borderRadius: '50%',
-                      background: isActive ? C.primary : (isPast ? `${C.primary}50` : C.surface),
-                      border: `2px solid ${isActive ? C.primary : C.border}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: sz(20),
-                      transition: 'all 0.2s',
-                      boxShadow: isActive ? `0 0 0 4px ${C.primary}25` : 'none',
-                    }}>
-                      {ev.icon}
-                    </div>
+                  <div style={{
+                    width: sz(38), height: sz(38), flexShrink: 0,
+                    borderRadius: 10,
+                    background: isActive ? C.primary : (isPast ? `${C.primary}20` : C.surface),
+                    border: `1px solid ${isActive ? C.primary : C.border}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.2s',
+                  }}>
+                    <Icon
+                      size={sz(18)}
+                      color={isActive ? (C.text === '#2A2520' ? '#FAF8F5' : C.bg) : (isPast ? C.primary : C.muted)}
+                      strokeWidth={2}
+                    />
                   </div>
-                  <div>
-                    <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 2 }}>
                       {ev.time}
                     </div>
-                    <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
+                    <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                       {ev.title}
                     </div>
-                    <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
-                      {ev.oneLiner}
-                    </div>
                   </div>
+                  {isActive && (
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.primary, flexShrink: 0 }} />
+                  )}
                 </div>
               );
             })}
@@ -2536,8 +2519,13 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               borderRadius: 14,
               background: `${C.primary}20`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: sz(30),
-            }}>{active.icon}</div>
+            }}>
+              {(() => {
+                const DetailIcons = [Coffee, Mail, BarChart2, Target, Handshake, FileText, AlertCircle, Send] as const;
+                const DIcon = DetailIcons[activeIdx] ?? Mail;
+                return <DIcon size={sz(30)} color={C.primary} strokeWidth={1.75} />;
+              })()}
+            </div>
             <div>
               <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
                 {active.time}
@@ -4271,6 +4259,7 @@ const HOSTS = [
     accent: 'Maxey',
     role: "The Tech Chameleon who's all over the place",
     avatar: 'A',
+    photo: '/assets/abiemaxey.jpg',
     flag: '🇵🇭 → 🌍 → 🇪🇸',
     location: 'Davao → Madrid',
     story: [
@@ -4288,6 +4277,7 @@ const HOSTS = [
     accent: 'Gee',
     role: 'The marketer who burned out',
     avatar: 'M',
+    photo: '/assets/merigee.jpg',
     flag: '🇵🇭 → 🌍 → 🇪🇸',
     location: 'Balkans now ~ Madrid soon',
     story: [
@@ -4358,15 +4348,16 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
 
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20 }}>
-              <div style={{
-                width: sz(72), height: sz(72), flexShrink: 0,
-                borderRadius: '50%',
-                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryHover} 100%)`,
-                color: C.text === '#2A2520' ? onDark : C.bg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                ...sans, fontSize: sz(34), fontWeight: 800,
-                boxShadow: `0 8px 20px -6px ${C.primary}55`,
-              }}>{host.avatar}</div>
+              <img
+                src={host.photo}
+                alt={`${host.name} ${host.accent}`}
+                style={{
+                  width: sz(72), height: sz(72), flexShrink: 0,
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  boxShadow: `0 8px 20px -6px ${C.primary}55`,
+                }}
+              />
               <div>
                 <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
                   {host.name}{' '}
