@@ -3844,26 +3844,24 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                     {door.secondaryCta} →
                   </a>
                 )}
-                {/* QR for paid doors */}
-                {(door.highlight || door.secondaryCta) && (
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: sz(16) }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(6) }}>
-                      <div style={{ background: '#ffffff', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${door.highlight ? C.primary : C.border}` }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(door.ctaUrl)}&margin=0&color=2A2520&bgcolor=ffffff`}
-                          width={sz(80)}
-                          height={sz(80)}
-                          alt={`Scan for ${door.name}`}
-                          style={{ display: 'block' }}
-                        />
-                      </div>
-                      <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
-                        Scan to join
-                      </div>
+                {/* QR for all doors */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: sz(16) }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(6) }}>
+                    <div style={{ background: '#ffffff', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${door.highlight ? C.primary : C.border}` }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(door.ctaUrl)}&margin=0&color=2A2520&bgcolor=ffffff`}
+                        width={sz(80)}
+                        height={sz(80)}
+                        alt={`Scan for ${door.name}`}
+                        style={{ display: 'block' }}
+                      />
+                    </div>
+                    <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                      Scan to join
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           );
