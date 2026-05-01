@@ -5800,8 +5800,8 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         {seg.num === '08' && (
           <>
             <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-            <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
