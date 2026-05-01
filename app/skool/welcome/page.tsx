@@ -1,40 +1,60 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Users, BookOpen, Zap } from "lucide-react";
+'use client';
 
-export const metadata: Metadata = {
-  title: "Welcome to the Community ~ Talent Mucho",
-  description: "You're in. Here's how to get the most out of your Talent Mucho community membership.",
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight, Users, BookOpen, Zap } from 'lucide-react';
+
+const SKOOL_URL = 'https://www.skool.com/future-proof-with-ai-4339';
+
+type Member = {
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  howFound: string;
 };
-
-const SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
 
 const nextSteps = [
   {
-    step: "01",
+    step: '01',
     icon: <Users className="w-5 h-5 text-clay-500" />,
-    title: "Join the Skool community",
-    body: "Click below to access your membership. Introduce yourself in the welcome thread ~ tell us your name, where you're from, and one thing you want to build with AI.",
-    cta: { label: "Enter the community", href: SKOOL_URL },
-  },
-  {
-    step: "02",
-    icon: <BookOpen className="w-5 h-5 text-clay-500" />,
-    title: "Check your email",
-    body: "Your receipt and subscription details are on their way. If you don't see it in 5 minutes, check your spam and mark us as safe so you never miss a workshop invite.",
+    title: 'Premium access incoming ~ within 24 hrs',
+    body: 'This is an invite-only premium community. We\'ll review your payment and send your personal invite within 24 hours. Keep an eye on your inbox ~ it\'ll come from hello@talentmucho.com.',
     cta: null,
   },
   {
-    step: "03",
+    step: '02',
+    icon: <BookOpen className="w-5 h-5 text-clay-500" />,
+    title: 'Check your email',
+    body: 'Your receipt and subscription details are on their way. If you don\'t see it in 5 minutes, check your spam and mark us as safe so you never miss a workshop invite.',
+    cta: null,
+  },
+  {
+    step: '03',
     icon: <Zap className="w-5 h-5 text-clay-500" />,
-    title: "Show up to the next live session",
-    body: "We run live AI workshops every month. Your membership gives you full access ~ replays, resources, and the community chat between sessions.",
+    title: 'Show up to the next live session',
+    body: 'We run live AI workshops every month. Your membership gives you full access ~ replays, resources, and the community chat between sessions.',
     cta: null,
   },
 ];
 
 export default function SkoolWelcomePage() {
+  const params = useSearchParams();
+  const sessionId = params.get('session_id');
+  const [member, setMember] = useState<Member | null>(null);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    fetch(`/api/skool/session?session_id=${sessionId}`)
+      .then(r => r.json())
+      .then(data => { if (data.email) setMember(data); })
+      .catch(() => {});
+  }, [sessionId]);
+
+  const firstName = member?.name?.split(' ')[0] ?? '';
+
   return (
     <>
       {/* HERO */}
@@ -65,19 +85,27 @@ export default function SkoolWelcomePage() {
             <h1
               className="font-light tracking-tight text-beige-50 mb-6"
               style={{
-                fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif",
-                fontSize: "clamp(3rem, 7vw, 5.5rem)",
+                fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif',
+                fontSize: 'clamp(3rem, 7vw, 5.5rem)',
                 lineHeight: 1.05,
               }}
             >
-              You&apos;re officially
+              {firstName ? `Welcome, ${firstName}.` : 'You\'re officially'}
               <br />
-              <em className="italic text-clay-500">one of us.</em>
+              <em className="italic text-clay-500">
+                {firstName ? 'You\'re one of us.' : 'one of us.'}
+              </em>
             </h1>
 
             <p className="text-lg md:text-xl text-beige-200 font-light leading-relaxed max-w-xl mx-auto mb-10">
               Welcome to the Talent Mucho community ~ where creators and entrepreneurs learn to work smarter with AI. Here&apos;s what to do next.
             </p>
+
+            {member?.email && (
+              <p className="text-sm text-beige-300/50 font-light mb-6 -mt-4">
+                Confirmation going to <span className="text-beige-200">{member.email}</span>
+              </p>
+            )}
 
             <a
               href={SKOOL_URL}
@@ -102,7 +130,7 @@ export default function SkoolWelcomePage() {
             </p>
             <h2
               className="text-4xl md:text-5xl font-light text-charcoal-900 mb-14 text-center"
-              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+              style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
             >
               Three steps to get started.
             </h2>
@@ -112,11 +140,11 @@ export default function SkoolWelcomePage() {
                 <div
                   key={step}
                   className="bg-white border border-beige-200 rounded-2xl p-7 flex gap-6 items-start"
-                  style={step === "01" ? { borderColor: "rgba(var(--clay-500-rgb), 0.3)" } : {}}
+                  style={step === '01' ? { borderColor: 'rgba(180,120,90,0.3)' } : {}}
                 >
                   <span
                     className="text-5xl font-light leading-none text-beige-300 shrink-0"
-                    style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+                    style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
                   >
                     {step}
                   </span>
@@ -151,15 +179,19 @@ export default function SkoolWelcomePage() {
             </p>
             <h2
               className="text-4xl md:text-5xl font-light text-beige-50 mb-10 leading-tight"
-              style={{ fontFamily: "var(--font-cormorant), ui-serif, Georgia, serif" }}
+              style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
             >
               Everything you need to build with AI.
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
               {[
-                { label: "Live workshops", desc: "Monthly sessions with Abie and Meri" },
-                { label: "Full replays", desc: "Every session on demand, forever" },
-                { label: "Community chat", desc: "Ask questions, share wins, get unstuck" },
+                { label: 'Live workshops', desc: 'Monthly sessions with Abie and Meri' },
+                { label: 'Full replays', desc: 'Every session on demand, forever' },
+                { label: 'Community chat', desc: 'Ask questions, share wins, get unstuck' },
+                { label: 'Early access to bootcamps', desc: 'First in line before doors open to the public' },
+                { label: 'Inner circle', desc: 'Direct access to Abie, Meri, and the team' },
+                { label: 'Vibe coding sessions', desc: 'Build real things with AI ~ no experience needed' },
+                { label: 'Resources & templates', desc: 'Prompts, playbooks, and tools that actually work' },
               ].map(({ label, desc }) => (
                 <div
                   key={label}
