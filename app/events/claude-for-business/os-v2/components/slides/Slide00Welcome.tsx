@@ -601,7 +601,7 @@ export function WelcomeInteractive({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://talentmucho.com/events/claude-for-business/workbook")}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent("https://menti.talentmucho.com/join/VDIEGH")}`}
             alt="QR code to workbook"
             width={sz(144)}
             height={sz(144)}
@@ -657,7 +657,7 @@ export function WelcomeInteractive({
               display: "inline-block",
             }}
           >
-            talentmucho.com/events/claude-for-business/workbook
+            menti.talentmucho.com/join/VDIEGH
           </div>
         </div>
       </div>
