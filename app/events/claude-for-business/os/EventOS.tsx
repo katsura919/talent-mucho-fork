@@ -3386,13 +3386,13 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ position: 'absolute' as const, inset: 0, pointerEvents: 'none', backgroundImage: 'repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px)' }} />
         <div style={{ position: 'relative' as const }}>
           <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>
-            Early-bird offer · Today only · May 1, 2026
+            Cohort 1 founding price · Tonight only · Cohort 2 opens at €397
           </div>
           <div style={{ ...sans, fontSize: sz(26), fontWeight: 700, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(4) }}>
-            Buy today at €197.
+            €197 tonight. €397 next cohort.
           </div>
           <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginBottom: sz(18) }}>
-            Get the €397 VIP package free.
+            Plus get the €397 VIP package free ~ tonight only.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(12), marginBottom: sz(20) }}>
             {BOOTCAMP_VIP_PERKS.map(p => (
@@ -3404,9 +3404,9 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), padding: `${sz(14)}px ${sz(20)}px`, borderRadius: sz(10), background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(255,255,255,0.1)` }}>
             <div style={{ flex: 1, textAlign: 'center' as const }}>
-              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Live bootcamp</div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Cohort 1 price</div>
               <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}><span style={{ color: C.primary }}>€197</span></div>
-              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>what you pay today</div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>cohort 2 opens at €397</div>
             </div>
             <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
             <div style={{ flex: 1, textAlign: 'center' as const }}>
@@ -3422,7 +3422,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
             </div>
           </div>
           <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', marginTop: sz(12) }}>
-            ● Deadline: Tonight, May 1, 2026 at midnight. After midnight the €197 live tier stays open, but the VIP upgrade returns to €397.
+            ● Cohort 1 closes tonight at midnight. €197 is the founding price ~ Cohort 2 opens at €397. The VIP upgrade (€397 free tonight) returns to full price after midnight.
           </div>
         </div>
       </div>
