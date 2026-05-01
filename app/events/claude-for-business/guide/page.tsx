@@ -572,39 +572,78 @@ export default function EventGuidePage() {
             ))}
 
             {/* Bottom CTA */}
-            <div className="mt-16 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-4">Want to go deeper?</p>
-              <h3
-                className="text-3xl md:text-4xl font-light text-charcoal-900 mb-5"
-                style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
-              >
-                Build all of this with us.
-              </h3>
-              <p className="text-base text-taupe-400 font-light mb-8 max-w-lg mx-auto">
-                The AI Business Bootcamp takes you from these prompts to a fully running AI system inside your business ~ in four weeks. Cohort 1 closes tonight.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href="https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                >
-                  Join the Bootcamp · €247
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 border border-charcoal-900/25 text-charcoal-900 hover:bg-charcoal-900/8 font-medium text-base px-9 py-4 rounded-full transition-all duration-200"
-                >
-                  Join the community · €49/mo
-                </a>
+            <div className="mt-16">
+
+              {/* Free Skool community */}
+              <div className="rounded-2xl border border-charcoal-900/12 bg-white p-6 sm:p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-clay-500 mb-2">Free · Join 200+ members</p>
+                  <h3
+                    className="text-2xl md:text-3xl font-light text-charcoal-900 mb-3 leading-tight"
+                    style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
+                  >
+                    We have a free community on Skool.
+                  </h3>
+                  <p className="text-sm text-taupe-400 font-light leading-relaxed max-w-sm">
+                    Founders, VAs, and operators figuring out AI together. Share what you build, ask questions, get feedback. No cost ~ just show up.
+                  </p>
+                </div>
+                <div className="flex flex-col items-center gap-3 shrink-0">
+                  <div className="bg-[#FAF8F5] p-2.5 rounded-xl border border-clay-500/30">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                      width={72} height={72} alt="Join the free Skool community" className="block"
+                    />
+                  </div>
+                  <a
+                    href="https://www.skool.com/future-proof-with-ai-4339"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-charcoal-900 hover:bg-charcoal-800 text-beige-50 font-semibold text-sm px-7 py-3 rounded-full transition-all duration-200"
+                  >
+                    Join free
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
-              <p className="text-xs text-beige-300/40 mt-5 font-light">
-                Bootcamp Cohort 1 closes tonight at midnight. €247 now ~ €397 next cohort.
-              </p>
+
+              {/* Paid options */}
+              <div className="text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-clay-500 mb-4">Want to go deeper?</p>
+                <h3
+                  className="text-3xl md:text-4xl font-light text-charcoal-900 mb-5"
+                  style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
+                >
+                  Build all of this with us.
+                </h3>
+                <p className="text-base text-taupe-400 font-light mb-8 max-w-lg mx-auto">
+                  The AI Business Bootcamp takes you from these prompts to a fully running AI system inside your business ~ in four weeks. Cohort 1 closes tonight.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <a
+                    href="https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-medium text-base px-9 py-4 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Join the Bootcamp · €247
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 border border-charcoal-900/25 text-charcoal-900 hover:bg-charcoal-900/8 font-medium text-base px-9 py-4 rounded-full transition-all duration-200"
+                  >
+                    Join the inner circle · €49/mo
+                  </a>
+                </div>
+                <p className="text-xs text-taupe-400 mt-5 font-light">
+                  Bootcamp Cohort 1 closes tonight at midnight. €247 now ~ €397 next cohort.
+                </p>
+              </div>
+
             </div>
 
           </div>
