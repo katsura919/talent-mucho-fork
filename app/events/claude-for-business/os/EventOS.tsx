@@ -1163,8 +1163,8 @@ const THREE_DOORS: DoorOption[] = [
   {
     label: 'Door 2',
     name: 'VIP',
-    italic: '€47 ~ the map',
-    price: '€47',
+    italic: '€49 ~ the map',
+    price: '€49',
     pitch: "The recording, the skill library, 30 days inside our community.",
     bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
     whatYouGet: [
@@ -1175,7 +1175,7 @@ const THREE_DOORS: DoorOption[] = [
       "Early access to the upcoming Bootcamp",
     ],
     nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
-    cta: 'Join VIP — €47',
+    cta: 'Join VIP — €49',
     ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
     highlight: true,
   },
@@ -3105,7 +3105,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
               Tonight only
             </div>
             <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
-              €47
+              €49
             </div>
           </div>
         </div>
