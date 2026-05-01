@@ -1995,21 +1995,42 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
           </div>
         </div>
 
-        {/* QR code */}
-        <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(10), flexShrink: 0 }}>
-          <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(4) }}>Scan to get prompts</div>
-          <div style={{ background: '#FAF8F5', padding: sz(12), borderRadius: sz(14), border: `2px solid ${C.primary}`, boxShadow: `0 16px 32px -10px ${C.primary}60` }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(WEB_WORKS_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
-              width={sz(130)}
-              height={sz(130)}
-              alt="Scan for Web Works prompts"
-              style={{ display: 'block' }}
-            />
+        {/* QR codes ~ guide first, then web-works */}
+        <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(16), flexShrink: 0 }}>
+          {/* Guide QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Tonight&apos;s guide</div>
+            <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${C.primary}40` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://talentmucho.com/events/claude-for-business/guide')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(90)}
+                height={sz(90)}
+                alt="Tonight's guide"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              talentmucho.com/…/guide
+            </div>
           </div>
-          <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.45)', letterSpacing: '0.1em', textAlign: 'center' as const }}>
-            abiemaxey.com/web-works
+
+          {/* Web-works QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Get your prompts</div>
+            <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 24px -8px ${C.primary}50` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(WEB_WORKS_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(110)}
+                height={sz(110)}
+                alt="Scan for Web Works prompts"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              abiemaxey.com/web-works
+            </div>
           </div>
         </div>
       </div>
