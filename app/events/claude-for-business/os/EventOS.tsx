@@ -4124,7 +4124,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
           </div>
           <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
-            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
+            Stick around till the end ~ there&apos;s a freebie waiting for everyone who stays. ;)
           </div>
         </div>
       </div>
