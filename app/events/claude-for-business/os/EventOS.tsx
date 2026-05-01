@@ -415,6 +415,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
     else setShowTab('abie');
     prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    // Broadcast to audience live page
+    fetch('/api/events/claude-for-business/state', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_segment: idx, is_live: true }),
+    }).catch(() => {});
   }, []);
 
   const goToBeat = useCallback((idx: number) => {
