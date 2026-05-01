@@ -150,30 +150,46 @@ export const SEGMENTS: Segment[] = [
     beats: [
       {
         id: 'o1', title: "Abie's story", speaker: 'ABIE', blocks: [
-          { type: 'stage', text: 'Abie on cam. Slow down ~ this is the trust-building beat.' },
-          { type: 'scripted', speaker: 'ABIE', text: "I'm from the Philippines, but right now I'm living in Madrid. <em>Weak passport. Strong plan.</em> That's become my whole thing." },
-          { type: 'scripted', speaker: 'ABIE', text: "Tech background. Software engineer who moved into management ~ stopped coding for years. <em>And then Claude Code brought me back.</em> Last week I added a Privacy Policy page to our website in minutes ~ no real coding, just describing what I needed. Done. Deployed." },
-          { type: 'scripted', speaker: 'ABIE', text: "What AI has done for our business in the last few months has been <em>genuinely insane.</em> Websites I didn't think I could build. Tools I didn't think I could create. <em>And we don't want to gatekeep any of it.</em> That's why you're here tonight." },
+          { type: 'stage', text: 'Abie on cam. Slow down. Trust beat.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Quick about me ~ I'm Filipino, currently living in Madrid. Spent the last decade in tech ~ analyst, architect, engineer, manager. <em>Never picked a lane.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "Tech gave me a real advantage early on. <em>Earning online meant location freedom.</em> I went full digital nomad ~ 1 to 3 months per country, working from wherever. Most of my twenties looked like that." },
+          { type: 'scripted', speaker: 'ABIE', text: "Then I picked Spain. Wanted a base. Wanted depth. <em>This is my build era.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "All those tech roles made me a textbook <em>jack of all trades.</em> Master of none. My LinkedIn is honestly kind of a mess. For years I felt two steps behind the specialists ~ the deep ML person, the senior backend dev. <em>I thought breadth was my problem.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "Then AI showed up and ate the depth problem for breakfast. Turns out <em>knowing a little about everything is exactly what you need to direct AI well.</em> The thing I thought made me unfocused? It's the whole game now." },
+          { type: 'scripted', speaker: 'ABIE', text: "The last few months have been wild. I'm shipping stuff I had no business shipping ~ websites, tools, automations. Things that used to mean a contractor, two weeks, and a budget. <em>Tonight we're showing you how.</em> No paywalls. No five-step framework. Just what we actually do." },
         ],
       },
       {
         id: 'o2', title: "Meri's story", speaker: 'MERI', blocks: [
           { type: 'stage', text: 'Meri on cam. Different energy ~ marketer who became operator.' },
-          { type: 'scripted', speaker: 'MERI', text: "I come from the opposite side. <em>Marketing and business, not tech.</em> I built my agency from scratch ~ started as an SEO writer, then editors, developers, social managers. The whole thing." },
-          { type: 'scripted', speaker: 'MERI', text: "And then I burned out. Managing people, personalities, deadlines ~ <em>it was exhausting.</em> When ChatGPT arrived, I was curious. <em>When Claude arrived, everything changed.</em>" },
-          { type: 'scripted', speaker: 'MERI', text: "Now I run a leaner, smarter operation. <em>Less staff. More output. Better results.</em> Tonight, Abie and I are going to show you exactly how we do it." },
+          { type: 'scripted', speaker: 'MERI', text: "I come at this from the <em>complete opposite side</em>. Marketing person, no tech background. Built an agency from scratch ~ writers, editors, devs, social managers. The whole circus." },
+          { type: 'scripted', speaker: 'MERI', text: "And I <em>burned out</em>. Not the cute LinkedIn burnout. The crying-into-the-Notion-doc kind. Managing humans is exhausting. <em>Pretty sure I aged ten years in two.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "ChatGPT got me curious. Then Claude landed and I was like... <em>oh. Oh. This is it.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "Now I run a way leaner operation. <em>Less people. More output. Fewer Mondays that feel like Sundays.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "Fun fact ~ I'm streaming this from <em>the Balkans</em> right now. Living the location-free life Abie talked about. <em>DNV pending</em> ~ Spain next, so we can finally be in the same time zone. Until then, Slack and Claude are doing the heavy lifting." },
+          { type: 'scripted', speaker: 'MERI', text: "Tonight we're showing you exactly how we did it ~ because we did, and we're still doing it." },
+        ],
+      },
+      {
+        id: 'o2a', title: "Why we're doing this", speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "Both back on cam. Mission beat. Slow down." },
+          { type: 'scripted', speaker: 'BOTH', text: "Here's the part nobody says out loud. <em>AI isn't new. The hype isn't new.</em> But most of you are still on the sidelines, scrolling twenty newsletters, trying to figure out where to start." },
+          { type: 'scripted', speaker: 'ABIE', text: "The people winning right now? <em>Developers. Tech operators.</em> They plug AI in and ship the same week. They also happen to have the biggest replacement risk ~ but they're not thinking about that yet." },
+          { type: 'scripted', speaker: 'MERI', text: "Meanwhile everyone else is paying €200 a month for tools they barely use, watching three-hour YouTube tutorials, and ending the week <em>more confused than when they started.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "We sit right at the intersection. <em>Tech, business, and AI.</em> I bring the engineering. Meri brings the business and the marketing. Claude brings the muscle." },
+          { type: 'scripted', speaker: 'BOTH', text: "Mission tonight ~ get you <em>the same superpowers</em>. Without you having to learn Python or watch another guru." },
         ],
       },
       {
         id: 'o3', title: 'Talent Mucho ~ three pillars', speaker: 'BOTH', blocks: [
           { type: 'scripted', speaker: 'BOTH', text: "What we built together is <em>Talent Mucho</em>. Three pillars. <em>Educate. Build. Operate.</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
-            '<em>Educate</em> ~ workshops, hands-on training, team adoption. Tonight is this pillar.',
-            '<em>Build</em> ~ websites, automations, AI systems your business runs on',
-            '<em>Operate</em> ~ AI-trained VAs and engineers placed inside your business',
-            "Built by two women who run this stack every day, not coaches selling a course",
+            '<em>Educate</em> ~ workshops like tonight. Get your team off the sidelines.',
+            '<em>Build</em> ~ websites, automations, AI systems we actually run inside our own business first.',
+            '<em>Operate</em> ~ AI-trained VAs and engineers we place inside yours, the way we\'d hire for ourselves.',
+            "Two women running the stack every single day. <em>Not coaches. Not gurus. Operators.</em>",
           ]},
-          { type: 'scripted', speaker: 'BOTH', text: 'Tonight is the <em>Educate</em> pillar. <em>Free.</em> Because if you don\'t understand what AI can actually do, the rest doesn\'t matter.' },
+          { type: 'scripted', speaker: 'BOTH', text: 'Tonight is the <em>Educate</em> pillar. <em>Free.</em> Because if you don\'t get what AI actually does, the rest is wasted on you.' },
           { type: 'workbook', text: 'WORKBOOK ~ Right now, on screen, write down: "What\'s the heaviest task in my work right now?" ~ we\'ll come back to this.' },
         ],
       },
@@ -183,12 +199,29 @@ export const SEGMENTS: Segment[] = [
   // 02 ~ What is Claude
   {
     id: 2, num: '02', title: 'What is', titleItalic: 'Claude',
-    subtitle: '6:15~6:27 PM ~ Claude vs ChatGPT, the mindset shift',
-    duration: '15 min', speakers: ['MERI', 'ABIE'], panel: 'compare', panelData: 'chatgpt-vs-claude',
+    subtitle: '6:15~6:30 PM ~ the AI landscape, Claude vs ChatGPT, the mindset shift',
+    duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'compare', panelData: 'chatgpt-vs-claude',
     audWhatTitle: 'What is <em>Claude</em> ~ and how is it different?',
-    audWhatBody: "<p>Most of you opened ChatGPT first. So the real question isn't <em>\"what is Claude?\"</em> ~ it's <em>\"what's actually different, and why should I care?\"</em></p><p>We'll show you ~ live, side by side ~ what changes when you stop using AI like a search engine.</p>",
+    audWhatBody: "<p>There are dozens of AI tools out there. We'll show you <em>the landscape</em> ~ who the major players are and what each one does ~ then zoom in on <em>why Claude is different</em> and why it changed everything for us.</p>",
     audTakeaway: "Claude is not a search engine. It's a <em>thinking partner.</em> The skill is in the context you bring.",
     beats: [
+      {
+        id: 'c0', title: 'The AI landscape', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: 'AI Landscape component visible on audience screen. Let them read + click models for 30s.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Before we talk about Claude specifically, let's zoom out. <em>There are dozens of AI tools out there right now.</em> You've probably heard of ChatGPT. Maybe Gemini. Maybe nothing else. <em>That's totally fine.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "<em>Here's the landscape.</em> Five major players. Each one built by a different company. Each one does something slightly different." },
+          { type: 'bullets', speaker: 'ABIE', items: [
+            "<em>ChatGPT</em> ~ the one everyone knows. Fast, general, great for brainstorming",
+            "<em>Gemini</em> ~ Google's version. Lives inside your Gmail and Docs",
+            "<em>Copilot</em> ~ Microsoft's version. Built into Word, Excel, PowerPoint",
+            "<em>Llama</em> ~ Meta's open-source model. Powers thousands of apps behind the scenes",
+            "<em>Claude</em> ~ the thinking partner. The one we use every day to run our business",
+          ]},
+          { type: 'scripted', speaker: 'ABIE', text: "Now here's the part nobody tells you. <em>Most AI tools you've seen are wrappers.</em> Notion AI? Runs on Claude. Jasper? Runs on GPT. Canva AI? Same thing. They just put a pretty interface on top of the same intelligence." },
+          { type: 'scripted', speaker: 'ABIE', text: "When you learn <em>the source directly</em>, you don't need the wrapper. You get more control, more power ~ and you stop paying extra for a button on top of the same brain." },
+          { type: 'scripted', speaker: 'ABIE', text: "Tonight we're going to show you <em>why Claude is different</em> ~ and why it's the one that changed everything for us." },
+        ],
+      },
       {
         id: 'c1', title: 'You came from ChatGPT', speaker: 'MERI', blocks: [
           { type: 'poll', text: 'POLL ~ Type in chat: 1 = ChatGPT user, 2 = Claude user, 3 = Both, 4 = Neither yet.' },
