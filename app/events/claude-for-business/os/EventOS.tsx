@@ -3342,7 +3342,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10), flexShrink: 0 }}>
           {[
             { val: '9', label: 'sessions total' },
-            { val: '€7.30', label: 'per hour' },
+            { val: '€9.15', label: 'per hour' },
             { val: '< 1 wk', label: 'to break even' },
           ].map(s => (
             <div key={s.label} style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: dark, textAlign: 'center' as const }}>
@@ -3389,7 +3389,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
             Cohort 1 founding price · Tonight only · Cohort 2 opens at €397
           </div>
           <div style={{ ...sans, fontSize: sz(26), fontWeight: 700, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(4) }}>
-            €197 tonight. €397 next cohort.
+            €247 tonight. €397 next cohort.
           </div>
           <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginBottom: sz(18) }}>
             Plus get the €397 VIP package free ~ tonight only.
@@ -3405,7 +3405,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
           <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), padding: `${sz(14)}px ${sz(20)}px`, borderRadius: sz(10), background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(255,255,255,0.1)` }}>
             <div style={{ flex: 1, textAlign: 'center' as const }}>
               <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Cohort 1 price</div>
-              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}><span style={{ color: C.primary }}>€197</span></div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}><span style={{ color: C.primary }}>€247</span></div>
               <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>cohort 2 opens at €397</div>
             </div>
             <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
@@ -3417,12 +3417,12 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
             <div style={{ flex: 1, textAlign: 'center' as const }}>
               <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Total value</div>
-              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}>€594</div>
-              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>for the price of €197</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}>€644</div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>for the price of €247</div>
             </div>
           </div>
           <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', marginTop: sz(12) }}>
-            ● Cohort 1 closes tonight at midnight. €197 is the founding price ~ Cohort 2 opens at €397. The VIP upgrade (€397 free tonight) returns to full price after midnight.
+            ● Cohort 1 closes tonight at midnight. €247 is the founding price ~ Cohort 2 opens at €397. The VIP upgrade (€397 free tonight) returns to full price after midnight.
           </div>
         </div>
       </div>
