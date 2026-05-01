@@ -4674,24 +4674,6 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
           </div>
         </div>
 
-        {/* Platform breakdown pills */}
-        <div style={{ position: 'relative', display: 'flex', gap: sz(12), marginTop: sz(24) }}>
-          {[
-            { label: 'GHL funnel', val: stats.ghlOnly, color: C.primary },
-            { label: 'Both platforms', val: stats.both, color: onDark },
-            { label: 'Skool community', val: stats.skoolOnly, color: `${C.primary}90` },
-          ].map(p => (
-            <div key={p.label} style={{
-              display: 'flex', alignItems: 'center', gap: sz(8),
-              padding: `${sz(8)}px ${sz(14)}px`, borderRadius: 100,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
-            }}>
-              <div style={{ width: sz(8), height: sz(8), borderRadius: '50%', background: p.color }} />
-              <span style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase' as const }}>{p.label}</span>
-              <span style={{ ...sans, fontSize: sz(18), fontWeight: 300, color: onDark }}>{p.val}</span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* ── Pain points ~ animated bars ── */}
