@@ -1099,21 +1099,43 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, sans, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
-// Sample cities ~ used in the segment 00 welcome "where are you joining from?" feed
-// Scrolls through these so the audience sees a global welcome vibe before they've even typed
+// Real names from GHL + Skool community ~ scrolls in the segment 00 welcome feed
 const WELCOME_CITIES = [
-  '👋 Maria from Madrid',
-  '✨ Sarah from London',
-  '🌴 Jobell from Cebu',
-  '☕ Marcus from Berlin',
-  '🌊 Lisa from Lisbon',
-  '🍁 Anna from Toronto',
-  '🦘 Tom from Sydney',
-  '🌅 Priya from Mumbai',
-  '⚡ Diego from Buenos Aires',
-  '🌸 Yuki from Tokyo',
-  '🌵 Carlos from Mexico City',
-  '🍷 Sophie from Paris',
+  '👋 Ella',
+  '✨ Paula',
+  '🌴 Jobell',
+  '☕ Kristen',
+  '🌊 Sofia',
+  '🍁 Dawn',
+  '🦋 Jacinta',
+  '🌅 Althea',
+  '⚡ Christina',
+  '🌸 Hazel',
+  '🎯 Angelica',
+  '🍷 Nora',
+  '🔥 Faye',
+  '💡 Julie',
+  '🌿 Erin',
+  '✦ Marga',
+  '🎨 Andresa',
+  '🚀 Brad',
+  '🌺 Aira',
+  '💫 Nathaly',
+  '🎵 Jean',
+  '🌟 Zeeshan',
+  '🦚 Mitzi',
+  '🎯 Akhil',
+  '🌙 Hani',
+  '⭐ Monica',
+  '🌻 Nina',
+  '🔮 Ingrid',
+  '🎪 April',
+  '💎 Gwen',
+  '🌊 Kyle',
+  '✨ Chelsea',
+  '🌴 Angel',
+  '☕ Rucha',
+  '🌸 Tala',
 ];
 
 // VIP value stack ~ used in segment 07 audience view (the close)
@@ -1153,55 +1175,56 @@ const THREE_DOORS: DoorOption[] = [
     name: 'Free',
     italic: 'just try it',
     price: '€0',
-    pitch: 'Open Claude tonight. Try one demo from what you saw.',
-    bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
+    pitch: 'Open Claude tonight. Try one prompt from what you saw.',
+    bestFor: 'You\'re curious. Not ready to commit. Totally valid ~ tonight already moved you forward.',
     whatYouGet: [
-      "Our Skool community ~ free tier, 200+ already in",
-      "Abie Maxey's AI Playbooks ~ free, growing every week",
-      "The mindset shift you got tonight",
-      "Whatever you remember from this session",
+      "Free Skool community ~ 230+ already in",
+      "Tonight's freebie drop at midnight ~ every prompt and framework cleaned up",
+      "Abie's AI Playbooks ~ free and growing every week",
     ],
-    nextStep: 'Join our Skool, grab the playbooks, open Claude tonight.',
-    cta: 'Join the community',
+    nextStep: 'Join the free Skool tier, grab the playbooks, open Claude tonight.',
+    cta: 'Join free community',
     ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
-    secondaryCta: 'Get the AI Playbooks',
-    secondaryCtaUrl: 'https://abiemaxey.com/playbooks',
   },
   {
     label: 'Door 2',
-    name: 'VIP',
-    italic: '€49 ~ the map',
-    price: '€49',
-    pitch: "The recording, the skill library, 30 days inside our community.",
-    bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
+    name: 'Inner Circle',
+    italic: '€49/mo ~ accountability',
+    price: '€49/mo',
+    pitch: "Stay close. Monthly workshops, replay vault, 30% off every bootcamp.",
+    bestFor: "You want the ongoing support without the intensive. Or you want to join the bootcamp later with the discount locked.",
     whatYouGet: [
-      "Full replay + transcript ~ 30-day access (€97)",
-      "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
-      "VIP-only group follow-up ~ 45 min with Abie + Meri",
-      "30-day Premium Skool · €49/mo after, cancel anytime",
-      "Early access to the upcoming Bootcamp",
+      "Monthly live workshops ~ new ones every month",
+      "Full replay vault ~ everything we've ever built",
+      "Vibe coding sessions ~ build real things together",
+      "30% off all future bootcamps ~ locked as long as you stay",
+      "Direct access to Abie & Meri",
     ],
-    nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
-    cta: 'Join VIP — €49',
-    ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
-    highlight: true,
+    nextStep: 'Rate locks tonight at €49/mo. Going to €97. Scan the QR or click below.',
+    cta: 'Join community ~ €49/mo',
+    ctaUrl: 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05',
+    secondaryCta: 'Annual ~ €399/yr (save 32%)',
+    secondaryCtaUrl: 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06',
   },
   {
     label: 'Door 3',
-    name: 'Custom',
-    italic: 'we build it',
-    price: 'Talk to us',
-    pitch: "We build the AI stack inside your business and place a trained VA inside your team.",
-    bestFor: "Founders who are booked-out. Need this done, not learned.",
+    name: 'Bootcamp',
+    italic: '€247 ~ tonight only',
+    price: '€247',
+    pitch: "One month. 9 live sessions. Four deliverables. AI running inside your business by Week 4.",
+    bestFor: "You're done waiting. You want the full transformation, not just the inspiration.",
     whatYouGet: [
-      "AI-Trained Ops Manager built for your business",
-      "Custom skills + connectors + scheduled runs",
-      "A trained VA placed inside your team",
-      "Monthly partnership ~ the Operate pillar",
+      "9 live sessions ~ Tuesdays & Thursdays, small groups",
+      "Week 1: AI foundations + first Claude Project live",
+      "Week 2: AI content engine built and running",
+      "Week 3: AI employees in your workflows",
+      "Week 4: custom dashboard + daily AI routine",
+      "VIP bundle included free ~ €397 value (custom prompts, 90-day community, priority DM access)",
     ],
-    nextStep: 'Book a free 30-min call at talentmucho.com/booking',
-    cta: 'Book free call',
-    ctaUrl: 'https://talentmucho.com/booking',
+    nextStep: 'Cohort 1 closes at midnight. €247 tonight ~ €397 next cohort. Link in chat.',
+    cta: 'Join Bootcamp ~ €247',
+    ctaUrl: 'https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07',
+    highlight: true,
   },
 ];
 
@@ -3244,148 +3267,270 @@ function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
   );
 }
 
-// ── BootcampPreview ~ segment 08: 3-day intensive teaser ────────────────────
-const BOOTCAMP_DAYS = [
+// ── BootcampPreview ~ segment 08: AI Business Bootcamp overview ──────────────
+const BOOTCAMP_WEEKS = [
   {
-    day: 'Day 01',
-    title: 'Create',
-    subtitle: 'Your AI content machine',
+    week: 'Week 1',
+    title: 'Knowing Claude',
     color: '#C4A882',
-    pain: 'Your #1 pain: content takes too long',
-    sessions: [
-      'Build your Claude content brain ~ voice, ICP, brand in one Project',
-      'Generate a week of content in 20 minutes ~ captions, scripts, carousels',
-      'Write emails that sound like you ~ outreach, newsletters, follow-ups',
-      'Live build: your own content workflow, ready to use Monday',
-    ],
-    outcome: 'Leave with a running content system.',
+    deliverable: '3 configured Claude.ai Projects loaded with your docs, business context, and brand voice.',
   },
   {
-    day: 'Day 02',
-    title: 'Operate',
-    subtitle: 'Your AI back office',
+    week: 'Week 2',
+    title: 'Delegating to Claude',
     color: '#7D6B5A',
-    pain: 'Your #2 pain: admin eating your day',
-    sessions: [
-      'Automate your inbox ~ triage, draft, respond without touching it',
-      'Build AI SOPs ~ Claude runs your recurring tasks so you don\'t have to',
-      'Research & analysis in minutes ~ reports, competitor intel, summaries',
-      'Live build: one repeating task fully off your plate by end of day',
-    ],
-    outcome: 'Leave with hours back every week.',
+    deliverable: '1 named AI employee in Cowork, briefed and tested against real scenarios from your business.',
   },
   {
-    day: 'Day 03',
-    title: 'Build',
-    subtitle: 'Your first AI tool',
-    color: '#5A6B5A',
-    pain: 'Your #3 pain: tech feels out of reach',
-    sessions: [
-      'Vibe coding session ~ build a real thing with Claude, no experience needed',
-      'Your AI dashboard ~ a custom home base for your business',
-      'Connect your tools ~ Claude + your CRM, calendar, docs',
-      'Live build: ship something to your audience by end of day',
-    ],
-    outcome: 'Leave having built something real.',
+    week: 'Week 3',
+    title: 'Building with Claude',
+    color: '#5A7A6B',
+    deliverable: '1 custom business dashboard built with Claude Code. No coding experience needed.',
   },
+  {
+    week: 'Week 4',
+    title: 'Living with Claude',
+    color: '#6B5A7A',
+    deliverable: 'A written daily Claude routine: 3 specific moments in your workday where Claude is open and ready.',
+  },
+];
+
+const BOOTCAMP_VIP_PERKS = [
+  { title: 'Small groups', desc: 'Live sessions capped so everyone gets airtime and real feedback' },
+  { title: 'Custom prompt buildout', desc: 'Prompts written specifically for your business and niche' },
+  { title: '90-day community access', desc: '3x the standard 30-day access to the Skool community' },
+  { title: 'Priority DM support', desc: 'Direct access to the instructor throughout the full bootcamp' },
+];
+
+const ROI_ROWS = [
+  { task: 'Emails and DM replies',      before: '3 hrs/wk',   after: '45 min/wk',  saved: 'Save 2h 15m' },
+  { task: 'Weekly content creation',    before: '4 hrs/wk',   after: '1 hr/wk',    saved: 'Save 3h' },
+  { task: 'Client proposals & quotes',  before: '2 hrs/wk',   after: '25 min/wk',  saved: 'Save 1h 35m' },
+  { task: 'Customer FAQ and replies',   before: '1.5 hrs/wk', after: '20 min/wk',  saved: 'Save 1h 10m' },
+  { task: 'Research and planning',      before: '2 hrs/wk',   after: '30 min/wk',  saved: 'Save 1h 30m' },
 ];
 
 function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
+  const dark = '#2A2120';
+  const onDark = '#FAF8F5';
+  const [roiOpen, setRoiOpen] = useState(false);
   return (
     <div style={{ marginTop: sz(48) }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: sz(28) }}>
-        <div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: sz(28), gap: sz(24) }}>
+        <div style={{ flex: 1 }}>
           <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-            Coming soon ~ members only
+            Talent Mucho · AI Business Bootcamp
           </div>
-          <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-            The 3-Day AI Intensive Bootcamp
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            One month. Three tools.
           </div>
-          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginTop: sz(6) }}>
-            Built around what you told us hurts most. Small groups. Hands-on. You ship something every day.
+          <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginTop: sz(2), marginBottom: sz(10) }}>
+            A business that runs differently.
           </div>
-          <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: sz(8), marginTop: sz(14), padding: `${sz(8)}px ${sz(14)}px`, borderRadius: sz(10), background: `${C.primary}12`, border: `1px solid ${C.primary}30` }}>
-            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>From</div>
-            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€197</div>
-            <div style={{ ...sans, fontSize: sz(12), color: C.muted }}>· members 30% off</div>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.5 }}>
+            9 sessions · 27 hrs live instruction · Tuesdays &amp; Thursdays · June 2026
           </div>
         </div>
-        {/* Member badge */}
-        <div style={{
-          flexShrink: 0,
-          padding: `${sz(16)}px ${sz(24)}px`,
-          borderRadius: sz(16),
-          background: C.primary,
-          textAlign: 'center',
-          marginLeft: sz(24),
-        }}>
-          <div style={{ ...mono, fontSize: sz(28), fontWeight: 900, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>30%</div>
-          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: '#FAF8F5', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>off every bootcamp</div>
-          <div style={{ ...sans, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, marginTop: 2 }}>for premium members</div>
+        {/* Stat pills */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10), flexShrink: 0 }}>
+          {[
+            { val: '9', label: 'sessions total' },
+            { val: '€9.15', label: 'per hour' },
+            { val: '< 1 wk', label: 'to break even' },
+          ].map(s => (
+            <div key={s.label} style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: dark, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(20), fontWeight: 800, color: C.primary, letterSpacing: '-0.01em', lineHeight: 1 }}>{s.val}</div>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 600, color: onDark, opacity: 0.6, letterSpacing: '0.14em', textTransform: 'uppercase' as const, marginTop: 2 }}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 3 day cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(16) }}>
-        {BOOTCAMP_DAYS.map((d) => (
-          <div key={d.day} style={{
-            borderRadius: sz(16),
+      {/* 4 week cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(14), marginBottom: sz(20) }}>
+        {BOOTCAMP_WEEKS.map((w) => (
+          <div key={w.week} style={{
+            borderRadius: sz(14),
             overflow: 'hidden',
             border: `1px solid ${C.border}`,
             background: C.surface,
             display: 'flex',
             flexDirection: 'column',
           }}>
-            {/* Day header */}
-            <div style={{ background: d.color, padding: `${sz(18)}px ${sz(22)}px` }}>
-              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
-                {d.day}
+            <div style={{ background: w.color, padding: `${sz(16)}px ${sz(18)}px` }}>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
+                {w.week}
               </div>
-              <div style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>
-                {d.title}
-              </div>
-              <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', marginTop: sz(4) }}>
-                {d.subtitle}
+              <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: '#FAF8F5', letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+                {w.title}
               </div>
             </div>
-
-            {/* Body */}
-            <div style={{ padding: `${sz(18)}px ${sz(22)}px`, flex: 1, display: 'flex', flexDirection: 'column', gap: sz(14) }}>
-              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.primary }}>
-                {d.pain}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: sz(8) }}>
-                {d.sessions.map((s, i) => (
-                  <div key={i} style={{ display: 'flex', gap: sz(10), alignItems: 'flex-start' }}>
-                    <span style={{ ...mono, fontSize: sz(11), color: d.color, flexShrink: 0, paddingTop: 1 }}>→</span>
-                    <span style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45 }}>{s}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop: 'auto', paddingTop: sz(14), borderTop: `1px solid ${C.border}` }}>
-                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: d.color }}>
-                  ✦ {d.outcome}
-                </span>
+            <div style={{ padding: `${sz(14)}px ${sz(16)}px`, flex: 1 }}>
+              <div style={{ ...sans, fontSize: sz(13), color: C.text, lineHeight: 1.5 }}>
+                {w.deliverable}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Bottom note */}
-      <div style={{ marginTop: sz(20), padding: `${sz(16)}px ${sz(24)}px`, borderRadius: sz(12), background: `${C.primary}10`, border: `1px solid ${C.primary}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ ...sans, fontSize: sz(15), color: C.text }}>
-          Drop <strong style={{ fontStyle: 'normal', ...mono, fontSize: sz(13), color: C.primary, letterSpacing: '0.1em' }}>BOOTCAMP</strong> in the chat to get notified when doors open.
+      {/* ── Schedule ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden', background: C.surface }}>
+        <div style={{ padding: `${sz(14)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>June 2026 Schedule</span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>Tuesdays & Thursdays · 10 AM EDT · 3 hrs each</span>
+          </div>
         </div>
-        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0, marginLeft: sz(24) }}>
-          Premium members · 30% off · always
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto', gap: `${sz(8)}px ${sz(20)}px`, padding: `${sz(14)}px ${sz(20)}px`, alignItems: 'center' }}>
+          {[
+            { session: 'Kickoff',  date: 'Tue Jun 2',  topic: 'Welcome, orientation, Claude.ai setup' },
+            { session: 'W1 · S1', date: 'Thu Jun 5',  topic: 'The interface, Projects, your first conversation' },
+            { session: 'W1 · S2', date: 'Tue Jun 10', topic: 'Custom instructions, file uploads' },
+            { session: 'W2 · S3', date: 'Thu Jun 12', topic: 'AI employees ~ what Cowork makes real' },
+            { session: 'W2 · S4', date: 'Tue Jun 17', topic: 'Build and test your first AI employee live' },
+            { session: 'W3 · S5', date: 'Thu Jun 19', topic: 'Claude Code ~ your first build' },
+            { session: 'W3 · S6', date: 'Tue Jun 24', topic: 'Build your business dashboard' },
+            { session: 'W4 · S7', date: 'Thu Jun 26', topic: 'Your full Claude stack working together' },
+            { session: 'W4 · S8', date: 'Tue Jul 1',  topic: 'Showcases, Q&A, and graduation' },
+          ].map((r, i) => (
+            <>
+              <div key={`s${i}`} style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: i === 0 ? C.primary : C.muted, letterSpacing: '0.1em', whiteSpace: 'nowrap' as const }}>{r.session}</div>
+              <div key={`d${i}`} style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: C.text, whiteSpace: 'nowrap' as const }}>{r.date}</div>
+              <div key={`t${i}`} style={{ ...sans, fontSize: sz(13), color: C.muted }}>{r.topic}</div>
+              <div key={`tz${i}`} style={{ ...mono, fontSize: sz(10), color: C.muted, whiteSpace: 'nowrap' as const }}>4–7 PM CEST</div>
+            </>
+          ))}
         </div>
       </div>
+
+      {/* ── Collapsible ROI table ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+        <button
+          onClick={() => setRoiOpen(o => !o)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: `${sz(14)}px ${sz(20)}px`,
+            background: C.surface, border: 'none', cursor: 'pointer',
+            borderBottom: roiOpen ? `1px solid ${C.border}` : 'none',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>
+              Where the hours come back
+            </span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>~9.5 hrs/week · €1,140/month returned</span>
+          </div>
+          <span style={{ ...mono, fontSize: sz(13), color: C.muted, transition: 'transform 0.2s', display: 'inline-block', transform: roiOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+        </button>
+
+        {roiOpen && (
+          <div style={{ background: C.bg }}>
+            {/* Column headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12), padding: `${sz(10)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, background: C.surface2 }}>
+              {['Task', 'Before Claude', 'With Claude', 'Saved'].map(h => (
+                <div key={h} style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: C.muted }}>{h}</div>
+              ))}
+            </div>
+            {ROI_ROWS.map((r, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+                padding: `${sz(12)}px ${sz(20)}px`,
+                background: i % 2 === 0 ? C.bg : C.surface,
+                borderBottom: i < ROI_ROWS.length - 1 ? `1px solid ${C.border}` : 'none',
+                alignItems: 'center',
+              }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.text }}>{r.task}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.muted, whiteSpace: 'nowrap' as const }}>{r.before}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.text, whiteSpace: 'nowrap' as const }}>{r.after}</div>
+                <div style={{ ...sans, fontSize: sz(13), fontStyle: 'italic', color: C.primary, whiteSpace: 'nowrap' as const, fontWeight: 600 }}>{r.saved}</div>
+              </div>
+            ))}
+            {/* Total row */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+              padding: `${sz(14)}px ${sz(20)}px`,
+              background: dark,
+            }}>
+              <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: onDark }}>Total saved per week</div>
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.primary, fontStyle: 'italic', whiteSpace: 'nowrap' as const }}>~9.5 hrs</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Early bird offer */}
+      <div style={{ borderRadius: sz(18), background: dark, padding: `${sz(24)}px ${sz(28)}px`, position: 'relative' as const, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute' as const, inset: 0, pointerEvents: 'none', backgroundImage: 'repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 48px)' }} />
+        <div style={{ position: 'relative' as const }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>
+            Cohort 1 founding price · Tonight only · Cohort 2 opens at €397
+          </div>
+          <div style={{ ...sans, fontSize: sz(26), fontWeight: 700, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(4) }}>
+            €247 tonight. €397 next cohort.
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.primary, fontStyle: 'italic', marginBottom: sz(18) }}>
+            Plus get the €397 VIP package free ~ tonight only.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(12), marginBottom: sz(20) }}>
+            {BOOTCAMP_VIP_PERKS.map(p => (
+              <div key={p.title} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: sz(10), padding: `${sz(14)}px ${sz(16)}px`, borderBottom: `2px solid ${C.primary}40` }}>
+                <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: onDark, marginBottom: sz(6) }}>{p.title}</div>
+                <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.6)', lineHeight: 1.4 }}>{p.desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), padding: `${sz(14)}px ${sz(20)}px`, borderRadius: sz(10), background: 'rgba(255,255,255,0.06)', border: `1px solid rgba(255,255,255,0.1)` }}>
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Cohort 1 price</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}><span style={{ color: C.primary }}>€247</span></div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>cohort 2 opens at €397</div>
+            </div>
+            <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>VIP upgrade</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: C.primary }}>€397 <span style={{ fontStyle: 'italic', fontWeight: 400 }}>free</span></div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>included at no extra cost</div>
+            </div>
+            <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ flex: 1, textAlign: 'center' as const }}>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>Total value</div>
+              <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: onDark }}>€644</div>
+              <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>for the price of €247</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), marginTop: sz(16) }}>
+            {/* QR code */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8), flexShrink: 0 }}>
+              <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 8px 20px -6px ${C.primary}50` }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(100)}
+                  height={sz(100)}
+                  alt="Scan to join Bootcamp Cohort 1"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                Scan to join
+              </div>
+            </div>
+            <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', lineHeight: 1.6 }}>
+              ● Cohort 1 closes tonight at midnight. €247 is the founding price ~ Cohort 2 opens at €397.<br />
+              The VIP upgrade (€397 free tonight) returns to full price after midnight.
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
@@ -3515,6 +3660,9 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
 
       {/* Right: details */}
       <div style={{ flex: 1 }}>
+        <div style={{ ...sans, fontSize: sz(13), color: C.muted, fontStyle: 'italic', marginBottom: sz(10) }}>
+          Not ready for the bootcamp? Join for accountability.
+        </div>
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6) }}>
           Premium membership
         </div>
@@ -3684,6 +3832,24 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                     {door.secondaryCta} →
                   </a>
                 )}
+                {/* QR for all doors */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: sz(16) }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(6) }}>
+                    <div style={{ background: '#ffffff', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${door.highlight ? C.primary : C.border}` }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(door.ctaUrl)}&margin=0&color=2A2520&bgcolor=ffffff`}
+                        width={sz(80)}
+                        height={sz(80)}
+                        alt={`Scan for ${door.name}`}
+                        style={{ display: 'block' }}
+                      />
+                    </div>
+                    <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                      Scan to join
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           );
@@ -4084,7 +4250,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
           </div>
           <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
-            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
+            Stick around till the end ~ there&apos;s a freebie waiting for everyone who stays. ;)
           </div>
         </div>
       </div>
@@ -4737,7 +4903,8 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
 
       {/* ── AI experience distribution ── */}
       <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(20),
+        display: 'none',
+        gridTemplateColumns: '1fr 1fr', gap: sz(20),
         opacity: revealed >= 3 ? 1 : 0, transform: revealed >= 3 ? 'translateY(0)' : 'translateY(20px)',
         transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
@@ -5407,7 +5574,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
               </div>
-              <div style={{ ...serif, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+              <div style={{ ...sans, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
                 {p.scenario}
               </div>
 
@@ -5458,7 +5625,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         }}>{col.tag}</div>
                         <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
                           dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-weight:400;color:${C.primary}">`) }} />
-                        <div style={{ ...serif, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                        <div style={{ ...sans, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
                           {col.why}
                         </div>
                       </div>
@@ -5478,7 +5645,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
                           {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
                         </div>
-                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                        <div style={{ ...sans, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
                           {col.answer}
                         </div>
                       </div>
@@ -5490,7 +5657,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                             Step 2 · Claude offers a selection
                           </div>
                           {p.rightBridge && (
-                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
+                            <div style={{ ...sans, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
                               {p.rightBridge}
                             </div>
                           )}
@@ -5522,7 +5689,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                                     </div>
                                   </div>
                                   {isSelected && (
-                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                    <div style={{ ...sans, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                                       {draft.body}
                                     </div>
                                   )}
@@ -5543,7 +5710,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                           {col.annLbl}
                         </div>
-                        <div style={{ ...serif, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                        <div style={{ ...sans, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
                           {col.annTxt}
                         </div>
                       </div>
@@ -5644,10 +5811,10 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         {/* ── Next step ~ Value Stack + Bootcamp + Three Doors ~ segment 08 ── */}
         {seg.num === '08' && (
           <>
-            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
