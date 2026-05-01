@@ -13,15 +13,15 @@ interface ThemeFonts {
   serif: string;  // scripted / italic accents
 }
 
-// Both themes use Abie Maxey's brand fonts ~ only the colors differ between themes
+// Body sans = Avenir (matches happyvoyager.com), serif = Instrument Serif (matches admin dashboard)
 const FONTS: Record<ThemeKey, ThemeFonts> = {
   tm: {
-    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
   am: {
-    sans: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
-    serif: 'var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)',
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
 };
 
@@ -756,7 +756,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                     <Editable key={`titleI-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => saveEdit(`${segIdx}.titleItalic`, v)} />
                   </em></>}
                 </div>
-                <div style={{ ...serif, fontSize: 12, color: C.muted, marginTop: 3 }}>
+                <div style={{ ...sans, fontSize: 14, color: C.muted, marginTop: 3 }}>
                   <Editable key={`sub-${segIdx}`} value={seg.subtitle} editMode={editMode} onSave={v => saveEdit(`${segIdx}.subtitle`, v)} />
                 </div>
                 <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
@@ -850,7 +850,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                                 value={(bl.text ?? '').replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                 editMode={editMode}
                                 onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
-                                style={{ ...serif, fontSize, lineHeight: 1.75, fontWeight: 400, color: C.text }}
+                                style={{ ...sans, fontSize, lineHeight: 1.75, fontWeight: 450, color: '#2A2520' }}
                               />
                             ) : (
                               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -862,7 +862,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                                       value={item.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                       editMode={editMode}
                                       onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
-                                      style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
+                                      style={{ ...sans, fontSize: fontSize - 2, lineHeight: 1.6, color: '#2A2520', fontWeight: 450 }}
                                     />
                                   </li>
                                 ))}
@@ -919,7 +919,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 24 }}>
                       <div style={{ fontSize: 28, opacity: 0.3 }}>↗</div>
-                      <div style={{ ...serif, fontSize: 14, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
+                      <div style={{ ...sans, fontSize: 15, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
                         Switch to compare, products,<br />or showcase for this segment
                       </div>
                     </div>
@@ -934,21 +934,21 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   state={compareState}
                   onRun={runCompare}
                   onReset={resetCompare}
-                  C={C} mono={mono} serif={serif}
+                  C={C} mono={mono} sans={sans} serif={serif}
                 />
               )}
               {mode === 'compare' && !activePreset && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...serif, fontSize: 14, color: C.muted }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...sans, fontSize: 15, color: C.muted }}>
                   No compare preset for this segment
                 </div>
               )}
 
               {/* Products */}
-              {mode === 'products' && <ProductsPanel C={C} mono={mono} serif={serif} />}
+              {mode === 'products' && <ProductsPanel C={C} mono={mono} sans={sans} serif={serif} />}
 
               {/* Showcase */}
               {mode === 'showcase' && (
-                <ShowcasePanel showTab={showTab} onTabChange={setShowTab} C={C} mono={mono} serif={serif} />
+                <ShowcasePanel showTab={showTab} onTabChange={setShowTab} C={C} mono={mono} sans={sans} serif={serif} />
               )}
 
               {/* Q&A */}
@@ -957,7 +957,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                   qaList={qaList} qaInput={qaInput} inputRef={qaInputRef}
                   onInput={setQaInput} onAdd={addQA}
                   onVote={voteQA} onActive={toggleActiveQA} onDismiss={dismissQA}
-                  C={C} mono={mono} serif={serif}
+                  C={C} mono={mono} sans={sans} serif={serif}
                 />
               )}
             </div>
@@ -975,7 +975,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           timerSecs={eventSecs}
           fontSize={fontSize}
           segments={segments}
-          C={C} mono={mono} serif={serif} sans={sans}
+          C={C} mono={mono} sans={sans} serif={serif}
           spkColor={spkColor}
           theme={theme}
           editMode={editMode}
@@ -1014,13 +1014,14 @@ function Btn({ children, onClick, primary, style, C }: {
 }
 
 // ── Compare Panel ─────────────────────────────────────────────────────────────
-function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
+function ComparePanel({ preset, state, onRun, onReset, C, mono, sans, serif }: {
   preset: ComparePreset;
   state: CompareState;
   onRun: () => void;
   onReset: () => void;
   C: Record<string, string>;
   mono: React.CSSProperties;
+  sans: React.CSSProperties;
   serif: React.CSSProperties;
 }) {
   const steps = ['Ready', 'Left runs', 'Right runs', 'Lands'];
@@ -1059,7 +1060,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
               </div>
               <div style={{ fontSize: 11, fontWeight: 800, color: C.text, letterSpacing: '-0.01em', textTransform: 'uppercase' }}
                 dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary};text-transform:none">`) }} />
-              <div style={{ ...serif, fontSize: 11, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
+              <div style={{ ...sans, fontSize: 13, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
             <div style={{ padding: '6px 12px', background: C.surface2, flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 3 }}>Prompt</div>
@@ -1069,7 +1070,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px' }}>
               <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 7 }}>Response</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
                 {col.output || <span style={{ opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
                 {((col.isLeft && state.step === 1) || (!col.isLeft && state.step === 2)) && !col.done && (
                   <span style={{ animation: 'blink 0.65s step-end infinite', color: C.primary }}>▋</span>
@@ -1079,7 +1080,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
             {col.done && (
               <div style={{ margin: '0 12px 10px', padding: '8px 12px', borderRadius: 7, border: `1px solid ${C.border}`, background: C.surface2 }}>
                 <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 4 }}>{col.annLbl}</div>
-                <div style={{ ...serif, fontSize: 11, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
+                <div style={{ ...sans, fontSize: 13, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
               </div>
             )}
           </div>
@@ -1087,7 +1088,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
       </div>
       {state.step === 3 && (
         <div style={{ borderTop: `1px solid ${C.border}`, padding: '10px 14px', background: C.surface, flexShrink: 0 }}>
-          <div style={{ ...serif, fontSize: 13, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
+          <div style={{ ...sans, fontSize: 14, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
             dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }} />
         </div>
       )}
@@ -1450,14 +1451,14 @@ const CLAUDE_PRODUCTS: ClaudeProduct[] = [
   },
 ];
 
-function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties }) {
+function ProductsPanel({ C, mono, sans, serif }: { C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties }) {
   const products = CLAUDE_PRODUCTS;
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
         The four <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
       </div>
-      <div style={{ ...serif, fontSize: 12, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
         Same brain. Four doors. Pick the one that matches what you&apos;re trying to do.
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1467,7 +1468,7 @@ function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: Re
             <div>
               <div style={{ fontSize: 12, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{p.name}</div>
               <div style={{ ...mono, fontSize: 9, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5 }}>{p.tag}</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
               <div style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 5 }}>
                 Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
               </div>
@@ -1480,9 +1481,9 @@ function ProductsPanel({ C, mono, serif }: { C: Record<string, string>; mono: Re
 }
 
 // ── Showcase Panel ────────────────────────────────────────────────────────────
-function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
+function ShowcasePanel({ showTab, onTabChange, C, mono, sans, serif }: {
   showTab: ShowTab; onTabChange: (t: ShowTab) => void;
-  C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
   const abieItems = ABIE_STACK;
   const meriItems = [
@@ -1507,7 +1508,7 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
       <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
         {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
       </div>
-      <div style={{ ...serif, fontSize: 12, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
         {showTab === 'abie' ? "Most days I don't open Gmail. I open my terminal." : "We don't replace VAs. We multiply what one VA can do."}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -1516,12 +1517,12 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
             <div style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 6, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 10, fontWeight: 900 }}>{item.icon}</div>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 3 }}>{item.name}</div>
-              <div style={{ ...serif, fontSize: 12, lineHeight: 1.5, color: C.muted }}>{item.desc}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.muted }}>{item.desc}</div>
             </div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...serif, fontSize: 12, lineHeight: 1.55, textAlign: 'center' }}>
+      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...sans, fontSize: 14, lineHeight: 1.55, textAlign: 'center' }}>
         {showTab === 'abie'
           ? <>Everyone should have <em style={{ color: C.text }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
           : <>Same hours, more clients ~ <em style={{ color: C.text }}>or</em> same clients, less burnout.<br />The VA chooses.</>
@@ -1532,11 +1533,11 @@ function ShowcasePanel({ showTab, onTabChange, C, mono, serif }: {
 }
 
 // ── Q&A Panel ─────────────────────────────────────────────────────────────────
-function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, onDismiss, C, mono, serif }: {
+function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, onDismiss, C, mono, sans, serif }: {
   qaList: QAItem[]; qaInput: string; inputRef: React.RefObject<HTMLInputElement | null>;
   onInput: (v: string) => void; onAdd: () => void;
   onVote: (id: number, d: number) => void; onActive: (id: number) => void; onDismiss: (id: number) => void;
-  C: Record<string, string>; mono: React.CSSProperties; serif: React.CSSProperties;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
   const live = qaList.filter(q => !q.answered).sort((a, b) => b.votes - a.votes);
   return (
@@ -1551,7 +1552,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px 14px' }}>
         {live.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10, opacity: 0.45 }}>
-            <div style={{ ...serif, fontSize: 14, color: C.muted }}>No questions yet</div>
+            <div style={{ ...sans, fontSize: 15, color: C.muted }}>No questions yet</div>
             <div style={{ ...mono, fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Meri pulls from chat</div>
           </div>
         ) : live.map(q => (
@@ -1561,7 +1562,7 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
               <div style={{ ...mono, fontSize: 11, fontWeight: 500, color: C.muted }}>{q.votes}</div>
               <button onClick={() => onVote(q.id, -1)} style={{ fontSize: 13, cursor: 'pointer', background: 'none', border: 'none', lineHeight: 1, padding: 2, opacity: 0.5, color: C.text }}>▼</button>
             </div>
-            <div style={{ ...serif, fontSize: 13, lineHeight: 1.5, color: C.text, flex: 1, paddingTop: 2 }}>{q.text}</div>
+            <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text, flex: 1, paddingTop: 2 }}>{q.text}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
               <button onClick={() => onActive(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: q.active ? C.primary : C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 {q.active ? '✓ Live' : 'Go live'}
@@ -1672,7 +1673,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
           <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           What is AI? ~ in 10 seconds
         </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
           No jargon. No PhD required.
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
@@ -1691,7 +1692,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, marginBottom: 6, letterSpacing: '-0.01em' }}>
                 {step.label}
               </div>
-              <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: C.muted, lineHeight: 1.45 }}>
+              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.45 }}>
                 {step.desc}
               </div>
             </div>
@@ -1756,7 +1757,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, color: isActive ? 'rgba(250,248,245,0.5)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
                   {model.maker}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4, marginBottom: 8 }}>
+                <div style={{ ...sans, fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4, marginBottom: 8 }}>
                   {model.vibe}
                 </div>
                 <div style={{
@@ -1803,7 +1804,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
                   <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
                     The wow factor
                   </div>
-                  <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
                     {m.wow}
                   </div>
                 </div>
@@ -1822,7 +1823,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 6 }}>
               The part nobody tells you
             </div>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: C.text, marginBottom: 16, lineHeight: 1.5 }}>
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, marginBottom: 16, lineHeight: 1.5 }}>
               Most AI tools you&apos;ve seen? They&apos;re <em style={{ color: C.primary }}>wrappers</em>. Same brain underneath ~ just a different interface.
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
@@ -1845,7 +1846,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
               ))}
             </div>
             <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.55, fontWeight: 500 }}>
-              When you learn <em style={{ color: C.primary, fontStyle: 'italic' }}>the source</em> directly, you don&apos;t need the wrapper. You get more control, more power, and you stop paying for a pretty interface on top of the same intelligence.
+              When you learn <em style={{ color: C.primary }}>the source</em> directly, you don&apos;t need the wrapper. You get more control, more power, and you stop paying for a pretty interface on top of the same intelligence.
             </div>
           </div>
         )}
@@ -1876,7 +1877,7 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
                   <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: '#FAF8F5', marginBottom: 4 }}>
                     {step.title}
                   </div>
-                  <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(12), color: 'rgba(250,248,245,0.65)', lineHeight: 1.45 }}>
+                  <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.65)', lineHeight: 1.45 }}>
                     {step.desc}
                   </div>
                 </div>
@@ -1892,8 +1893,8 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
             opacity: 1,
             animation: 'aiLandFadeIn 0.6s ease',
           }}>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, lineHeight: 1.5 }}>
-              Now you know the players. Let&apos;s zoom in on the one that changes how you <em style={{ color: C.primary, fontStyle: 'italic' }}>work</em>.
+            <div style={{ ...sans, fontSize: sz(18), color: C.muted, lineHeight: 1.5 }}>
+              Now you know the players. Let&apos;s zoom in on the one that changes how you <em style={{ color: C.primary }}>work</em>.
             </div>
           </div>
         )}
@@ -2068,7 +2069,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
           <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
           <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
         </div>
-        <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
           Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
         </div>
 
@@ -2083,7 +2084,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
               flexDirection: 'column',
               gap: 12,
             }}>
-              <div style={{ ...serif, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
+              <div style={{ ...sans, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
               <div>
                 <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
                 <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
@@ -2103,9 +2104,8 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
           <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           Four questions. Each yes climbs one rung.
         </div>
-        <div style={{ marginBottom: 22 }}>
-          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>How to pick the right level </span>
-          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>for the job.</span>
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 22 }}>
+          How to pick the right level <span style={{ color: C.primary, fontWeight: 500 }}>for the job.</span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -2122,7 +2122,7 @@ function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
               {/* Left: Q number + title */}
               <div style={{ flexShrink: 0, minWidth: sz(110) }}>
                 <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
-                <div style={{ ...serif, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
+                <div style={{ ...sans, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
               </div>
 
               {/* Middle: Question + detail */}
@@ -2227,7 +2227,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
         Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
       <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
@@ -2264,7 +2264,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
                 {b.name}
               </div>
-              <div style={{ ...serif, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
+              <div style={{ ...sans, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
                 {b.desc}
               </div>
 
@@ -2303,7 +2303,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
                     </button>
                     {isExpanded && (
                       <div style={{
-                        ...serif, fontSize: sz(17), lineHeight: 1.6,
+                        ...sans, fontSize: sz(17), lineHeight: 1.6,
                         color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
                         marginTop: 10,
                         animation: 'fadeInUp 0.25s ease',
@@ -2370,7 +2370,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         A day with a Talent Mucho <em style={{ ...serif, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
         Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
         <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
@@ -2405,7 +2405,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
               Sarah <em style={{ ...serif, fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
             </div>
-            <div style={{ ...serif, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8 }}>
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8 }}>
               Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
@@ -2477,7 +2477,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
                     <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
                       {ev.title}
                     </div>
-                    <div style={{ ...serif, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                    <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                       {ev.oneLiner}
                     </div>
                   </div>
@@ -2515,7 +2515,7 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               ↳ This is the Operate pillar
             </div>
-            <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.5 }}>
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, lineHeight: 1.5 }}>
               We build, train, and place these inside our clients&apos; businesses.
             </div>
           </div>
@@ -2548,11 +2548,11 @@ function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
             </div>
           </div>
 
-          <div style={{ ...serif, fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
+          <div style={{ ...sans, fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
             {active.oneLiner}
           </div>
 
-          <div style={{ ...serif, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
+          <div style={{ ...sans, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
             {active.detail}
           </div>
 
@@ -2788,7 +2788,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
                 <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
                   Awaiting the spin
                 </div>
-                <div style={{ ...serif, fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
+                <div style={{ ...sans, fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
                   Wherever it lands, that&apos;s what we demo live.
                 </div>
               </div>
@@ -2805,7 +2805,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
               <div style={{ ...sans, fontSize: 36, fontWeight: 800, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
                 {items[winner].name}
               </div>
-              <div style={{ ...serif, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
+              <div style={{ ...sans, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
                 {items[winner].desc}
               </div>
             </div>
@@ -2926,7 +2926,7 @@ function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
           {answered.size} of {SAMPLE_QUESTIONS.length} answered
         </span>
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
         Real questions from real people in the chat. Drop yours in ~ we&apos;ll get to it.
       </div>
 
@@ -2975,7 +2975,7 @@ function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
                 <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   {q.theme}
                 </span>
-                <span style={{ ...serif, fontSize: sz(15), color: C.text }}>
+                <span style={{ ...sans, fontSize: sz(15), color: C.text }}>
                   &ldquo;{q.text}&rdquo;
                 </span>
               </div>
@@ -3087,7 +3087,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
           {pricesRevealed ? '↺ Hide the math' : '▸ Reveal the math'}
         </button>
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 26, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 26, lineHeight: 1.5, fontWeight: 400 }}>
         {pricesRevealed ? "Honest values. Math doesn't lie." : "Click reveal when you're ready to drop the math."}
       </div>
 
@@ -3118,7 +3118,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
                   {item.name}
                 </div>
-                <div style={{ ...serif, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
+                <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45, fontWeight: 400 }}>
                   {item.desc}
                 </div>
               </div>
@@ -3168,6 +3168,90 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
         </div>
       )}
 
+    </div>
+  );
+}
+
+// ── FreeGuideCTA ~ segment 08 closing remark: Skool QR + free guide drop ─────
+const SKOOL_FREE_URL = 'https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7';
+
+function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const onDark = '#FAF8F5';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
+      <div style={{
+        position: 'relative',
+        background: C.text,
+        color: onDark,
+        borderRadius: sz(24),
+        padding: `${sz(48)}px ${sz(44)}px`,
+        overflow: 'hidden',
+        boxShadow: `0 32px 64px -20px ${C.text}55`,
+      }}>
+        {/* Glow accent */}
+        <div style={{
+          position: 'absolute', top: '-30%', right: '-10%',
+          width: '50%', height: '160%',
+          background: `radial-gradient(ellipse, ${C.primary}40 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
+        {/* Grid pattern */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr auto', gap: sz(48), alignItems: 'center' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(14), display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ display: 'inline-block', width: sz(8), height: sz(8), borderRadius: '50%', background: C.primary, animation: 'pulse 1.6s ease-in-out infinite' }} />
+              Tonight only ~ free guide drop
+            </div>
+            <div style={{ ...serif, fontSize: sz(56), fontWeight: 300, color: onDark, letterSpacing: '-0.025em', lineHeight: 1.05, marginBottom: sz(18) }}>
+              Everything you saw tonight ~<br />
+              <span style={{ color: C.primary }}>turned into your starter playbook.</span>
+            </div>
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.78)', lineHeight: 1.55, maxWidth: sz(560) }}>
+              We're posting it inside Skool ~ for free ~ at midnight tonight. Every prompt, every framework, every demo we just ran. Cleaned up, copy-paste ready, and yours forever.
+            </div>
+          </div>
+
+          {/* QR + scan instruction */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14) }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+              Scan to claim
+            </div>
+            <div style={{
+              background: '#FAF8F5',
+              padding: sz(14),
+              borderRadius: sz(16),
+              boxShadow: `0 16px 32px -10px ${C.primary}80`,
+              border: `2px solid ${C.primary}`,
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(220)}x${sz(220)}&data=${encodeURIComponent(SKOOL_FREE_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(200)}
+                height={sz(200)}
+                alt="Scan to join the free Skool community"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: onDark, letterSpacing: '0.02em', textAlign: 'center' }}>
+              Future Proof with AI
+            </div>
+            <div style={{ ...sans, fontSize: sz(11), color: 'rgba(250,248,245,0.55)', textAlign: 'center' }}>
+              Free tier · join in 30 seconds
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -3234,8 +3318,13 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
           <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
             The 3-Day AI Intensive Bootcamp
           </div>
-          <div style={{ ...serif, fontSize: sz(16), color: C.muted, fontStyle: 'italic', marginTop: sz(6) }}>
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginTop: sz(6) }}>
             Built around what you told us hurts most. Small groups. Hands-on. You ship something every day.
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: sz(8), marginTop: sz(14), padding: `${sz(8)}px ${sz(14)}px`, borderRadius: sz(10), background: `${C.primary}12`, border: `1px solid ${C.primary}30` }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>From</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€197</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted }}>· members 30% off</div>
           </div>
         </div>
         {/* Member badge */}
@@ -3249,7 +3338,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
         }}>
           <div style={{ ...mono, fontSize: sz(28), fontWeight: 900, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>30%</div>
           <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: '#FAF8F5', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>off every bootcamp</div>
-          <div style={{ ...serif, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, fontStyle: 'italic', marginTop: 2 }}>for premium members</div>
+          <div style={{ ...sans, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, marginTop: 2 }}>for premium members</div>
         </div>
       </div>
 
@@ -3272,7 +3361,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>
                 {d.title}
               </div>
-              <div style={{ ...serif, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', fontStyle: 'italic', marginTop: sz(4) }}>
+              <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', marginTop: sz(4) }}>
                 {d.subtitle}
               </div>
             </div>
@@ -3286,7 +3375,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
                 {d.sessions.map((s, i) => (
                   <div key={i} style={{ display: 'flex', gap: sz(10), alignItems: 'flex-start' }}>
                     <span style={{ ...mono, fontSize: sz(11), color: d.color, flexShrink: 0, paddingTop: 1 }}>→</span>
-                    <span style={{ ...serif, fontSize: sz(13), color: C.text, lineHeight: 1.45 }}>{s}</span>
+                    <span style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45 }}>{s}</span>
                   </div>
                 ))}
               </div>
@@ -3302,7 +3391,7 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
 
       {/* Bottom note */}
       <div style={{ marginTop: sz(20), padding: `${sz(16)}px ${sz(24)}px`, borderRadius: sz(12), background: `${C.primary}10`, border: `1px solid ${C.primary}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ ...serif, fontSize: sz(15), color: C.text, fontStyle: 'italic' }}>
+        <div style={{ ...sans, fontSize: sz(15), color: C.text }}>
           Drop <strong style={{ fontStyle: 'normal', ...mono, fontSize: sz(13), color: C.primary, letterSpacing: '0.1em' }}>BOOTCAMP</strong> in the chat to get notified when doors open.
         </div>
         <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0, marginLeft: sz(24) }}>
@@ -3317,9 +3406,9 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
 const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
 const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
 
-function QRBlock({ url, label, sublabel, size, C, mono, serif }: {
+function QRBlock({ url, label, sublabel, size, C, mono, sans, serif }: {
   url: string; label: string; sublabel: string; size: number;
-  C: Palette; mono: object; serif: object;
+  C: Palette; mono: object; sans: object; serif: object;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size * 0.08, flexShrink: 0 }}>
@@ -3336,7 +3425,7 @@ function QRBlock({ url, label, sublabel, size, C, mono, serif }: {
           style={{ display: 'block' }}
         />
       </div>
-      <div style={{ ...serif, fontSize: size * 0.07, color: C.primary, fontStyle: 'italic', fontWeight: 600 }}>
+      <div style={{ ...sans, fontSize: size * 0.07, color: C.primary, fontWeight: 600 }}>
         {sublabel}
       </div>
     </div>
@@ -3385,7 +3474,7 @@ function BonusSlide({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ flex: 1, height: 1, background: C.border }} />
       </div>
 
-      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
+      <div style={{ ...sans, fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
         Five things to do this week.
       </div>
       <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(24), lineHeight: 1.5 }}>
@@ -3429,8 +3518,8 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
 
       {/* QR codes side by side */}
       <div style={{ display: 'flex', gap: sz(24), flexShrink: 0 }}>
-        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} serif={serif} />
-        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} serif={serif} />
+        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
+        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
       </div>
 
       {/* Divider */}
@@ -3444,7 +3533,7 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(6) }}>
           Talent Mucho
         </div>
-        <div style={{ ...serif, fontSize: sz(15), color: C.muted, fontStyle: 'italic', marginBottom: sz(20) }}>
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: sz(20) }}>
           Live workshops · Vault access · Inner circle · Vibe coding sessions
         </div>
 
@@ -3490,7 +3579,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Three doors out
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
         Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
       </div>
 
@@ -3535,13 +3624,13 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
                 {door.name}
               </div>
-              <div style={{ ...serif, fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
+              <div style={{ ...sans, fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
                 ~ {door.italic}
               </div>
               <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
                 {door.pitch}
               </div>
-              <div style={{ ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+              <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
                 <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
                 {door.bestFor}
               </div>
@@ -3549,7 +3638,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
               {/* What you get list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18, flex: 1 }}>
                 {door.whatYouGet.map((item, ii) => (
-                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...serif, fontSize: sz(14), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
+                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
                     <span style={{ ...mono, fontSize: sz(12), color: C.primary, flexShrink: 0, paddingTop: 2 }}>~</span>
                     <span>{item}</span>
                   </div>
@@ -3561,7 +3650,7 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Next step ~
                 </div>
-                <div style={{ ...serif, fontSize: sz(13), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
+                <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
                   {door.nextStep}
                 </div>
                 <a
@@ -3719,7 +3808,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                 <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: onDark, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
                   {fmtLiveTime(timerSecs)}
                 </div>
-                <div style={{ ...serif, fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
                   Workshop time remaining
                 </div>
               </>
@@ -3742,7 +3831,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                     </div>
                   ))}
                 </div>
-                <div style={{ ...serif, fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
                   May 1st · 6 PM EST · grab a drink, get comfy
                 </div>
               </>
@@ -3761,7 +3850,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
               Drop your city in chat
             </div>
-            <div style={{ ...serif, fontSize: sz(13), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
               We&apos;re from everywhere tonight ~
             </div>
             <div style={{ minHeight: sz(28), display: 'flex', alignItems: 'center' }}>
@@ -3775,6 +3864,50 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                 {WELCOME_CITIES[cityIdx]}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Skool QR + "Tonight's workshop is built for you" ── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'auto 1fr', gap: sz(36),
+        alignItems: 'center',
+        padding: '32px 36px',
+        borderRadius: 22,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        marginBottom: 32,
+      }}>
+        {/* QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+            Join free
+          </div>
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 28px -10px ${C.primary}40` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(180)}x${sz(180)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+              width={sz(160)}
+              height={sz(160)}
+              alt="Scan to join the Skool community"
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...sans, fontSize: sz(11), fontWeight: 600, color: C.text, letterSpacing: '0.02em' }}>
+            Future Proof with AI
+          </div>
+        </div>
+
+        {/* Right: built for you message */}
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
+            Why we&apos;re here
+          </div>
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
+            Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
+            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
           </div>
         </div>
       </div>
@@ -3798,7 +3931,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What you told us
               </div>
-              <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5, fontWeight: 400 }}>
                 Real answers from your onboarding ~ this is why we&apos;re here.
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -3828,7 +3961,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                         {m.firstName.charAt(0)}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ ...serif, fontSize: sz(16), color: C.text, lineHeight: 1.45 }}>
+                        <div style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45, fontWeight: 400 }}>
                           &ldquo;{m.painPoint}&rdquo;
                         </div>
                         <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
@@ -3854,7 +3987,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Tonight&apos;s agenda
           </div>
-          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
             Two hours. Nine beats. No filler.
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -3937,7 +4070,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
           <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(24), letterSpacing: '-0.01em' }}>
             {MENTI_URL}
           </div>
-          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
             Scan to answer live ~ your responses appear on screen
           </div>
           <div style={{
@@ -3994,7 +4127,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
               <div style={{ fontSize: sz(22), lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{item.icon}</div>
               <div>
                 <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: C.text, marginBottom: sz(4), letterSpacing: '-0.01em' }}>{item.label}</div>
-                <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5, fontStyle: 'italic' }}>{item.desc}</div>
+                <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{item.desc}</div>
               </div>
             </div>
           ))}
@@ -4091,7 +4224,7 @@ function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Where you&apos;re joining from
       </div>
-      <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+      <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
         {sorted.reduce((s, [, n]) => s + n, 0)} response{sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? 's' : ''} from {sorted.length} location{sorted.length !== 1 ? 's' : ''} ~ updating live
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'baseline', minHeight: sz(60) }}>
@@ -4193,7 +4326,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
         <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Meet your hosts
       </div>
-      <div style={{ ...serif, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
         Two very different stories. One business. <span style={{ color: C.primary, fontWeight: 600 }}>Operators, not coaches.</span>
       </div>
 
@@ -4249,7 +4382,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
               {host.story.map((line, i) => (
                 <div
                   key={i}
-                  style={{ ...serif, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
+                  style={{ ...sans, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
                   dangerouslySetInnerHTML={{ __html: line.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }}
                 />
               ))}
@@ -4346,7 +4479,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
               How we met
             </div>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
+            <div style={{ ...sans, fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
               Meri found Abie on YouTube. They decided to meet in Barcelona ~ strangers from the internet.
               Abie&apos;s thread went viral. People thought she was getting trafficked. <em style={{ color: C.primary }}>1 million views.</em>
             </div>
@@ -4366,17 +4499,17 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
             Why we&apos;re here
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(20), color: '#FAF8F5', lineHeight: 1.45 }}>
+            <div style={{ ...sans, fontSize: sz(20), color: '#FAF8F5', lineHeight: 1.45 }}>
               AI isn&apos;t new. The hype isn&apos;t new. <em style={{ color: C.primary }}>But most of you are still on the sidelines.</em>
             </div>
             <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
-              The ones cashing in right now? Developers. Tech operators. They can plug-and-play ~ <em style={{ color: C.primary, fontStyle: 'italic' }}>and they also face the biggest replacement risk.</em>
+              The ones cashing in right now? Developers. Tech operators. They can plug-and-play ~ <em style={{ color: C.primary }}>and they also face the biggest replacement risk.</em>
             </div>
             <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
-              We sit at the intersection. <em style={{ color: C.primary, fontStyle: 'italic' }}>Tech + business + AI.</em> That&apos;s why we built Talent Mucho.
+              We sit at the intersection. <em style={{ color: C.primary }}>Tech + business + AI.</em> That&apos;s why we built Talent Mucho.
             </div>
             <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: '#FAF8F5', lineHeight: 1.5, marginTop: 4 }}>
-              Our mission: get you <em style={{ color: C.primary, fontStyle: 'italic' }}>the same superpowers</em> ~ without needing to be a developer.
+              Our mission: get you <em style={{ color: C.primary }}>the same superpowers</em> ~ without needing to be a developer.
             </div>
           </div>
         </div>
@@ -4408,7 +4541,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 6 }}>
                   {p.label}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(14), color: C.muted, lineHeight: 1.5 }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.muted, lineHeight: 1.5 }}>
                   {p.desc}
                 </div>
               </div>
@@ -4483,41 +4616,62 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
-              Your community ~ right now
+              Our Skool community ~ right now
             </div>
             <div style={{ ...serif, fontSize: sz(80), fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: onDark }}>
-              {animCount}
+              236
             </div>
             <div style={{ ...mono, fontSize: sz(12), letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.5)', marginTop: sz(8) }}>
-              members across all platforms
+              members and growing
             </div>
           </div>
 
-          {/* Mini donut */}
-          <svg width={sz(140)} height={sz(140)} style={{ transform: 'rotate(-90deg)' }}>
-            {(() => {
-              const r = sz(52); const sw = sz(16); const cx = sz(70); const cy = sz(70);
-              const circ = 2 * Math.PI * r;
-              const segs = [
-                { val: stats.ghlOnly, color: C.primary },
-                { val: stats.both, color: onDark },
-                { val: stats.skoolOnly, color: `${C.primary}60` },
-              ];
-              let cum = 0;
-              return segs.map((s, i) => {
-                const pct = s.val / stats.total;
-                const offset = circ * (1 - pct);
-                const rot = cum * 360;
-                cum += pct;
-                return (
-                  <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
-                    strokeDasharray={`${circ}`} strokeDashoffset={offset} strokeLinecap="round"
-                    style={{ transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%', transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
-                  />
-                );
-              });
-            })()}
-          </svg>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(28) }}>
+            {/* Mini donut */}
+            <svg width={sz(140)} height={sz(140)} style={{ transform: 'rotate(-90deg)' }}>
+              {(() => {
+                const r = sz(52); const sw = sz(16); const cx = sz(70); const cy = sz(70);
+                const circ = 2 * Math.PI * r;
+                const segs = [
+                  { val: stats.ghlOnly, color: C.primary },
+                  { val: stats.both, color: onDark },
+                  { val: stats.skoolOnly, color: `${C.primary}60` },
+                ];
+                let cum = 0;
+                return segs.map((s, i) => {
+                  const pct = s.val / stats.total;
+                  const offset = circ * (1 - pct);
+                  const rot = cum * 360;
+                  cum += pct;
+                  return (
+                    <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
+                      strokeDasharray={`${circ}`} strokeDashoffset={offset} strokeLinecap="round"
+                      style={{ transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%', transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                    />
+                  );
+                });
+              })()}
+            </svg>
+
+            {/* QR to join Skool free */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>
+                Join free
+              </div>
+              <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), boxShadow: `0 8px 20px -8px ${C.text}40` }}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(140)}x${sz(140)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(120)}
+                  height={sz(120)}
+                  alt="Scan to join the Skool community"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...sans, fontSize: sz(10), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.04em' }}>
+                Future Proof with AI
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Platform breakdown pills */}
@@ -4534,7 +4688,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
             }}>
               <div style={{ width: sz(8), height: sz(8), borderRadius: '50%', background: p.color }} />
               <span style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase' as const }}>{p.label}</span>
-              <span style={{ ...serif, fontSize: sz(18), fontWeight: 300, color: onDark }}>{p.val}</span>
+              <span style={{ ...sans, fontSize: sz(18), fontWeight: 300, color: onDark }}>{p.val}</span>
             </div>
           ))}
         </div>
@@ -4551,7 +4705,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
           <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
           What keeps them up at night
         </div>
-        <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
+        <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
           Self-reported pain points from Skool onboarding
         </div>
 
@@ -4580,7 +4734,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                   }} />
                 </div>
                 {isActive && (
-                  <div style={{ ...serif, fontSize: sz(13), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
+                  <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
                     {count} members need help with {key.toLowerCase()} ~ prime mentoring opportunity
                   </div>
                 )}
@@ -4605,7 +4759,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
             AI experience levels
           </div>
-          <div style={{ ...serif, fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
             Where they are on their AI journey
           </div>
 
@@ -4654,7 +4808,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {((stats.ghlOnly / (stats.ghlOnly + stats.both)) * 100).toFixed(0)}%
                 </div>
-                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   of your GHL leads haven&apos;t joined Skool yet
                 </div>
               </div>
@@ -4665,7 +4819,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {painEntries[0]?.[0]}
                 </div>
-                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   is the #1 pain point ~ {painEntries[0]?.[1]} members need help here
                 </div>
               </div>
@@ -4676,7 +4830,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {aiEntries[0]?.[0]}
                 </div>
-                <div style={{ ...serif, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   is the most common AI level ~ {aiEntries[0]?.[1]} members
                 </div>
               </div>
@@ -4719,7 +4873,7 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
                 <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{t.pct}</span>
               </div>
               <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{t.track}</div>
-              <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{t.desc}</div>
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.5 }}>{t.desc}</div>
             </div>
           ))}
         </div>
@@ -4876,7 +5030,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live word cloud
           </div>
-          <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
             Words from your workbook responses ~ updating in real time
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', alignItems: 'baseline', minHeight: sz(60) }}>
@@ -4919,7 +5073,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
             <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live poll results
           </div>
-          <div style={{ ...serif, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
             {totalVotes} vote{totalVotes !== 1 ? 's' : ''} so far
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -5113,7 +5267,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 value={emRender(seg.audWhatBody)}
                 editMode={editMode}
                 onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
-                style={{ ...serif, fontSize: 26, lineHeight: 1.6, color: C.text, opacity: 0.9 }}
+                style={{ ...sans, fontSize: 22, lineHeight: 1.6, color: C.text, opacity: 0.9, fontWeight: 400 }}
               />
             </div>
           </div>
@@ -5142,7 +5296,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                   value={emOnDark(seg.audTakeaway)}
                   editMode={editMode}
                   onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
-                  style={{ ...serif, fontSize: 30, lineHeight: 1.45, color: onDark, position: 'relative' }}
+                  style={{ ...sans, fontSize: 24, lineHeight: 1.45, color: onDark, position: 'relative', fontWeight: 400 }}
                 />
               </div>
             )}
@@ -5173,7 +5327,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
                         <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                           {row.claude}
-                          <span style={{ ...serif, fontSize: 14, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
+                          <span style={{ ...sans, fontSize: 15, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
                             ~ {row.desc}
                           </span>
                         </div>
@@ -5504,6 +5658,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
             <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 

@@ -112,28 +112,33 @@ export const SEGMENTS: Segment[] = [
     beats: [
       {
         id: 'w0', title: 'Land the promise', speaker: 'BOTH', blocks: [
-          { type: 'stage', text: 'Both on cam. Wait 30s for stragglers. Warm smile, slow tempo.' },
-          { type: 'scripted', speaker: 'BOTH', text: "Hey everyone ~ welcome. I'm Abie, this is Meri. Before we do anything else ~ thank you for showing up. You could be doing a hundred other things tonight." },
-          { type: 'scripted', speaker: 'BOTH', text: "Quick promise so you know what you're in for. You signed up because you've been saying \"I need to learn AI\" for months. Tonight, that ends." },
+          { type: 'stage', text: 'Both on cam. Wait 30s for stragglers. Warm smile, slow tempo. Make eye contact with the camera.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Hey hey ~ welcome in. I'm Abie. This is Meri. Give us a sec while everyone trickles in ~ grab a drink, get comfy, settle in." },
+          { type: 'scripted', speaker: 'MERI', text: "Drop a wave in the chat if you can hear us okay. We see you." },
+          { type: 'scripted', speaker: 'ABIE', text: "Okay ~ I want to start with the only thing that actually matters tonight. Thank you. Genuinely. Because you could be watching Netflix, you could be answering emails, you could be in bed already ~ and instead you're here. That's not nothing. We don't take that lightly." },
+          { type: 'scripted', speaker: 'MERI', text: "And here's the thing ~ I know exactly why most of you signed up. Because you've been saying it for months. \"I really need to figure out this AI thing.\" You watched the YouTube videos, you opened ChatGPT once or twice, maybe you even paid for a course you never finished. And you still feel behind." },
+          { type: 'scripted', speaker: 'ABIE', text: "Tonight, that ends. That's not a hype line. That's a promise. So let me tell you what's actually going to happen in the next two hours ~" },
           { type: 'bullets', speaker: 'BOTH', items: [
-            "By 8 PM, you'll finally understand what AI can actually do for your business",
-            "You'll get hands-on with Claude in a small group setting ~ no experience required",
-            "And you'll leave with a clear starting point ~ not 47 tabs and more overwhelm",
+            "You'll finally get what AI actually does ~ in plain English. No PhDs, no jargon.",
+            "You'll see Claude work on real tasks. Live. Not a demo video. Real builds you can copy.",
+            "And you'll leave with a clear next step ~ not 47 browser tabs and a vague promise to 'try this later'.",
           ]},
-          { type: 'scripted', speaker: 'BOTH', text: "That's the deal. That's all we promised on the landing page. We're going to deliver it." },
+          { type: 'scripted', speaker: 'MERI', text: "That's the whole deal. That's what we promised on the landing page, and that's what we're delivering. No bait. No upsell halfway through. Just the workshop you came for." },
+          { type: 'scripted', speaker: 'ABIE', text: "Cool? Cool. Let's go." },
         ],
       },
       {
         id: 'w1', title: 'Housekeeping', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "Two house rules and we go." },
-          { type: 'bullets', speaker: 'BOTH', items: [
-            "Drop your name + where you're joining from in the chat right now",
-            "Meri is in the chat the whole event ~ ask anything, no question is too basic",
-            "You'll see a workbook on screen ~ that's your live companion, use it",
-            "This is a workshop, not a webinar. Be present ~ you'll get 10x more out of it",
+          { type: 'scripted', speaker: 'MERI', text: "Two quick house rules and we dive in. I'll keep it short ~ I promise." },
+          { type: 'bullets', speaker: 'MERI', items: [
+            "Drop your name and where you're tuning in from in the chat right now ~ we want to see who's in the room.",
+            "I'm in the chat the entire time ~ no question is too basic. If you're confused, ten other people are too. Ask.",
+            "You'll see a workbook pop up on screen ~ that's your companion. Write in it. Use it. It's where the work actually happens.",
+            "This is a workshop, not a webinar. You came to do, not to watch. Be present and you'll get ten times more out of it.",
           ]},
-          { type: 'workbook', text: "WORKBOOK ~ Where are you joining from tonight? Drop your city or country." },
-          { type: 'poll', text: "POLL ~ Drop a 1, 2, 3, or 4 in chat:\n1 = I run my own business\n2 = I work in a company but want my own thing\n3 = I freelance / side hustle\n4 = Just curious about AI" },
+          { type: 'scripted', speaker: 'ABIE', text: "And one last thing ~ this is being recorded. So if your kid screams in the background or your dog walks across the keyboard, you can rewatch later. But trust me, live is where the magic is." },
+          { type: 'workbook', text: "WORKBOOK ~ Where are you joining from tonight? Drop your city or country in the chat." },
+          { type: 'poll', text: "POLL ~ Drop a 1, 2, 3, or 4 in chat so we know who's in the room:\n1 = I run my own business\n2 = I work at a company but I want to start my own thing\n3 = Freelance / side hustle life\n4 = Just curious about AI ~ no skin in the game yet" },
         ],
       },
     ],
