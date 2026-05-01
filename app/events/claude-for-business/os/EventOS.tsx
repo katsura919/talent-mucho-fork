@@ -3248,6 +3248,8 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
   const [revealedPromises, setRevealedPromises] = useState(0);
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
+  const MENTI_URL = 'menti.talentmucho.com/join';
+  const MENTI_CODE = 'VDIEGH';
 
   // Tick every second for the countdown
   useEffect(() => {
@@ -3291,12 +3293,6 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
     const sec = s % 60;
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   };
-
-  const promises = [
-    "Finally understand what AI can do for your business",
-    "Get hands-on with Claude in a small group ~ no experience required",
-    "Walk away with a clear starting point ~ not 47 tabs and overwhelm",
-  ];
 
   return (
     <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
@@ -3509,59 +3505,118 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
         </div>
       </div>
 
-      {/* ── QR Code ~ join the workbook ── */}
+      {/* ── Mentimeter join card ── */}
+      <div style={{
+        marginTop: 26,
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: sz(52),
+      }}>
+        {/* Left: QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+            Scan to join
+          </div>
+          <div style={{
+            background: '#FFFFFF',
+            padding: sz(12),
+            borderRadius: sz(16),
+            border: `1px solid ${C.border}`,
+            boxShadow: `0 4px 24px ${C.text}08`,
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
+              alt="QR code to join Mentimeter"
+              width={sz(160)}
+              height={sz(160)}
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
+            {MENTI_URL}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+        {/* Right: code + URL + button */}
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
+            Enter code at
+          </div>
+          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(24), letterSpacing: '-0.01em' }}>
+            {MENTI_URL}
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(8) }}>
+            Code
+          </div>
+          <div style={{ ...mono, fontSize: sz(56), fontWeight: 800, color: C.text, letterSpacing: '0.06em', lineHeight: 1, marginBottom: sz(28) }}>
+            {MENTI_CODE}
+          </div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: sz(8),
+            padding: `${sz(13)}px ${sz(32)}px`,
+            borderRadius: 100,
+            background: '#7C6B5A',
+            color: '#FAF8F5',
+            ...sans,
+            fontSize: sz(15),
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            cursor: 'default',
+          }}>
+            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
+            Start Session
+          </div>
+        </div>
+      </div>
+
+      {/* ── Housekeeping ── */}
       <div style={{
         marginTop: 26,
         padding: '28px 30px',
         borderRadius: 18,
         background: C.surface,
         border: `1px solid ${C.border}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 28,
       }}>
-        <div style={{
-          flexShrink: 0,
-          width: sz(160),
-          height: sz(160),
-          borderRadius: 14,
-          background: '#FFFFFF',
-          padding: 8,
-          border: `1px solid ${C.border}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://talentmucho.com/events/claude-for-business/workbook')}`}
-            alt="QR code to workbook"
-            width={sz(144)}
-            height={sz(144)}
-            style={{ display: 'block', imageRendering: 'pixelated' }}
-          />
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(20), display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Before we start
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-            Join the workbook
-          </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div style={{
-            ...mono,
-            fontSize: sz(12),
-            color: C.text,
-            letterSpacing: '0.04em',
-            padding: '8px 14px',
-            borderRadius: 8,
-            background: `${C.primary}10`,
-            border: `1px solid ${C.border}`,
-            display: 'inline-block',
-          }}>
-            talentmucho.com/events/claude-for-business/workbook
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(14) }}>
+          {[
+            { icon: '🎙', label: 'Mute yourself', desc: 'Stay muted unless we call on you ~ reduces background noise for everyone.' },
+            { icon: '💬', label: 'Use the chat', desc: 'Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.' },
+            { icon: '📹', label: 'Camera on if you can', desc: 'We love seeing faces ~ helps us read the room and connect with you.' },
+            { icon: '⏺', label: 'We\'re recording', desc: 'Replay link goes to everyone who registered ~ even if you can\'t stay.' },
+            { icon: '📝', label: 'Take notes', desc: 'Open a doc or grab a notebook ~ you\'ll want to capture your ideas as we go.' },
+            { icon: '🚽', label: 'Bathroom break', desc: 'We\'ll pause halfway through ~ hold tight until then if you can.' },
+            { icon: '🏁', label: 'Stay till the end', desc: 'We save the most actionable stuff for last ~ worth it, we promise.' },
+          ].map(item => (
+            <div key={item.label} style={{
+              display: 'flex',
+              gap: sz(14),
+              padding: `${sz(16)}px ${sz(18)}px`,
+              borderRadius: sz(12),
+              background: `${C.primary}06`,
+              border: `1px solid ${C.border}`,
+              alignItems: 'flex-start',
+            }}>
+              <div style={{ fontSize: sz(22), lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{item.icon}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: C.text, marginBottom: sz(4), letterSpacing: '-0.01em' }}>{item.label}</div>
+                <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5, fontStyle: 'italic' }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -3974,281 +4029,26 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
 function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties; scale?: number;
 }) {
-  const stats = communityData.stats;
-  const members = communityData.members;
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
 
   const [revealed, setRevealed] = useState(0);
-  const [animCount, setAnimCount] = useState(0);
-  const [activePain, setActivePain] = useState<number | null>(null);
 
-  // Stagger reveal of sections
   useEffect(() => {
     setRevealed(0);
     let i = 0;
-    const tick = () => { i += 1; setRevealed(i); if (i < 5) setTimeout(tick, 600); };
+    const tick = () => { i += 1; setRevealed(i); if (i < 2) setTimeout(tick, 600); };
     setTimeout(tick, 400);
   }, []);
-
-  // Animate the total count up
-  useEffect(() => {
-    const target = stats.total;
-    const duration = 1800;
-    const start = Date.now();
-    const frame = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-  }, [stats.total]);
-
-  // Pain points sorted by count (exclude noise)
-  const painEntries = Object.entries(stats.byPainCategory as Record<string, number>)
-    .filter(([k]) => k !== 'No Answer' && k !== 'Unspecified')
-    .sort((a, b) => b[1] - a[1]);
-  const painTotal = painEntries.reduce((sum, [, v]) => sum + v, 0);
-  const painMax = painEntries[0]?.[1] || 1;
-
-  // AI levels sorted
-  const aiEntries = Object.entries(stats.byAILevel as Record<string, number>)
-    .filter(([k]) => k !== 'Unknown')
-    .sort((a, b) => b[1] - a[1]);
-  const aiTotal = aiEntries.reduce((sum, [, v]) => sum + v, 0);
-
-  // Pain point color based on rank
-  const painColors = [C.primary, C.text, C.muted, `${C.primary}cc`, `${C.text}bb`, `${C.muted}cc`, `${C.primary}99`, `${C.text}88`, `${C.muted}88`, `${C.primary}66`];
 
   return (
     <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
 
-      {/* ── Hero stat: total members ── */}
+      {/* Tonight's workshop is built for you */}
       <div style={{
-        background: C.text, color: onDark, borderRadius: sz(24), padding: `${sz(40)}px ${sz(36)}px`,
-        marginBottom: sz(28), position: 'relative', overflow: 'hidden',
-        boxShadow: `0 28px 56px -16px ${C.text}40`,
+        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+        border: `1px solid ${C.border}`,
         opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-        {/* Grid overlay */}
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
-        }} />
-
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
-              Your community ~ right now
-            </div>
-            <div style={{ ...serif, fontSize: sz(80), fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: onDark }}>
-              {animCount}
-            </div>
-            <div style={{ ...mono, fontSize: sz(12), letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.5)', marginTop: sz(8) }}>
-              members across all platforms
-            </div>
-          </div>
-
-          {/* Mini donut */}
-          <svg width={sz(140)} height={sz(140)} style={{ transform: 'rotate(-90deg)' }}>
-            {(() => {
-              const r = sz(52); const sw = sz(16); const cx = sz(70); const cy = sz(70);
-              const circ = 2 * Math.PI * r;
-              const segs = [
-                { val: stats.ghlOnly, color: C.primary },
-                { val: stats.both, color: onDark },
-                { val: stats.skoolOnly, color: `${C.primary}60` },
-              ];
-              let cum = 0;
-              return segs.map((s, i) => {
-                const pct = s.val / stats.total;
-                const offset = circ * (1 - pct);
-                const rot = cum * 360;
-                cum += pct;
-                return (
-                  <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
-                    strokeDasharray={`${circ}`} strokeDashoffset={offset} strokeLinecap="round"
-                    style={{ transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%', transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
-                  />
-                );
-              });
-            })()}
-          </svg>
-        </div>
-
-        {/* Platform breakdown pills */}
-        <div style={{ position: 'relative', display: 'flex', gap: sz(12), marginTop: sz(24) }}>
-          {[
-            { label: 'GHL funnel', val: stats.ghlOnly, color: C.primary },
-            { label: 'Both platforms', val: stats.both, color: onDark },
-            { label: 'Skool community', val: stats.skoolOnly, color: `${C.primary}90` },
-          ].map(p => (
-            <div key={p.label} style={{
-              display: 'flex', alignItems: 'center', gap: sz(8),
-              padding: `${sz(8)}px ${sz(14)}px`, borderRadius: 100,
-              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
-            }}>
-              <div style={{ width: sz(8), height: sz(8), borderRadius: '50%', background: p.color }} />
-              <span style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase' as const }}>{p.label}</span>
-              <span style={{ ...serif, fontSize: sz(18), fontWeight: 300, color: onDark }}>{p.val}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Pain points ~ animated bars ── */}
-      <div style={{
-        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
-        border: `1px solid ${C.border}`, marginBottom: sz(28),
-        opacity: revealed >= 2 ? 1 : 0, transform: revealed >= 2 ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
-          <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
-          What keeps them up at night
-        </div>
-        <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
-          Self-reported pain points from Skool onboarding
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10) }}>
-          {painEntries.map(([key, count], i) => {
-            const pct = (count / painMax) * 100;
-            const isActive = activePain === i;
-            return (
-              <div
-                key={key}
-                onClick={() => setActivePain(isActive ? null : i)}
-                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: sz(4) }}>
-                  <span style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: isActive ? C.primary : C.text }}>{key}</span>
-                  <span style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em' }}>
-                    {count} <span style={{ opacity: 0.5 }}>({((count / painTotal) * 100).toFixed(0)}%)</span>
-                  </span>
-                </div>
-                <div style={{ height: sz(8), borderRadius: sz(4), background: `${C.surface2}`, overflow: 'hidden', position: 'relative' }}>
-                  <div style={{
-                    height: '100%', borderRadius: sz(4),
-                    background: painColors[i] || C.primary,
-                    width: revealed >= 2 ? `${pct}%` : '0%',
-                    transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.1}s`,
-                  }} />
-                </div>
-                {isActive && (
-                  <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(13), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
-                    {count} members need help with {key.toLowerCase()} ~ prime mentoring opportunity
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── AI experience distribution ── */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(20),
-        opacity: revealed >= 3 ? 1 : 0, transform: revealed >= 3 ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}>
-        {/* AI level breakdown */}
-        <div style={{
-          background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
-          border: `1px solid ${C.border}`,
-        }}>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
-            <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
-            AI experience levels
-          </div>
-          <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
-            Where they are on their AI journey
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: sz(12) }}>
-            {aiEntries.map(([level, count], i) => {
-              const pct = aiTotal > 0 ? (count / aiTotal) * 100 : 0;
-              return (
-                <div key={level} style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
-                  <div style={{ width: sz(100), ...sans, fontSize: sz(13), fontWeight: 500, color: C.text, flexShrink: 0 }}>
-                    {level}
-                  </div>
-                  <div style={{ flex: 1, height: sz(6), borderRadius: sz(3), background: C.surface2, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%', borderRadius: sz(3), background: C.primary,
-                      width: revealed >= 3 ? `${pct}%` : '0%',
-                      transition: `width 1s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.12}s`,
-                    }} />
-                  </div>
-                  <div style={{ ...mono, fontSize: sz(12), color: C.muted, width: sz(40), textAlign: 'right' as const }}>
-                    {count}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Key insight card */}
-        <div style={{
-          background: C.text, color: onDark, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
-          position: 'relative', overflow: 'hidden',
-          boxShadow: `0 16px 32px -10px ${C.text}30`,
-        }}>
-          <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
-            backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
-          }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
-              <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
-              The opportunity
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: sz(20) }}>
-              <div>
-                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
-                  {((stats.ghlOnly / (stats.ghlOnly + stats.both)) * 100).toFixed(0)}%
-                </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
-                  of your GHL leads haven&apos;t joined Skool yet
-                </div>
-              </div>
-
-              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
-
-              <div>
-                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
-                  {painEntries[0]?.[0]}
-                </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
-                  is the #1 pain point ~ {painEntries[0]?.[1]} members need help here
-                </div>
-              </div>
-
-              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
-
-              <div>
-                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
-                  {aiEntries[0]?.[0]}
-                </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
-                  is the most common AI level ~ {aiEntries[0]?.[1]} members
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mentor track recommendation ~ data-driven */}
-      <div style={{
-        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
-        border: `1px solid ${C.border}`, marginTop: sz(28),
-        opacity: revealed >= 4 ? 1 : 0, transform: revealed >= 4 ? 'translateY(0)' : 'translateY(20px)',
         transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
@@ -4466,8 +4266,8 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
         </div>
       )}
 
-      {/* Poll bar chart */}
-      {hasPoll && (
+      {/* Poll bar chart ~ hidden for now */}
+      {false && hasPoll && (
         <div style={{
           padding: '28px 30px',
           borderRadius: 18,
