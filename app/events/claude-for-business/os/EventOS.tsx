@@ -233,6 +233,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
   const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
+  const [showLiveQA, setShowLiveQA] = useState(true);
   const [compareState, setCompareState] = useState<CompareState>({
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
@@ -593,6 +594,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </Btn>
           <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
             {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
+          </Btn>
+          <Btn onClick={() => setShowLiveQA(q => !q)} C={C} style={{ color: showLiveQA ? C.primary : C.muted }}>
+            {showLiveQA ? '💬 HIDE Q&A' : '💬 SHOW Q&A'}
           </Btn>
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
@@ -976,6 +980,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           theme={theme}
           editMode={editMode}
           onSaveEdit={saveEdit}
+          showLiveQA={showLiveQA}
         />
       )}
     </div>
@@ -1136,6 +1141,8 @@ interface DoorOption {
   nextStep: string;
   cta: string;
   ctaUrl: string;
+  secondaryCta?: string;
+  secondaryCtaUrl?: string;
   highlight?: boolean;
 }
 const THREE_DOORS: DoorOption[] = [
@@ -1155,23 +1162,25 @@ const THREE_DOORS: DoorOption[] = [
     nextStep: 'Join our Skool, grab the playbooks, open Claude tonight.',
     cta: 'Join the community',
     ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
+    secondaryCta: 'Get the AI Playbooks',
+    secondaryCtaUrl: 'https://abiemaxey.com/playbooks',
   },
   {
     label: 'Door 2',
     name: 'VIP',
-    italic: '€47 ~ the map',
-    price: '€47',
+    italic: '€49 ~ the map',
+    price: '€49',
     pitch: "The recording, the skill library, 30 days inside our community.",
     bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
     whatYouGet: [
       "Full replay + transcript ~ 30-day access (€97)",
       "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
       "VIP-only group follow-up ~ 45 min with Abie + Meri",
-      "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
+      "30-day Premium Skool · €49/mo after, cancel anytime",
       "Early access to the upcoming Bootcamp",
     ],
     nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
-    cta: 'Join VIP — €47',
+    cta: 'Join VIP — €49',
     ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
     highlight: true,
   },
@@ -1352,7 +1361,15 @@ const CLAUDE_BUILDING_BLOCKS = [
   },
 ];
 
-// Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
+// Live demo options for the segment 04 spin wheel ~ demoed by TM AI Architects
+const LIVE_DEMOS = [
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousel', desc: 'Turn any idea, blog post, or voice note into a ready-to-post Instagram or Threads carousel ~ in your brand voice.' },
+  { icon: '⬛', name: 'Premium Dashboard & Command Centre', short: 'Dashboard', desc: 'Your custom AI home base ~ business metrics, task triage, and daily priorities in one place. No-code. Fully yours.' },
+  { icon: '◉', name: 'Profile Maker', short: 'Profile', desc: 'Drop in your background and let Claude write your LinkedIn, bio link, Instagram, and pitch deck intro ~ all consistent, all on-brand.' },
+  { icon: '▶', name: 'Video Editor', short: 'Video', desc: 'Script, trim, caption, and repurpose your videos with AI ~ from raw footage to polished content ready to post.' },
+];
+
+// Abie's actual stack ~ used in segment 06 showcase
 const ABIE_STACK = [
   { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
   { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
@@ -2635,7 +2652,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
         What we demo live
       </div>
       <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
-        ↓ Pick someone in chat to spin · we demo whatever it lands on
+        ↓ Pick someone in chat to spin · our AI Architects demo whatever it lands on
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
@@ -3101,12 +3118,312 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
               Tonight only
             </div>
             <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
-              €47
+              €49
             </div>
           </div>
         </div>
       )}
 
+    </div>
+  );
+}
+
+// ── BootcampPreview ~ segment 08: 3-day intensive teaser ────────────────────
+const BOOTCAMP_DAYS = [
+  {
+    day: 'Day 01',
+    title: 'Create',
+    subtitle: 'Your AI content machine',
+    color: '#C4A882',
+    pain: 'Your #1 pain: content takes too long',
+    sessions: [
+      'Build your Claude content brain ~ voice, ICP, brand in one Project',
+      'Generate a week of content in 20 minutes ~ captions, scripts, carousels',
+      'Write emails that sound like you ~ outreach, newsletters, follow-ups',
+      'Live build: your own content workflow, ready to use Monday',
+    ],
+    outcome: 'Leave with a running content system.',
+  },
+  {
+    day: 'Day 02',
+    title: 'Operate',
+    subtitle: 'Your AI back office',
+    color: '#7D6B5A',
+    pain: 'Your #2 pain: admin eating your day',
+    sessions: [
+      'Automate your inbox ~ triage, draft, respond without touching it',
+      'Build AI SOPs ~ Claude runs your recurring tasks so you don\'t have to',
+      'Research & analysis in minutes ~ reports, competitor intel, summaries',
+      'Live build: one repeating task fully off your plate by end of day',
+    ],
+    outcome: 'Leave with hours back every week.',
+  },
+  {
+    day: 'Day 03',
+    title: 'Build',
+    subtitle: 'Your first AI tool',
+    color: '#5A6B5A',
+    pain: 'Your #3 pain: tech feels out of reach',
+    sessions: [
+      'Vibe coding session ~ build a real thing with Claude, no experience needed',
+      'Your AI dashboard ~ a custom home base for your business',
+      'Connect your tools ~ Claude + your CRM, calendar, docs',
+      'Live build: ship something to your audience by end of day',
+    ],
+    outcome: 'Leave having built something real.',
+  },
+];
+
+function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  return (
+    <div style={{ marginTop: sz(48) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: sz(28) }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Coming soon ~ members only
+          </div>
+          <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            The 3-Day AI Intensive Bootcamp
+          </div>
+          <div style={{ ...serif, fontSize: sz(16), color: C.muted, fontStyle: 'italic', marginTop: sz(6) }}>
+            Built around what you told us hurts most. Small groups. Hands-on. You ship something every day.
+          </div>
+        </div>
+        {/* Member badge */}
+        <div style={{
+          flexShrink: 0,
+          padding: `${sz(16)}px ${sz(24)}px`,
+          borderRadius: sz(16),
+          background: C.primary,
+          textAlign: 'center',
+          marginLeft: sz(24),
+        }}>
+          <div style={{ ...mono, fontSize: sz(28), fontWeight: 900, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>30%</div>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: '#FAF8F5', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>off every bootcamp</div>
+          <div style={{ ...serif, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, fontStyle: 'italic', marginTop: 2 }}>for premium members</div>
+        </div>
+      </div>
+
+      {/* 3 day cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(16) }}>
+        {BOOTCAMP_DAYS.map((d) => (
+          <div key={d.day} style={{
+            borderRadius: sz(16),
+            overflow: 'hidden',
+            border: `1px solid ${C.border}`,
+            background: C.surface,
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {/* Day header */}
+            <div style={{ background: d.color, padding: `${sz(18)}px ${sz(22)}px` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
+                {d.day}
+              </div>
+              <div style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                {d.title}
+              </div>
+              <div style={{ ...serif, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', fontStyle: 'italic', marginTop: sz(4) }}>
+                {d.subtitle}
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: `${sz(18)}px ${sz(22)}px`, flex: 1, display: 'flex', flexDirection: 'column', gap: sz(14) }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.primary }}>
+                {d.pain}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: sz(8) }}>
+                {d.sessions.map((s, i) => (
+                  <div key={i} style={{ display: 'flex', gap: sz(10), alignItems: 'flex-start' }}>
+                    <span style={{ ...mono, fontSize: sz(11), color: d.color, flexShrink: 0, paddingTop: 1 }}>→</span>
+                    <span style={{ ...serif, fontSize: sz(13), color: C.text, lineHeight: 1.45 }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 'auto', paddingTop: sz(14), borderTop: `1px solid ${C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: d.color }}>
+                  ✦ {d.outcome}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom note */}
+      <div style={{ marginTop: sz(20), padding: `${sz(16)}px ${sz(24)}px`, borderRadius: sz(12), background: `${C.primary}10`, border: `1px solid ${C.primary}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ ...serif, fontSize: sz(15), color: C.text, fontStyle: 'italic' }}>
+          Drop <strong style={{ fontStyle: 'normal', ...mono, fontSize: sz(13), color: C.primary, letterSpacing: '0.1em' }}>BOOTCAMP</strong> in the chat to get notified when doors open.
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0, marginLeft: sz(24) }}>
+          Premium members · 30% off · always
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── SkoolJoinCard ~ segment 08 audience view: premium membership CTA ────────
+const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
+const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
+
+function QRBlock({ url, label, sublabel, size, C, mono, serif }: {
+  url: string; label: string; sublabel: string; size: number;
+  C: Palette; mono: object; serif: object;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size * 0.08, flexShrink: 0 }}>
+      <div style={{ ...mono, fontSize: size * 0.07, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+        {label}
+      </div>
+      <div style={{ background: '#FFFFFF', padding: size * 0.075, borderRadius: size * 0.1, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.text}08` }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=2A2520&bgcolor=ffffff&margin=0`}
+          alt={label}
+          width={size}
+          height={size}
+          style={{ display: 'block' }}
+        />
+      </div>
+      <div style={{ ...serif, fontSize: size * 0.07, color: C.primary, fontStyle: 'italic', fontWeight: 600 }}>
+        {sublabel}
+      </div>
+    </div>
+  );
+}
+
+const BONUS_NUGGETS = [
+  {
+    icon: '✉️',
+    title: 'The 15-min email trick',
+    desc: 'Paste your last 5 sent emails into Claude. Ask it to write your next 10 in your exact voice. Done.',
+  },
+  {
+    icon: '🃏',
+    title: 'Build your first skill card',
+    desc: 'Pick one task you repeat every week. Describe it to Claude step by step. Ask it to turn it into a reusable skill prompt.',
+  },
+  {
+    icon: '🧠',
+    title: 'The brain dump → action plan',
+    desc: 'Paste your messy notes, voice memo transcript, or scattered ideas. Ask Claude: "Turn this into a structured action plan with priorities."',
+  },
+  {
+    icon: '🪪',
+    title: 'Write your system prompt',
+    desc: 'Tell Claude who you are, what you do, and how you communicate. Ask it to write a system prompt you paste at the start of every session.',
+  },
+  {
+    icon: '📅',
+    title: 'The Friday review ritual',
+    desc: 'Every Friday: give Claude your wins, blocks, and open loops. Ask: "What patterns do you see? What should I prioritize Monday?"',
+  },
+];
+
+function BonusSlide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  return (
+    <div style={{ marginTop: sz(40) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: sz(14), marginBottom: sz(24) }}>
+        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, padding: `${sz(4)}px ${sz(12)}px`, borderRadius: 100, border: `1px solid ${C.primary}`, background: C.primary + '15' }}>
+          🎁 Bonus
+        </div>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+      </div>
+
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
+        Five things to do this week.
+      </div>
+      <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(24), lineHeight: 1.5 }}>
+        No setup needed. No paid tools. Just Claude and 15 minutes.
+      </div>
+
+      {/* Nugget grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(14) }}>
+        {BONUS_NUGGETS.map((n, i) => (
+          <div
+            key={i}
+            style={{
+              padding: `${sz(20)}px ${sz(22)}px`,
+              borderRadius: 14,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              gridColumn: i === 4 ? 'span 2' : undefined,
+            }}
+          >
+            <div style={{ fontSize: sz(22), marginBottom: sz(8) }}>{n.icon}</div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{n.title}</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.55 }}>{n.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: sz(20), textAlign: 'center' }}>
+        ✦ These are in your workbook ~ take them home tonight
+      </div>
+    </div>
+  );
+}
+
+function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  const qrSize = sz(140);
+  return (
+    <div style={{ marginTop: sz(40), padding: `${sz(32)}px ${sz(36)}px`, borderRadius: 18, background: C.surface, border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: sz(40) }}>
+
+      {/* QR codes side by side */}
+      <div style={{ display: 'flex', gap: sz(24), flexShrink: 0 }}>
+        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} serif={serif} />
+        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} serif={serif} />
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+      {/* Right: details */}
+      <div style={{ flex: 1 }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6) }}>
+          Premium membership
+        </div>
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(6) }}>
+          Talent Mucho
+        </div>
+        <div style={{ ...serif, fontSize: sz(15), color: C.muted, fontStyle: 'italic', marginBottom: sz(20) }}>
+          Live workshops · Vault access · Inner circle · Vibe coding sessions
+        </div>
+
+        {/* Pricing row */}
+        <div style={{ display: 'flex', gap: sz(14), alignItems: 'center', marginBottom: sz(20) }}>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.border}`, background: C.bg }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: 2 }}>Monthly</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€49 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/mo</span></div>
+          </div>
+          <div style={{ ...mono, fontSize: sz(12), color: C.muted }}>or</div>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.primary + '15' }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.primary, marginBottom: 2 }}>Annual · save 32%</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€399 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/yr</span></div>
+          </div>
+        </div>
+
+        <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: sz(6) }}>
+          ✦ Price goes to €97/mo soon ~ lock in €49 tonight
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          Not happy? Message us directly ~ we'll refund you.
+        </div>
+      </div>
     </div>
   );
 }
@@ -3219,10 +3536,33 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                     background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
                     color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
                     border: 'none',
+                    marginBottom: door.secondaryCta ? sz(10) : 0,
                   }}
                 >
                   {door.cta} →
                 </a>
+                {door.secondaryCta && door.secondaryCtaUrl && (
+                  <a
+                    href={door.secondaryCtaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                      display: 'block',
+                      padding: `${sz(12)}px ${sz(20)}px`,
+                      borderRadius: 100,
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      ...mono, fontSize: sz(11), fontWeight: 700,
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      background: 'transparent',
+                      color: C.primary,
+                      border: `1.5px solid ${C.primary}`,
+                    }}
+                  >
+                    {door.secondaryCta} →
+                  </a>
+                )}
               </div>
             </div>
           );
@@ -3248,6 +3588,8 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
   const [revealedPromises, setRevealedPromises] = useState(0);
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
+  const MENTI_URL = 'menti.talentmucho.com/join';
+  const MENTI_CODE = 'VDIEGH';
 
   // Tick every second for the countdown
   useEffect(() => {
@@ -3291,12 +3633,6 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
     const sec = s % 60;
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   };
-
-  const promises = [
-    "Finally understand what AI can do for your business",
-    "Get hands-on with Claude in a small group ~ no experience required",
-    "Walk away with a clear starting point ~ not 47 tabs and overwhelm",
-  ];
 
   return (
     <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
@@ -3509,59 +3845,115 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
         </div>
       </div>
 
-      {/* ── QR Code ~ join the workbook ── */}
+      {/* ── Mentimeter join card ── */}
+      <div style={{
+        marginTop: 26,
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: sz(52),
+      }}>
+        {/* Left: QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+            Scan to join
+          </div>
+          <div style={{
+            background: '#FFFFFF',
+            padding: sz(12),
+            borderRadius: sz(16),
+            border: `1px solid ${C.border}`,
+            boxShadow: `0 4px 24px ${C.text}08`,
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
+              alt="QR code to join Mentimeter"
+              width={sz(160)}
+              height={sz(160)}
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
+            {MENTI_URL}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+        {/* Right: code + URL + button */}
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
+            Enter code at
+          </div>
+          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(24), letterSpacing: '-0.01em' }}>
+            {MENTI_URL}
+          </div>
+          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: sz(8),
+            padding: `${sz(13)}px ${sz(32)}px`,
+            borderRadius: 100,
+            background: '#7C6B5A',
+            color: '#FAF8F5',
+            ...sans,
+            fontSize: sz(15),
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            cursor: 'default',
+          }}>
+            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
+            Start Session
+          </div>
+        </div>
+      </div>
+
+      {/* ── Housekeeping ── */}
       <div style={{
         marginTop: 26,
         padding: '28px 30px',
         borderRadius: 18,
         background: C.surface,
         border: `1px solid ${C.border}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 28,
       }}>
-        <div style={{
-          flexShrink: 0,
-          width: sz(160),
-          height: sz(160),
-          borderRadius: 14,
-          background: '#FFFFFF',
-          padding: 8,
-          border: `1px solid ${C.border}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://talentmucho.com/events/claude-for-business/workbook')}`}
-            alt="QR code to workbook"
-            width={sz(144)}
-            height={sz(144)}
-            style={{ display: 'block', imageRendering: 'pixelated' }}
-          />
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(20), display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          Before we start
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-            Join the workbook
-          </div>
-          <div style={{ ...serif, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div style={{
-            ...mono,
-            fontSize: sz(12),
-            color: C.text,
-            letterSpacing: '0.04em',
-            padding: '8px 14px',
-            borderRadius: 8,
-            background: `${C.primary}10`,
-            border: `1px solid ${C.border}`,
-            display: 'inline-block',
-          }}>
-            talentmucho.com/events/claude-for-business/workbook
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(14) }}>
+          {[
+            { icon: '🎙', label: 'Mute yourself', desc: 'Stay muted unless we call on you ~ reduces background noise for everyone.' },
+            { icon: '💬', label: 'Use the chat', desc: 'Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.' },
+            { icon: '📹', label: 'Camera on if you can', desc: 'We love seeing faces ~ helps us read the room and connect with you.' },
+            { icon: '⏺', label: 'We\'re recording', desc: 'Replay link goes to everyone who registered ~ even if you can\'t stay.' },
+            { icon: '📝', label: 'Take notes', desc: 'Open a doc or grab a notebook ~ you\'ll want to capture your ideas as we go.' },
+            { icon: '🚽', label: 'Bathroom break', desc: 'We\'ll pause halfway through ~ hold tight until then if you can.' },
+            { icon: '🏁', label: 'Stay till the end', desc: 'We save the most actionable stuff for last ~ worth it, we promise.' },
+          ].map(item => (
+            <div key={item.label} style={{
+              display: 'flex',
+              gap: sz(14),
+              padding: `${sz(16)}px ${sz(18)}px`,
+              borderRadius: sz(12),
+              background: `${C.primary}06`,
+              border: `1px solid ${C.border}`,
+              alignItems: 'flex-start',
+            }}>
+              <div style={{ fontSize: sz(22), lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{item.icon}</div>
+              <div>
+                <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: C.text, marginBottom: sz(4), letterSpacing: '-0.01em' }}>{item.label}</div>
+                <div style={{ ...serif, fontSize: sz(13), color: C.muted, lineHeight: 1.5, fontStyle: 'italic' }}>{item.desc}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -3974,53 +4366,17 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
 function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties; scale?: number;
 }) {
-  const stats = communityData.stats;
-  const members = communityData.members;
   const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
 
   const [revealed, setRevealed] = useState(0);
-  const [animCount, setAnimCount] = useState(0);
-  const [activePain, setActivePain] = useState<number | null>(null);
 
-  // Stagger reveal of sections
   useEffect(() => {
     setRevealed(0);
     let i = 0;
-    const tick = () => { i += 1; setRevealed(i); if (i < 5) setTimeout(tick, 600); };
+    const tick = () => { i += 1; setRevealed(i); if (i < 2) setTimeout(tick, 600); };
     setTimeout(tick, 400);
   }, []);
-
-  // Animate the total count up
-  useEffect(() => {
-    const target = stats.total;
-    const duration = 1800;
-    const start = Date.now();
-    const frame = () => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-  }, [stats.total]);
-
-  // Pain points sorted by count (exclude noise)
-  const painEntries = Object.entries(stats.byPainCategory as Record<string, number>)
-    .filter(([k]) => k !== 'No Answer' && k !== 'Unspecified')
-    .sort((a, b) => b[1] - a[1]);
-  const painTotal = painEntries.reduce((sum, [, v]) => sum + v, 0);
-  const painMax = painEntries[0]?.[1] || 1;
-
-  // AI levels sorted
-  const aiEntries = Object.entries(stats.byAILevel as Record<string, number>)
-    .filter(([k]) => k !== 'Unknown')
-    .sort((a, b) => b[1] - a[1]);
-  const aiTotal = aiEntries.reduce((sum, [, v]) => sum + v, 0);
-
-  // Pain point color based on rank
-  const painColors = [C.primary, C.text, C.muted, `${C.primary}cc`, `${C.text}bb`, `${C.muted}cc`, `${C.primary}99`, `${C.text}88`, `${C.muted}88`, `${C.primary}66`];
 
   return (
     <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
@@ -4247,8 +4603,8 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
       {/* Mentor track recommendation ~ data-driven */}
       <div style={{
         background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
-        border: `1px solid ${C.border}`, marginTop: sz(28),
-        opacity: revealed >= 4 ? 1 : 0, transform: revealed >= 4 ? 'translateY(0)' : 'translateY(20px)',
+        border: `1px solid ${C.border}`,
+        opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
         transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
@@ -4466,8 +4822,8 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
         </div>
       )}
 
-      {/* Poll bar chart */}
-      {hasPoll && (
+      {/* Poll bar chart ~ hidden for now */}
+      {false && hasPoll && (
         <div style={{
           padding: '28px 30px',
           borderRadius: 18,
@@ -4524,7 +4880,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit, showLiveQA }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
@@ -4537,6 +4893,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   theme: ThemeKey;
   editMode: boolean;
   onSaveEdit: (path: string, value: string) => void;
+  showLiveQA: boolean;
 }) {
   // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
   const audScale = fontSize / 19;
@@ -5019,7 +5376,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
 
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
         {seg.num === '04' && (
-          <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+          <SpinWheel items={LIVE_DEMOS} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
         {/* ── Welcome interactive ~ countdown + agenda + cities + location cloud (segment 00) ── */}
@@ -5050,7 +5407,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         )}
 
         {/* ── Q&A live feed ~ segment 07 ── */}
-        {seg.num === '07' && (
+        {seg.num === '07' && showLiveQA && (
           <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
@@ -5059,6 +5416,9 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           <>
             <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 

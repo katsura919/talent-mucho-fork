@@ -326,60 +326,51 @@ export const SEGMENTS: Segment[] = [
     subtitle: '6:40~7:05 PM ~ three real tasks, on screen',
     duration: '25 min', speakers: ['ABIE', 'MERI'], panel: 'demo', panelUrl: 'https://claude.ai/new',
     audWhatTitle: 'What we <em>demo</em> live',
-    audWhatBody: "<p>This is the part you came for. <em>Real tasks. Live, on screen.</em> Tools we use to run our actual business every day ~ from inbox triage to proposal writing to invoice chasing.</p><p>We brought a <em>spin wheel</em> with seven options. Whoever's most engaged in the chat picks the spinner. <em>Whatever it lands on, we build live.</em></p>",
+    audWhatBody: "<p>This is the part you came for. <em>Real tools. Live, on screen.</em> Our Talent Mucho AI Architects are in the room ~ each one specialised in a different tool.</p><p>We spin the wheel. Whoever's most active in the chat picks the spinner. <em>Whatever it lands on, an AI Architect demos it live.</em></p>",
     audTakeaway: 'Your job tonight: <em>copy one of these prompts</em> and try it tomorrow.',
     beats: [
       {
         id: 'd1', title: 'Frame the demo block', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "<em>Enough theory. Let's show you what this looks like in real life.</em> Three demos. Real tasks. On screen." },
+          { type: 'scripted', speaker: 'ABIE', text: "<em>Enough theory. Let's show you what this looks like in real life.</em> Real tools. On screen. Right now." },
+          { type: 'scripted', speaker: 'ABIE', text: "We have our <em>Talent Mucho AI Architects</em> in the room ~ each one specialised in one of these tools. We're going to spin the wheel, and whoever it lands on, one of our Architects demos it live." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            "Demo 1 ~ Cowork organises my whole Downloads folder (Abie, ~6 min)",
-            "Demo 2 ~ IG Carousel Generator skill ~ blog post → 7 slides (Abie, ~8 min)",
-            "Demo 3 ~ Competitor Analysis tool ~ full intel report in minutes (Meri, ~8 min)",
+            "<em>Carousel Studio</em> ~ turn any idea into a ready-to-post carousel",
+            "<em>Premium Dashboard & Command Centre</em> ~ your AI home base, built live",
+            "<em>Profile Maker</em> ~ bio, LinkedIn, pitch ~ consistent and on-brand",
+            "<em>Video Editor</em> ~ script, caption, repurpose ~ without touching an edit suite",
           ]},
-          { type: 'stage', text: "Meri pinned in chat: drops links + copies prompts as Abie types them." },
+          { type: 'stage', text: "Call out the most active person in chat. Ask them to pick: spin or choose? Hand it to them." },
         ],
       },
       {
-        id: 'd2', title: 'Demo 1 ~ File organization with Cowork', speaker: 'ABIE', blocks: [
-          { type: 'stage', text: "Switch to Claude Cowork desktop app. Pre-recorded backup ready in case live fails." },
-          { type: 'scripted', speaker: 'ABIE', text: "What you're watching is <em>Claude Cowork.</em> I gave it one instruction ~ <em>organise my Downloads folder by category.</em>" },
-          { type: 'stage', text: 'Run the command live. Show files moving into Images, Documents, Spreadsheets, Invoices folders.' },
-          { type: 'scripted', speaker: 'ABIE', text: "Look at that. Images, documents, spreadsheets ~ everything sorted automatically. <em>This used to take me an hour.</em> Now it takes 30 seconds. <em>That's Cowork.</em>" },
-          { type: 'workbook', text: "WORKBOOK ~ What's one folder on your computer that's been a disaster for months? You're going to fix it tonight." },
+        id: 'd2', title: 'Spin + hand to AI Architect', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "Spin the wheel on screen. Announce what it lands on. AI Architect takes over camera + screen share." },
+          { type: 'scripted', speaker: 'ABIE', text: "The wheel has spoken. <em>[Architect name]</em> ~ take it away." },
+          { type: 'stage', text: "AI Architect runs the live demo. Abie + Meri stay on cam, react, answer chat questions while demo runs." },
+          { type: 'scripted', speaker: 'ABIE', text: "Drop your questions in chat as they build ~ our team is watching. <em>Nothing is pre-recorded. This is all live.</em>" },
         ],
       },
       {
-        id: 'd3', title: 'Demo 2 ~ IG Carousel Generator skill', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "Now watch <em>this.</em> This is one of our proprietary skills ~ the <em>IG Carousel Generator.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "I have a blog post. I want to turn it into a carousel for Instagram. <em>I paste the blog. Run the skill.</em>" },
-          { type: 'stage', text: "Live demo: paste a real blog post into Claude. Run the skill. Show the 7 slides materialising." },
-          { type: 'scripted', speaker: 'ABIE', text: "<em>Boom.</em> Seven slides. Properly formatted. Right structure, right tone. <em>I didn't write a single word of copy.</em>" },
+        id: 'd3', title: 'Second spin (if time)', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "If pace is good, spin again. Pick a second person from chat. Different Architect demos the next tool." },
+          { type: 'scripted', speaker: 'ABIE', text: "One more. Who in chat hasn't had a turn yet ~ drop a number 1 to 4, we'll pick someone." },
+          { type: 'stage', text: "Second Architect demos. Keep it tight ~ 6 to 8 minutes max." },
+        ],
+      },
+      {
+        id: 'd4', title: 'Debrief + pull the insight', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "What you just watched ~ that's not magic. That's <em>a skill library.</em> Natural language instructions you give Claude once, and it just works ~ every time, forever." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            "<em>Built without the API.</em> No code. No developer.",
-            'A "skill" = a set of natural language instructions I gave Claude <em>once</em>',
-            "Now it just works, every time, <em>forever</em>",
-            "<em>This whole skill library lives inside our paid community.</em>",
+            "<em>No code.</em> No developer. No API.",
+            "Each of those tools was built with Claude ~ by someone who started exactly where you are",
+            "<em>The full skill library lives inside our premium community.</em>",
           ]},
-        ],
-      },
-      {
-        id: 'd4', title: 'Demo 3 ~ Competitor Analysis (Meri)', speaker: 'MERI', blocks: [
-          { type: 'stage', text: "Meri takes the cam. This is the demo for the business owners in the room." },
-          { type: 'scripted', speaker: 'MERI', text: "This one is for the <em>business owners</em>. The Competitor Analysis tool. Also one of our proprietary skills." },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "Step 1 ~ enter your <em>business type</em>",
-            "Step 2 ~ describe your <em>audience</em>",
-            "Step 3 ~ describe your <em>market</em>",
-            "Step 4 ~ <em>Claude builds you a full competitive intelligence report</em>",
-          ]},
-          { type: 'stage', text: "Run live. Show: audience demographics, competitor strengths, market gaps, positioning strategy." },
-          { type: 'scripted', speaker: 'MERI', text: "Audience demographics. Competitor strengths. Market gaps. Your positioning strategy. <em>All of it. In minutes.</em> A consultant would charge thousands for this." },
+          { type: 'workbook', text: "WORKBOOK ~ Which of those tools would save you the most time this week? Write it down." },
         ],
       },
       {
         id: 'd5', title: 'Pause + reset', speaker: 'BOTH', blocks: [
-          { type: 'poll', text: 'POLL ~ "Which demo would save YOU the most hours? Type 1, 2, or 3."' },
+          { type: 'poll', text: 'POLL ~ "Which demo would save YOU the most hours? 1 = Carousel  2 = Dashboard  3 = Profile  4 = Video"' },
           { type: 'stage', text: 'Meri reads top answers from chat. 90 second screen break. Stretch.' },
         ],
       },
@@ -530,29 +521,43 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'ns3', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. <em>One time. €47.</em> Here's exactly what's inside:" },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "<em>Full replay + transcript</em> ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
-            "<em>The Claude Vault</em> ~ Talent Mucho's <em>premium proprietary skill library</em> · private dashboard setups + Claude skills (€297 value)",
-            "<em>VIP-only group follow-up</em> ~ 45 min private session with Abie & Meri, small group",
-            "<em>30-day Premium Skool access</em> ~ closed mentorship, weekly Vibe Coding. €49/mo after if you stay, cancel anytime (€49 value)",
-            "<em>Early access to the upcoming Bootcamp</em> ~ before it opens to the public",
-          ]},
-          { type: 'scripted', speaker: 'MERI', text: "<em>Total real value: over €700.</em> Tonight only ~ €47." },
-          { type: 'scripted', speaker: 'ABIE', text: "Real talk on what these skills are worth. At our old dev agency we charged <em>€10,000 to €20,000 to build prototypes</em> for clients. Tonight you're getting the skills <em>and</em> the knowledge to build your own ~ for a fraction of one of those." },
+        id: 'ns3', title: 'The real cost of not deciding', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: "Slow down here. This is not a sell ~ it's a reframe. Speak like you're talking to a friend." },
+          { type: 'scripted', speaker: 'ABIE', text: "Before I tell you what's available ~ I want to ask you something honestly." },
+          { type: 'scripted', speaker: 'ABIE', text: "How long have you been telling yourself you'll figure out AI? Be honest. A month? Six months? Since ChatGPT came out?" },
+          { type: 'stage', text: "Pause. Let it sit." },
+          { type: 'scripted', speaker: 'ABIE', text: "The people who are already ahead of you didn't wait until they felt ready. <em>They just got in the room.</em> That's the only difference." },
         ],
       },
       {
-        id: 'ns4', title: 'Why this price, this once', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "<em>I want to be honest about the price.</em> €47 isn't because we don't value our work. It's because <em>we want you in the room early.</em>" },
+        id: 'ns4', title: 'Stack the value ~ Skool premium', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want to keep going. <em>The Talent Mucho premium community.</em> €49 a month. Here's what that gets you:" },
           { type: 'bullets', speaker: 'MERI', items: [
-            "After tonight, premium Skool goes back to <em>€97/month</em>",
-            "We're building this community in front of you ~ early members shape what we build",
-            "You can spend <em>6 months</em> figuring this out alone the way we did ~",
-            "Or you can spend <em>6 weeks inside Skool</em> with two operators in the room",
+            "<em>Live workshops every month</em> ~ hands-on, with us, not a pre-recorded course you'll never finish",
+            "<em>Full replay vault</em> ~ everything, on demand, including tonight",
+            "<em>Vibe coding sessions</em> ~ we build real things together, live, in the chat",
+            "<em>Early access to every bootcamp</em> ~ before it opens to the public, at member pricing",
+            "<em>Inner circle access</em> ~ direct line to Abie and the team, not a ticketing system",
           ]},
-          { type: 'scripted', speaker: 'MERI', text: "<em>€47 isn't a fee. It's compressed time.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "And our promise: <em>if you join tonight and it's not what we promised, message Abie directly and she'll refund you.</em> No form, no wait." },
+          { type: 'scripted', speaker: 'ABIE', text: "For context ~ a single session with a Claude consultant in Madrid runs €200 to €500 an hour. You're getting us every month for €49. <em>That math only works because we're building this community now and we want early people in it.</em>" },
+        ],
+      },
+      {
+        id: 'ns4b', title: 'Anchor the price + urgency', speaker: 'MERI', blocks: [
+          { type: 'stage', text: "This is the anchor moment. Say the future price first. Let it land. Then reveal current price." },
+          { type: 'scripted', speaker: 'MERI', text: "This membership is going to <em>€97 a month.</em> That's where it's heading ~ and honestly at what's inside, that's still a deal." },
+          { type: 'scripted', speaker: 'MERI', text: "But tonight ~ because you showed up, because you stayed two hours, because <em>you're clearly not the person who watches from the sidelines</em> ~ it's <em>€49.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "That price is locked for as long as you stay. <em>You leave, you come back, it's €97.</em> So the question isn't whether €49 is worth it. The question is whether you'll wish you'd locked it in." },
+          { type: 'stage', text: "QR code is on screen. Let them scan. Don't rush past it." },
+        ],
+      },
+      {
+        id: 'ns4c', title: 'Social proof + identity', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "We already have <em>390 people</em> in this community. Creators, founders, VAs, freelancers ~ people who a few months ago were exactly where you are tonight." },
+          { type: 'scripted', speaker: 'ABIE', text: "They're not smarter than you. They didn't have more time. They just <em>decided</em> that figuring this out alone wasn't the move." },
+          { type: 'scripted', speaker: 'ABIE', text: "There are two kinds of people watching this right now. The ones who will close this tab and feel motivated for about 48 hours. <em>And the ones who actually change something tonight.</em> I think you know which one you want to be." },
+          { type: 'stage', text: "Don't soften this. Let the identity mirror do the work." },
         ],
       },
       {
@@ -572,7 +577,7 @@ export const SEGMENTS: Segment[] = [
           { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ <em>Educate. Build. Operate.</em>" },
           { type: 'bullets', speaker: 'BOTH', items: [
             "<em>Door 1 ~ Free.</em> Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. <em>This is enough for some of you ~ and that's totally fine.</em>",
-            "<em>Door 2 ~ €47 VIP.</em> Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
+            "<em>Door 2 ~ €49 VIP.</em> Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. <em>This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.</em>",
             "<em>Door 3 ~ Custom.</em> Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
           ]},
         ],

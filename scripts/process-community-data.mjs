@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-const GHL_PATH = join(process.env.HOME, 'Downloads/Export_Contacts_undefined_Apr_2026_5_38_AM.csv');
-const SKOOL_PATH = join(process.env.HOME, 'Downloads/community_members (1).csv');
+const GHL_PATH = join(process.env.HOME, 'Downloads/Export_Contacts_undefined_May_2026_6_18_PM.csv');
+const SKOOL_PATH = join(process.env.HOME, 'Downloads/community_members.csv');
 const OUT_PATH = join(process.cwd(), 'data/community-combined.json');
 
 function parseCSVLine(line) {
