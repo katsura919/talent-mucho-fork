@@ -191,25 +191,19 @@ export default function EventGuidePage() {
                   className="bg-white border border-beige-200 rounded-2xl overflow-hidden"
                 >
                   {/* Card header */}
-                  <div className="p-7 pb-0 flex gap-5 items-start">
-                    <span
-                      className="text-5xl font-light leading-none text-beige-300 shrink-0 mt-1"
-                      style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
-                    >
-                      {p.num}
-                    </span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                  <div className="p-5 sm:p-7 pb-0">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
                         <span className="text-xl">{p.icon}</span>
                         <span className="font-semibold text-charcoal-900 text-base">{p.title}</span>
                       </div>
-                      <p className="text-sm text-taupe-400 font-light leading-relaxed">{p.why}</p>
+                      <span className="text-xs font-semibold uppercase tracking-widest text-clay-500/60 shrink-0">{p.time}</span>
                     </div>
-                    <span className="text-xs font-semibold uppercase tracking-widest text-clay-500/60 shrink-0 mt-1">{p.time}</span>
+                    <p className="text-sm text-taupe-400 font-light leading-relaxed">{p.why}</p>
                   </div>
 
                   {/* Prompt block */}
-                  <div className="mx-7 my-5 rounded-xl bg-charcoal-900 relative">
+                  <div className="mx-4 sm:mx-7 my-5 rounded-xl bg-charcoal-900 relative">
                     <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
                       <span className="text-xs font-semibold uppercase tracking-widest text-beige-300/50">Prompt</span>
                       <button
@@ -219,13 +213,13 @@ export default function EventGuidePage() {
                         {copied === p.num ? '✓ Copied' : 'Copy'}
                       </button>
                     </div>
-                    <pre className="p-4 text-sm text-beige-200 font-light leading-relaxed whitespace-pre-wrap font-mono overflow-x-auto">
+                    <pre className="p-4 text-xs sm:text-sm text-beige-200 font-light leading-relaxed whitespace-pre-wrap font-mono overflow-x-auto">
                       {p.prompt}
                     </pre>
                   </div>
 
                   {/* Result */}
-                  <div className="px-7 pb-6 flex items-start gap-3">
+                  <div className="px-5 sm:px-7 pb-6 flex items-start gap-3">
                     <span className="text-clay-500 text-sm mt-0.5 shrink-0">→</span>
                     <p className="text-sm text-taupe-400 font-light leading-relaxed italic">{p.result}</p>
                   </div>
