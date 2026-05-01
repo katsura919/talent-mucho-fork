@@ -708,7 +708,7 @@ export default function EventGuidePage() {
                 className="text-4xl md:text-5xl font-light text-charcoal-900 leading-tight"
                 style={{ fontFamily: 'var(--font-cormorant), ui-serif, Georgia, serif' }}
               >
-                How we got here.
+                Made with love,<br /><em className="italic text-clay-500">happy to serve.</em>
               </h2>
             </div>
 
@@ -731,10 +731,12 @@ export default function EventGuidePage() {
                   <p className="text-sm text-taupe-400 font-light leading-relaxed">
                     Decade in tech ~ analyst, architect, engineer, manager. Davao to Madrid. Found her love in AI and finally found her base in Spain. Her build era.
                   </p>
-                  <div className="flex items-center gap-3 pt-1">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1">
                     <a href="https://instagram.com/abiemaxey" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-clay-500 hover:text-clay-600 transition-colors">@abiemaxey</a>
                     <span className="text-beige-300 text-xs">·</span>
                     <a href="https://abiemaxey.com" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-charcoal-900/40 hover:text-clay-500 transition-colors">abiemaxey.com</a>
+                    <span className="text-beige-300 text-xs">·</span>
+                    <a href="https://happyvoyager.com" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-charcoal-900/40 hover:text-clay-500 transition-colors">happyvoyager.com</a>
                   </div>
                 </div>
               </div>
@@ -757,10 +759,12 @@ export default function EventGuidePage() {
                   <p className="text-sm text-taupe-400 font-light leading-relaxed">
                     Marketing, no tech background. Built an agency from scratch. Burned out managing people. Claude changed everything ~ less staff, more output, better results. Streaming from the Balkans.
                   </p>
-                  <div className="flex items-center gap-3 pt-1">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1">
                     <a href="https://instagram.com/udreamtravels" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-clay-500 hover:text-clay-600 transition-colors">@udreamtravels</a>
                     <span className="text-beige-300 text-xs">·</span>
                     <a href="https://udreamtravels.com" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-charcoal-900/40 hover:text-clay-500 transition-colors">udreamtravels.com</a>
+                    <span className="text-beige-300 text-xs">·</span>
+                    <a href="https://advancedvirtualstaff.com" target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-charcoal-900/40 hover:text-clay-500 transition-colors">advancedvirtualstaff.com</a>
                   </div>
                 </div>
               </div>
