@@ -20,9 +20,9 @@ const nextSteps = [
   {
     step: '01',
     icon: <Users className="w-5 h-5 text-clay-500" />,
-    title: 'Premium access incoming ~ within 24 hrs',
-    body: 'This is an invite-only premium community. We\'ll review your payment and send your personal invite within 24 hours. Keep an eye on your inbox ~ it\'ll come from hello@talentmucho.com.',
-    cta: null,
+    title: 'Access your premium community',
+    body: 'Click below to enter the vault. Your membership unlocks everything ~ workshops, replays, vibe coding sessions, and the inner circle.',
+    cta: { label: 'Enter the community', href: SKOOL_URL },
   },
   {
     step: '02',
