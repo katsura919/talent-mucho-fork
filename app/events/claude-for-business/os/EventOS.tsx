@@ -1098,21 +1098,43 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, sans, serif }: {
 }
 
 // ── Products Panel ────────────────────────────────────────────────────────────
-// Sample cities ~ used in the segment 00 welcome "where are you joining from?" feed
-// Scrolls through these so the audience sees a global welcome vibe before they've even typed
+// Real names from GHL + Skool community ~ scrolls in the segment 00 welcome feed
 const WELCOME_CITIES = [
-  '👋 Maria from Madrid',
-  '✨ Sarah from London',
-  '🌴 Jobell from Cebu',
-  '☕ Marcus from Berlin',
-  '🌊 Lisa from Lisbon',
-  '🍁 Anna from Toronto',
-  '🦘 Tom from Sydney',
-  '🌅 Priya from Mumbai',
-  '⚡ Diego from Buenos Aires',
-  '🌸 Yuki from Tokyo',
-  '🌵 Carlos from Mexico City',
-  '🍷 Sophie from Paris',
+  '👋 Ella',
+  '✨ Paula',
+  '🌴 Jobell',
+  '☕ Kristen',
+  '🌊 Sofia',
+  '🍁 Dawn',
+  '🦋 Jacinta',
+  '🌅 Althea',
+  '⚡ Christina',
+  '🌸 Hazel',
+  '🎯 Angelica',
+  '🍷 Nora',
+  '🔥 Faye',
+  '💡 Julie',
+  '🌿 Erin',
+  '✦ Marga',
+  '🎨 Andresa',
+  '🚀 Brad',
+  '🌺 Aira',
+  '💫 Nathaly',
+  '🎵 Jean',
+  '🌟 Zeeshan',
+  '🦚 Mitzi',
+  '🎯 Akhil',
+  '🌙 Hani',
+  '⭐ Monica',
+  '🌻 Nina',
+  '🔮 Ingrid',
+  '🎪 April',
+  '💎 Gwen',
+  '🌊 Kyle',
+  '✨ Chelsea',
+  '🌴 Angel',
+  '☕ Rucha',
+  '🌸 Tala',
 ];
 
 // VIP value stack ~ used in segment 07 audience view (the close)
