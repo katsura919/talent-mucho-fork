@@ -3542,68 +3542,6 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
         </div>
       </div>
 
-      {/* ── Transition: Just want accountability ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: sz(16), margin: `${sz(4)}px 0` }}>
-        <div style={{ flex: 1, height: 1, background: `${C.border}` }} />
-        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.muted, whiteSpace: 'nowrap' as const }}>
-          Not ready for the bootcamp? Want the community first?
-        </div>
-        <div style={{ flex: 1, height: 1, background: `${C.border}` }} />
-      </div>
-
-      {/* ── Premium membership QR ── */}
-      <div style={{ borderRadius: sz(18), border: `1.5px solid ${C.border}`, background: C.surface, padding: `${sz(20)}px ${sz(24)}px` }}>
-        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(4) }}>
-          Premium community
-        </div>
-        <div style={{ ...sans, fontSize: sz(17), fontWeight: 700, color: C.text, marginBottom: sz(4) }}>
-          Join for accountability, workshops, and 30% off every bootcamp.
-        </div>
-        <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(16), lineHeight: 1.5 }}>
-          Monthly workshops · replay vault · vibe coding sessions · direct access to Abie & Meri · rate locked as long as you stay.
-        </div>
-        <div style={{ display: 'flex', gap: sz(24), alignItems: 'flex-start' }}>
-          {/* Monthly QR */}
-          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(8) }}>
-            <div style={{ background: '#ffffff', padding: sz(10), borderRadius: sz(12), border: `1.5px solid ${C.border}` }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05')}&margin=0&color=2A2520&bgcolor=ffffff`}
-                width={sz(90)}
-                height={sz(90)}
-                alt="Scan for monthly membership"
-                style={{ display: 'block' }}
-              />
-            </div>
-            <div style={{ textAlign: 'center' as const }}>
-              <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text }}>€49<span style={{ ...mono, fontSize: sz(10), fontWeight: 400, color: C.muted }}>/mo</span></div>
-              <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>Monthly</div>
-            </div>
-          </div>
-          {/* Annual QR */}
-          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(8) }}>
-            <div style={{ background: '#ffffff', padding: sz(10), borderRadius: sz(12), border: `1.5px solid ${C.border}` }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06')}&margin=0&color=2A2520&bgcolor=ffffff`}
-                width={sz(90)}
-                height={sz(90)}
-                alt="Scan for annual membership"
-                style={{ display: 'block' }}
-              />
-            </div>
-            <div style={{ textAlign: 'center' as const }}>
-              <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text }}>€399<span style={{ ...mono, fontSize: sz(10), fontWeight: 400, color: C.muted }}>/yr</span></div>
-              <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>Annual · save 32%</div>
-            </div>
-          </div>
-          <div style={{ flex: 1, ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.7, marginTop: sz(4) }}>
-            ● €49/mo → going to €97. Tonight's rate is locked for life.<br />
-            ● Includes 30% off the bootcamp ~ join community now, upgrade later.<br />
-            ● Not happy? Message Abie directly. Instant refund. No forms.
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
