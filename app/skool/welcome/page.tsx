@@ -5,7 +5,7 @@ import { ArrowRight, Users, BookOpen, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Welcome to the Community ~ Talent Mucho",
-  description: "You're in. Here's how to get the most out of your Talent Mucho Skool membership.",
+  description: "You're in. Here's how to get the most out of your Talent Mucho community membership.",
 };
 
 const SKOOL_URL = "https://www.skool.com/future-proof-with-ai-4339";
@@ -76,7 +76,7 @@ export default function SkoolWelcomePage() {
             </h1>
 
             <p className="text-lg md:text-xl text-beige-200 font-light leading-relaxed max-w-xl mx-auto mb-10">
-              Welcome to the Talent Mucho community ~ where Filipino creators and entrepreneurs learn to work smarter with AI. Here&apos;s what to do next.
+              Welcome to the Talent Mucho community ~ where creators and entrepreneurs learn to work smarter with AI. Here&apos;s what to do next.
             </p>
 
             <a
