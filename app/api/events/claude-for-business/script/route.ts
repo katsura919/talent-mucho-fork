@@ -13,8 +13,9 @@ interface EditsBody {
 export async function GET() {
   const sb = getSupabaseServer();
   if (!sb) {
+    // No edits field returned ~ client preserves localStorage instead of nuking it
     return NextResponse.json(
-      { edits: {}, note: 'Supabase not configured ~ add NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY' },
+      { note: 'Supabase not configured ~ add SUPABASE_SERVICE_ROLE_KEY to .env.local' },
       { status: 200 }
     );
   }

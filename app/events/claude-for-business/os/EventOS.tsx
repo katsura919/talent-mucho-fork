@@ -1,102 +1,71 @@
-﻿"use client";
+﻿'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  SEGMENTS,
-  SPEAKERS,
-  COMPARE_PRESETS,
-  type Segment,
-  type ComparePreset,
-} from "./config";
-import communityData from "@/data/community-combined.json";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { SEGMENTS, SPEAKERS, COMPARE_PRESETS, type Segment, type ComparePreset } from './config';
+import communityData from '@/data/community-combined.json';
 
 // ── Palettes ─────────────────────────────────────────────────────────────────
-type ThemeKey = "tm" | "am";
+type ThemeKey = 'tm' | 'am';
 type Palette = Record<string, string>;
 
 interface ThemeFonts {
-  sans: string; // UI / body
-  serif: string; // scripted / italic accents
+  sans: string;   // UI / body
+  serif: string;  // scripted / italic accents
 }
 
-// Both themes use Abie Maxey's brand fonts ~ only the colors differ between themes
+// Body sans = Avenir (matches happyvoyager.com), serif = Instrument Serif (matches admin dashboard)
 const FONTS: Record<ThemeKey, ThemeFonts> = {
   tm: {
-    sans: "var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)",
-    serif: "var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)",
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
   am: {
-    sans: "var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)",
-    serif: "var(--font-host-grotesk, ui-sans-serif, system-ui, sans-serif)",
+    sans: '"Avenir Next", Avenir, var(--font-host-grotesk), ui-sans-serif, system-ui, sans-serif',
+    serif: 'var(--font-instrument-serif), Georgia, serif',
   },
 };
 
-const THEMES: Record<
-  ThemeKey,
-  { label: string; sub: string; isDark: boolean; C: Palette }
-> = {
+const THEMES: Record<ThemeKey, { label: string; sub: string; isDark: boolean; C: Palette }> = {
   // Talent Mucho ~ light, beige + clay (matches talentmucho.com)
   tm: {
-    label: "TM",
-    sub: "Talent Mucho",
+    label: 'TM',
+    sub: 'Talent Mucho',
     isDark: false,
     C: {
-      bg: "#FAF8F5",
-      surface: "#FFFFFF",
-      surface2: "#EBE4D8",
-      border: "rgba(42,37,32,0.12)",
-      primary: "#7D6B5A",
-      primaryHover: "#665847",
-      text: "#2A2520",
-      muted: "#9C8B7A",
-      peach: "rgba(125,107,90,0.10)",
-      sage: "rgba(156,139,122,0.20)",
-      abie: "#2A2520",
-      meri: "#7D6B5A",
-      both: "#9C8B7A",
-      good: "#4a7c59",
-      bad: "#8b3a3a",
+      bg: '#FAF8F5', surface: '#FFFFFF', surface2: '#EBE4D8',
+      border: 'rgba(42,37,32,0.12)',
+      primary: '#7D6B5A', primaryHover: '#665847',
+      text: '#2A2520', muted: '#9C8B7A',
+      peach: 'rgba(125,107,90,0.10)', sage: 'rgba(156,139,122,0.20)',
+      abie: '#2A2520', meri: '#7D6B5A', both: '#9C8B7A',
+      good: '#4a7c59', bad: '#8b3a3a',
     },
   },
   // Abie Maxey ~ light, peach, sage ~ creator personal brand
   am: {
-    label: "AM",
-    sub: "Abie Maxey",
+    label: 'AM',
+    sub: 'Abie Maxey',
     isDark: false,
     C: {
-      bg: "#f9f5f2",
-      surface: "#ffffff",
-      surface2: "#e7ddd3",
-      border: "rgba(58,58,58,0.12)",
-      primary: "#e3a99c",
-      primaryHover: "#d49283",
-      text: "#3a3a3a",
-      muted: "#6b6b6b",
-      peach: "#f2d6c9",
-      sage: "#bbcccd",
-      abie: "#3a3a3a",
-      meri: "#e3a99c",
-      both: "#bbcccd",
-      good: "#1e8449",
-      bad: "#b03a2e",
+      bg: '#f9f5f2', surface: '#ffffff', surface2: '#e7ddd3',
+      border: 'rgba(58,58,58,0.12)',
+      primary: '#e3a99c', primaryHover: '#d49283',
+      text: '#3a3a3a', muted: '#6b6b6b',
+      peach: '#f2d6c9', sage: '#bbcccd',
+      abie: '#3a3a3a', meri: '#e3a99c', both: '#bbcccd',
+      good: '#1e8449', bad: '#b03a2e',
     },
   },
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-interface QAItem {
-  id: number;
-  text: string;
-  votes: number;
-  answered: boolean;
-  active: boolean;
-}
-type Mode = "demo" | "compare" | "products" | "showcase" | "qa";
-type ViewType = "presenter" | "audience";
-type ShowTab = "abie" | "meri";
+interface QAItem { id: number; text: string; votes: number; answered: boolean; active: boolean; }
+type Mode = 'demo' | 'compare' | 'products' | 'showcase' | 'qa';
+type ViewType = 'presenter' | 'audience';
+type ShowTab = 'abie' | 'meri';
 
 interface CompareState {
-  step: number; // 0=ready, 1=left running, 2=right running, 3=landed
+  step: number;         // 0=ready, 1=left running, 2=right running, 3=landed
   running: boolean;
   leftText: string;
   rightText: string;
@@ -105,31 +74,19 @@ interface CompareState {
 }
 
 // ── Pin gate ───────────────────────────────────────────────────────────────────
-const PIN = "2028"; // change this or set via NEXT_PUBLIC_EVENT_OS_PIN
+const PIN = '2028'; // change this or set via NEXT_PUBLIC_EVENT_OS_PIN
 
-function PinGate({
-  onUnlock,
-  theme,
-}: {
-  onUnlock: () => void;
-  theme: ThemeKey;
-}) {
+function PinGate({ onUnlock, theme }: { onUnlock: () => void; theme: ThemeKey }) {
   const C = THEMES[theme].C;
-  const [val, setVal] = useState("");
+  const [val, setVal] = useState('');
   const [shake, setShake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  useEffect(() => { inputRef.current?.focus(); }, []);
 
   function tryPin(v: string) {
-    if (v === PIN) {
-      onUnlock();
-      return;
-    }
+    if (v === PIN) { onUnlock(); return; }
     if (v.length === 4) {
-      setShake(true);
-      setVal("");
+      setShake(true); setVal('');
       setTimeout(() => setShake(false), 500);
     } else {
       setVal(v);
@@ -137,52 +94,22 @@ function PinGate({
   }
 
   return (
-    <div
-      style={{
-        background: C.bg,
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        gap: 24,
-        fontFamily: FONTS[theme].sans,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 11,
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: C.primary,
-          fontWeight: 700,
-        }}
-      >
-        {THEMES[theme].sub.toUpperCase()} ~ EVENT OS
-      </div>
-      <div style={{ fontSize: 13, color: C.muted, letterSpacing: "0.08em" }}>
-        Enter access PIN to continue
-      </div>
+    <div style={{ background: C.bg, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 24, fontFamily: FONTS[theme].sans }}>
+      <div style={{ fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, fontWeight: 700 }}>{THEMES[theme].sub.toUpperCase()} ~ EVENT OS</div>
+      <div style={{ fontSize: 13, color: C.muted, letterSpacing: '0.08em' }}>Enter access PIN to continue</div>
       <input
         ref={inputRef}
         type="password"
         inputMode="numeric"
         maxLength={4}
         value={val}
-        onChange={(e) => tryPin(e.target.value)}
+        onChange={e => tryPin(e.target.value)}
         style={{
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          borderRadius: 12,
-          color: C.text,
-          fontSize: 24,
-          textAlign: "center",
-          letterSpacing: 12,
-          padding: "14px 28px",
-          width: 160,
-          outline: "none",
-          transition: "all 0.15s",
-          animation: shake ? "shake 0.4s ease" : "none",
+          background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+          color: C.text, fontSize: 24, textAlign: 'center', letterSpacing: 12,
+          padding: '14px 28px', width: 160, outline: 'none',
+          transition: 'all 0.15s',
+          animation: shake ? 'shake 0.4s ease' : 'none',
         }}
         placeholder="····"
       />
@@ -194,14 +121,14 @@ function PinGate({
 // ── Edit helpers ~ deep get/set for path-based field editing ─────────────────
 type AnyRecord = Record<string, unknown>;
 function getByPath(obj: unknown, path: string): unknown {
-  return path.split(".").reduce<unknown>((o, k) => {
+  return path.split('.').reduce<unknown>((o, k) => {
     if (o == null) return undefined;
     if (Array.isArray(o)) return o[Number(k)];
     return (o as AnyRecord)[k];
   }, obj);
 }
 function setByPath(obj: unknown, path: string, value: unknown): void {
-  const keys = path.split(".");
+  const keys = path.split('.');
   const last = keys.pop()!;
   const target = keys.reduce<unknown>((o, k) => {
     if (o == null) return undefined;
@@ -214,26 +141,20 @@ function setByPath(obj: unknown, path: string, value: unknown): void {
 }
 
 // ── Editable ~ contentEditable wrapper that fires onSave on blur ─────────────
-function Editable({
-  value,
-  editMode,
-  onSave,
-  style,
-  tagName = "span",
-}: {
+function Editable({ value, editMode, onSave, style, tagName = 'span' }: {
   value: string;
   editMode: boolean;
   onSave: (next: string) => void;
   style?: React.CSSProperties;
-  tagName?: "span" | "div";
+  tagName?: 'span' | 'div';
 }) {
-  const editClass = editMode ? "os-editable" : undefined;
+  const editClass = editMode ? 'os-editable' : undefined;
   const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
     const next = e.currentTarget.innerHTML;
     if (next !== value) onSave(next);
   };
   const handleKey = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Enter" && !e.shiftKey && tagName === "span") {
+    if (e.key === 'Enter' && !e.shiftKey && tagName === 'span') {
       e.preventDefault();
       (e.currentTarget as HTMLElement).blur();
     }
@@ -247,7 +168,7 @@ function Editable({
     dangerouslySetInnerHTML: { __html: value },
     style,
   };
-  if (tagName === "div") return <div {...props} />;
+  if (tagName === 'div') return <div {...props} />;
   return <span {...props} />;
 }
 
@@ -264,29 +185,29 @@ async function typeOut(
     onChunk(tok);
     // 20ms~55ms per token, slightly longer on punctuation
     const delay = /[.!?]\s*$/.test(tok) ? 90 : 22 + Math.random() * 30;
-    await new Promise((r) => setTimeout(r, delay));
+    await new Promise(r => setTimeout(r, delay));
   }
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function EventOS() {
   const [unlocked, setUnlocked] = useState(false);
-  const [theme, setTheme] = useState<ThemeKey>("tm");
+  const [theme, setTheme] = useState<ThemeKey>('tm');
 
   useEffect(() => {
-    if (sessionStorage.getItem("os-unlocked") === "1") setUnlocked(true);
-    const saved = localStorage.getItem("os-theme") as ThemeKey | null;
+    if (sessionStorage.getItem('os-unlocked') === '1') setUnlocked(true);
+    const saved = localStorage.getItem('os-theme') as ThemeKey | null;
     if (saved && THEMES[saved]) setTheme(saved);
   }, []);
 
   function unlock() {
-    sessionStorage.setItem("os-unlocked", "1");
+    sessionStorage.setItem('os-unlocked', '1');
     setUnlocked(true);
   }
 
   function changeTheme(t: ThemeKey) {
     setTheme(t);
-    localStorage.setItem("os-theme", t);
+    localStorage.setItem('os-theme', t);
   }
 
   if (!unlocked) return <PinGate onUnlock={unlock} theme={theme} />;
@@ -294,43 +215,32 @@ export default function EventOS() {
 }
 
 // ── The actual OS ──────────────────────────────────────────────────────────────
-function OSApp({
-  theme,
-  onThemeChange,
-}: {
-  theme: ThemeKey;
-  onThemeChange: (t: ThemeKey) => void;
-}) {
+function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: ThemeKey) => void }) {
   const C = THEMES[theme].C;
   const isDark = THEMES[theme].isDark;
   const [segIdx, setSegIdx] = useState(0);
   const [beatIdx, setBeatIdx] = useState(0);
-  const [view, setView] = useState<ViewType>("presenter");
-  const [mode, setMode] = useState<Mode>("demo");
+  const [view, setView] = useState<ViewType>('presenter');
+  const [mode, setMode] = useState<Mode>('demo');
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerSecs, setTimerSecs] = useState(0);
   const [eventSecs, setEventSecs] = useState(7200);
   const [fontSize, setFontSize] = useState(19);
-  const [showTab, setShowTab] = useState<ShowTab>("abie");
+  const [showTab, setShowTab] = useState<ShowTab>('abie');
   const [qaList, setQaList] = useState<QAItem[]>([]);
-  const [qaInput, setQaInput] = useState("");
+  const [qaInput, setQaInput] = useState('');
   const [nextQId, setNextQId] = useState(1);
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
   const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
   const [showLiveQA, setShowLiveQA] = useState(true);
   const [compareState, setCompareState] = useState<CompareState>({
-    step: 0,
-    running: false,
-    leftText: "",
-    rightText: "",
-    leftDone: false,
-    rightDone: false,
+    step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
   const [activePreset, setActivePreset] = useState<ComparePreset | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [segments, setSegments] = useState<Segment[]>(SEGMENTS);
-  const [editStatus, setEditStatus] = useState("");
+  const [editStatus, setEditStatus] = useState('');
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prompterRef = useRef<HTMLDivElement>(null);
@@ -344,60 +254,52 @@ function OSApp({
 
   // ── Edit persistence ─ server (Vercel Blob) is source of truth, localStorage backs it up
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [syncStatus, setSyncStatus] = useState<
-    "idle" | "saving" | "synced" | "offline"
-  >("idle");
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'synced' | 'offline'>('idle');
 
   useEffect(() => {
     let cancelled = false;
     function applyEdits(edits: Record<string, string>) {
       if (cancelled) return;
       const copy: Segment[] = JSON.parse(JSON.stringify(SEGMENTS));
-      Object.entries(edits).forEach(([path, val]) =>
-        setByPath(copy, path, val),
-      );
+      Object.entries(edits).forEach(([path, val]) => setByPath(copy, path, val));
       setSegments(copy);
     }
     // 1. Hydrate immediately from localStorage (fast)
     try {
-      const local = localStorage.getItem("os-edits");
+      const local = localStorage.getItem('os-edits');
       if (local) applyEdits(JSON.parse(local));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     // 2. Then fetch the canonical version from the server
-    fetch("/api/events/claude-for-business/script", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
+    fetch('/api/events/claude-for-business/script', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
         if (!data?.edits) return;
         applyEdits(data.edits);
-        localStorage.setItem("os-edits", JSON.stringify(data.edits));
-        setSyncStatus("synced");
+        localStorage.setItem('os-edits', JSON.stringify(data.edits));
+        setSyncStatus('synced');
       })
-      .catch(() => setSyncStatus("offline"));
-    return () => {
-      cancelled = true;
-    };
+      .catch(() => setSyncStatus('offline'));
+    return () => { cancelled = true; };
   }, []);
 
   function persistEditsToServer(edits: Record<string, string>) {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    setSyncStatus("saving");
+    setSyncStatus('saving');
     saveTimerRef.current = setTimeout(() => {
-      fetch("/api/events/claude-for-business/script", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      fetch('/api/events/claude-for-business/script', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ edits }),
       })
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .then(() => setSyncStatus("synced"))
-        .catch(() => setSyncStatus("offline"));
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(() => setSyncStatus('synced'))
+        .catch(() => setSyncStatus('offline'));
     }, 700);
   }
 
   function flashStatus(msg: string) {
     setEditStatus(msg);
-    setTimeout(() => setEditStatus(""), 1800);
+    setTimeout(() => setEditStatus(''), 1800);
   }
 
   function saveEdit(path: string, value: string) {
@@ -405,88 +307,71 @@ function OSApp({
     setByPath(copy, path, value);
     setSegments(copy);
 
-    const original = String(getByPath(SEGMENTS, path) ?? "");
-    const stored = JSON.parse(
-      localStorage.getItem("os-edits") || "{}",
-    ) as Record<string, string>;
+    const original = String(getByPath(SEGMENTS, path) ?? '');
+    const stored = JSON.parse(localStorage.getItem('os-edits') || '{}') as Record<string, string>;
     if (value !== original) stored[path] = value;
     else delete stored[path];
-    localStorage.setItem("os-edits", JSON.stringify(stored));
+    localStorage.setItem('os-edits', JSON.stringify(stored));
     persistEditsToServer(stored);
-    flashStatus("Saved ✓");
+    flashStatus('Saved ✓');
   }
 
   function resetEdits() {
-    if (!confirm("Reset all edits? Original script will be restored.")) return;
-    localStorage.removeItem("os-edits");
+    if (!confirm('Reset all edits? Original script will be restored.')) return;
+    localStorage.removeItem('os-edits');
     setSegments(SEGMENTS);
     persistEditsToServer({});
-    flashStatus("Reset ✓");
+    flashStatus('Reset ✓');
   }
 
   function exportConfig() {
-    const blob = new Blob([JSON.stringify(segments, null, 2)], {
-      type: "application/json",
-    });
-    const a = document.createElement("a");
+    const blob = new Blob([JSON.stringify(segments, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `event-config-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    flashStatus("Downloaded ✓");
+    flashStatus('Downloaded ✓');
   }
 
   function importConfig(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = ev => {
       try {
         const parsed = JSON.parse(String(ev.target?.result)) as Segment[];
-        if (!Array.isArray(parsed)) throw new Error("not an array");
+        if (!Array.isArray(parsed)) throw new Error('not an array');
         setSegments(parsed);
         // Save full snapshot as edits
         const edits: Record<string, string> = {};
         parsed.forEach((s, i) => {
-          [
-            "title",
-            "titleItalic",
-            "subtitle",
-            "duration",
-            "audWhatTitle",
-            "audWhatBody",
-            "audTakeaway",
-          ].forEach((field) => {
-            const orig = String(getByPath(SEGMENTS, `${i}.${field}`) ?? "");
-            const newVal = String(getByPath(parsed, `${i}.${field}`) ?? "");
+          ['title', 'titleItalic', 'subtitle', 'duration', 'audWhatTitle', 'audWhatBody', 'audTakeaway'].forEach(field => {
+            const orig = String(getByPath(SEGMENTS, `${i}.${field}`) ?? '');
+            const newVal = String(getByPath(parsed, `${i}.${field}`) ?? '');
             if (orig !== newVal) edits[`${i}.${field}`] = newVal;
           });
         });
-        localStorage.setItem("os-edits", JSON.stringify(edits));
+        localStorage.setItem('os-edits', JSON.stringify(edits));
         persistEditsToServer(edits);
-        flashStatus("Imported ✓");
+        flashStatus('Imported ✓');
       } catch {
-        flashStatus("Invalid file");
+        flashStatus('Invalid file');
       }
     };
     reader.readAsText(file);
-    e.target.value = "";
+    e.target.value = '';
   }
 
   // ── Persist notes ─────────────────────────────────────────────────────────
   useEffect(() => {
-    const saved = localStorage.getItem("os-notes");
-    if (saved)
-      try {
-        setNotes(JSON.parse(saved));
-      } catch {
-        /* ignore */
-      }
+    const saved = localStorage.getItem('os-notes');
+    if (saved) try { setNotes(JSON.parse(saved)); } catch { /* ignore */ }
   }, []);
 
   function saveNote(segId: number, val: string) {
     const next = { ...notes, [segId]: val };
     setNotes(next);
-    localStorage.setItem("os-notes", JSON.stringify(next));
+    localStorage.setItem('os-notes', JSON.stringify(next));
   }
 
   // ── Timer ─────────────────────────────────────────────────────────────────
@@ -496,81 +381,67 @@ function OSApp({
       setTimerRunning(false);
     } else {
       timerRef.current = setInterval(() => {
-        setTimerSecs((s) => s + 1);
-        setEventSecs((s) => Math.max(0, s - 1));
+        setTimerSecs(s => s + 1);
+        setEventSecs(s => Math.max(0, s - 1));
       }, 1000);
       setTimerRunning(true);
     }
   }
 
-  function resetTimer() {
-    clearInterval(timerRef.current!);
-    setTimerRunning(false);
-    setTimerSecs(0);
-  }
+  function resetTimer() { clearInterval(timerRef.current!); setTimerRunning(false); setTimerSecs(0); }
 
   useEffect(() => () => clearInterval(timerRef.current!), []);
 
   function fmt(s: number) {
-    return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   }
   function fmtEvent(s: number) {
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sc = s % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sc).padStart(2, "0")}`;
+    const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sc = s % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
   }
 
   // ── Navigation ────────────────────────────────────────────────────────────
   const goToSeg = useCallback((idx: number) => {
-    setSegIdx(idx);
-    setBeatIdx(0);
+    setSegIdx(idx); setBeatIdx(0);
     const s = segments[idx];
     if (!s) return;
     const newMode = s.panel as Mode;
     setMode(newMode);
-    if (newMode === "compare" && s.panelData) {
+    if (newMode === 'compare' && s.panelData) {
       const preset = COMPARE_PRESETS[s.panelData];
-      if (preset) {
-        setActivePreset(preset);
-        resetCompare();
-      }
+      if (preset) { setActivePreset(preset); resetCompare(); }
     }
     const speakers = s.speakers ?? [];
-    if (speakers.includes("MERI") && !speakers.includes("ABIE"))
-      setShowTab("meri");
-    else setShowTab("abie");
-    prompterRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
+    else setShowTab('abie');
+    prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const goToBeat = useCallback(
-    (idx: number) => {
-      setBeatIdx(idx);
-      const b = segments[segIdx]?.beats[idx];
-      if (b && mode === "showcase") {
-        if (b.speaker === "MERI") setShowTab("meri");
-        else if (b.speaker === "ABIE") setShowTab("abie");
-      }
-      const el = document.getElementById(`beat-${idx}`);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    },
-    [segIdx, mode, segments],
-  );
+  const goToBeat = useCallback((idx: number) => {
+    setBeatIdx(idx);
+    const b = segments[segIdx]?.beats[idx];
+    if (b && mode === 'showcase') {
+      if (b.speaker === 'MERI') setShowTab('meri');
+      else if (b.speaker === 'ABIE') setShowTab('abie');
+    }
+    const el = document.getElementById(`beat-${idx}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [segIdx, mode, segments]);
 
   // Keyboard navigation
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
       // Don't intercept while editing contentEditable text
       if ((e.target as HTMLElement).isContentEditable) return;
       const s = segments[segIdx];
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (beatIdx < s.beats.length - 1) goToBeat(beatIdx + 1);
         else if (segIdx < segments.length - 1) goToSeg(segIdx + 1);
       }
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
         if (beatIdx > 0) goToBeat(beatIdx - 1);
         else if (segIdx > 0) {
@@ -582,30 +453,19 @@ function OSApp({
           setTimeout(() => goToBeat(lastBeat), 50);
         }
       }
-      if (e.key === " ") {
-        e.preventDefault();
-        toggleTimer();
-      }
-      if (e.key === "v" || e.key === "V")
-        setView((v) => (v === "presenter" ? "audience" : "presenter"));
-      if (e.key === "n" || e.key === "N") setShowNotes((n) => !n);
-      if (e.key === "r" || e.key === "R") resetTimer();
+      if (e.key === ' ') { e.preventDefault(); toggleTimer(); }
+      if (e.key === 'v' || e.key === 'V') setView(v => v === 'presenter' ? 'audience' : 'presenter');
+      if (e.key === 'n' || e.key === 'N') setShowNotes(n => !n);
+      if (e.key === 'r' || e.key === 'R') resetTimer();
     }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [segIdx, beatIdx, goToBeat, goToSeg, toggleTimer]);
 
   // ── Compare ───────────────────────────────────────────────────────────────
   function resetCompare() {
     compareSignal.current.cancelled = true;
-    setCompareState({
-      step: 0,
-      running: false,
-      leftText: "",
-      rightText: "",
-      leftDone: false,
-      rightDone: false,
-    });
+    setCompareState({ step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false });
   }
 
   const compareSignal = useRef({ cancelled: false });
@@ -613,342 +473,160 @@ function OSApp({
     if (!activePreset || compareState.running) return;
     compareSignal.current = { cancelled: false };
     resetCompare();
-    setCompareState((s) => ({ ...s, running: true, step: 1 }));
-    await typeOut(
-      activePreset.leftAnswer,
-      (chunk) => {
-        setCompareState((s) => ({ ...s, leftText: s.leftText + chunk }));
-      },
-      compareSignal.current,
-    );
+    setCompareState(s => ({ ...s, running: true, step: 1 }));
+    await typeOut(activePreset.leftAnswer, (chunk) => {
+      setCompareState(s => ({ ...s, leftText: s.leftText + chunk }));
+    }, compareSignal.current);
     if (compareSignal.current.cancelled) return;
-    setCompareState((s) => ({ ...s, leftDone: true, step: 2 }));
-    await new Promise((r) => setTimeout(r, 500));
+    setCompareState(s => ({ ...s, leftDone: true, step: 2 }));
+    await new Promise(r => setTimeout(r, 500));
     if (compareSignal.current.cancelled) return;
-    await typeOut(
-      activePreset.rightAnswer,
-      (chunk) => {
-        setCompareState((s) => ({ ...s, rightText: s.rightText + chunk }));
-      },
-      compareSignal.current,
-    );
+    await typeOut(activePreset.rightAnswer, (chunk) => {
+      setCompareState(s => ({ ...s, rightText: s.rightText + chunk }));
+    }, compareSignal.current);
     if (compareSignal.current.cancelled) return;
-    setCompareState((s) => ({
-      ...s,
-      rightDone: true,
-      step: 3,
-      running: false,
-    }));
+    setCompareState(s => ({ ...s, rightDone: true, step: 3, running: false }));
   }
 
   // ── Q&A ───────────────────────────────────────────────────────────────────
   function addQA() {
-    const text = qaInput.trim();
-    if (!text) return;
-    setQaList((l) => [
-      ...l,
-      { id: nextQId, text, votes: 0, answered: false, active: false },
-    ]);
-    setNextQId((n) => n + 1);
-    setQaInput("");
+    const text = qaInput.trim(); if (!text) return;
+    setQaList(l => [...l, { id: nextQId, text, votes: 0, answered: false, active: false }]);
+    setNextQId(n => n + 1); setQaInput('');
   }
   function voteQA(id: number, d: number) {
-    setQaList((l) =>
-      l.map((q) =>
-        q.id === id ? { ...q, votes: Math.max(0, q.votes + d) } : q,
-      ),
-    );
+    setQaList(l => l.map(q => q.id === id ? { ...q, votes: Math.max(0, q.votes + d) } : q));
   }
   function toggleActiveQA(id: number) {
-    setQaList((l) =>
-      l.map((q) => ({ ...q, active: q.id === id ? !q.active : false })),
-    );
+    setQaList(l => l.map(q => ({ ...q, active: q.id === id ? !q.active : false })));
   }
   function dismissQA(id: number) {
-    setQaList((l) =>
-      l.map((q) => (q.id === id ? { ...q, answered: true, active: false } : q)),
-    );
+    setQaList(l => l.map(q => q.id === id ? { ...q, answered: true, active: false } : q));
   }
 
   // ── Export notes ──────────────────────────────────────────────────────────
   function exportNotes() {
-    const lines = segments
-      .map((s) => {
-        const note = notes[s.id];
-        return note
-          ? `## Segment ${s.num} ~ ${s.title}${s.titleItalic ? " " + s.titleItalic : ""}\n${note}`
-          : null;
-      })
-      .filter(Boolean);
-    if (!lines.length) return alert("No notes yet.");
-    const blob = new Blob([lines.join("\n\n")], { type: "text/plain" });
-    const a = document.createElement("a");
+    const lines = segments.map(s => {
+      const note = notes[s.id];
+      return note ? `## Segment ${s.num} ~ ${s.title}${s.titleItalic ? ' ' + s.titleItalic : ''}\n${note}` : null;
+    }).filter(Boolean);
+    if (!lines.length) return alert('No notes yet.');
+    const blob = new Blob([lines.join('\n\n')], { type: 'text/plain' });
+    const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = "event-notes.txt";
+    a.download = 'event-notes.txt';
     a.click();
   }
 
   // ── Speaker color helper ──────────────────────────────────────────────────
   function spkColor(spk: string) {
-    if (spk === "ABIE") return C.abie;
-    if (spk === "MERI") return C.meri;
+    if (spk === 'ABIE') return C.abie;
+    if (spk === 'MERI') return C.meri;
     return C.both;
   }
 
   // ── Handoff text ──────────────────────────────────────────────────────────
   function handoffText() {
-    if (!beat) return "";
-    if (beat.speaker === "BOTH") return "BOTH ON CAM";
-    if (beat.speaker === "ABIE") return "ABIE ON CAM ~ Meri on chat";
-    return "MERI ON CAM ~ Abie on chat";
+    if (!beat) return '';
+    if (beat.speaker === 'BOTH') return 'BOTH ON CAM';
+    if (beat.speaker === 'ABIE') return 'ABIE ON CAM ~ Meri on chat';
+    return 'MERI ON CAM ~ Abie on chat';
   }
 
   // ── Progress ──────────────────────────────────────────────────────────────
-  const progress =
-    seg.beats.length > 1 ? (beatIdx / (seg.beats.length - 1)) * 100 : 100;
+  const progress = seg.beats.length > 1 ? (beatIdx / (seg.beats.length - 1)) * 100 : 100;
 
   // ── Audience workbook ~ find active poll/workbook ──────────────────────────
-  const wbBlock = beat?.blocks.find((b) => b.type === "workbook");
-  const pollBlock = beat?.blocks.find((b) => b.type === "poll");
+  const wbBlock = beat?.blocks.find(b => b.type === 'workbook');
+  const pollBlock = beat?.blocks.find(b => b.type === 'poll');
 
   // ── Styles ────────────────────────────────────────────────────────────────
   const F = FONTS[theme];
-  const mono: React.CSSProperties = {
-    fontFamily: 'ui-monospace, "Geist Mono", monospace',
-  };
+  const mono: React.CSSProperties = { fontFamily: 'ui-monospace, "Geist Mono", monospace' };
   const sans: React.CSSProperties = { fontFamily: F.sans };
   const serif: React.CSSProperties = { fontFamily: F.serif };
 
   return (
-    <div
-      style={{
-        background: C.bg,
-        color: C.text,
-        height: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        ...sans,
-      }}
-    >
+    <div style={{ background: C.bg, color: C.text, height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', ...sans }}>
+
       {/* ── TOP BAR ── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 16px",
-          background: C.surface,
-          borderBottom: `1px solid ${C.border}`,
-          flexShrink: 0,
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: C.primary,
-            whiteSpace: "nowrap",
-            marginRight: 4,
-          }}
-        >
-          TM<span style={{ color: C.muted, margin: "0 5px" }}>~</span>CFB
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', background: C.surface, borderBottom: `1px solid ${C.border}`, flexShrink: 0, flexWrap: 'wrap' }}>
+        <div style={{ ...mono, fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.primary, whiteSpace: 'nowrap', marginRight: 4 }}>
+          TM<span style={{ color: C.muted, margin: '0 5px' }}>~</span>CFB
         </div>
 
         {/* Segment tabs */}
-        <div style={{ display: "flex", gap: 3, flexWrap: "wrap", flex: 1 }}>
+        <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
           {segments.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => goToSeg(i)}
-              style={{
-                padding: "3px 9px",
-                borderRadius: 100,
-                fontSize: 9,
-                ...mono,
-                cursor: "pointer",
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                border: `1px solid ${i === segIdx ? C.primary : C.border}`,
-                background: i === segIdx ? C.primary : "transparent",
-                color: i === segIdx ? C.bg : C.muted,
-                fontWeight: i === segIdx ? 700 : 400,
-                transition: "all 0.15s",
-              }}
-            >
+            <button key={s.id} onClick={() => goToSeg(i)} style={{
+              padding: '3px 9px', borderRadius: 100, fontSize: 9, ...mono,
+              cursor: 'pointer', letterSpacing: '0.05em', textTransform: 'uppercase',
+              border: `1px solid ${i === segIdx ? C.primary : C.border}`,
+              background: i === segIdx ? C.primary : 'transparent',
+              color: i === segIdx ? C.bg : C.muted,
+              fontWeight: i === segIdx ? 700 : 400,
+              transition: 'all 0.15s',
+            }}>
               {s.num} {s.title}
             </button>
           ))}
         </div>
 
         {/* Controls */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: 10,
-              color: C.muted,
-              paddingRight: 8,
-              borderRight: `1px solid ${C.border}`,
-            }}
-          >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: 10, color: C.muted, paddingRight: 8, borderRight: `1px solid ${C.border}` }}>
             {fmtEvent(eventSecs)}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <span
-              style={{
-                ...mono,
-                fontSize: 9,
-                color: C.muted,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              SIZE
-            </span>
-            <input
-              type="range"
-              min={14}
-              max={30}
-              value={fontSize}
-              onChange={(e) => setFontSize(Number(e.target.value))}
-              style={{ width: 50, accentColor: C.primary }}
-            />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>SIZE</span>
+            <input type="range" min={14} max={30} value={fontSize}
+              onChange={e => setFontSize(Number(e.target.value))}
+              style={{ width: 50, accentColor: C.primary }} />
           </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: 17,
-              fontWeight: 500,
-              minWidth: 52,
-              textAlign: "right",
-            }}
-          >
-            {fmt(timerSecs)}
-          </div>
-          <Btn primary C={C} onClick={toggleTimer}>
-            {timerRunning ? "⏸" : "▶"} {timerRunning ? "PAUSE" : "START"}
+          <div style={{ ...mono, fontSize: 17, fontWeight: 500, minWidth: 52, textAlign: 'right' }}>{fmt(timerSecs)}</div>
+          <Btn primary C={C} onClick={toggleTimer}>{timerRunning ? '⏸' : '▶'} {timerRunning ? 'PAUSE' : 'START'}</Btn>
+          <Btn C={C} onClick={resetTimer} style={{ fontSize: 9 }}>↺</Btn>
+          <Btn C={C} onClick={() => setView(v => v === 'presenter' ? 'audience' : 'presenter')}>
+            {view === 'presenter' ? '🖥 SHARE' : '⬅ BACK'}
           </Btn>
-          <Btn C={C} onClick={resetTimer} style={{ fontSize: 9 }}>
-            ↺
-          </Btn>
-          <Btn
-            C={C}
-            onClick={() =>
-              setView((v) => (v === "presenter" ? "audience" : "presenter"))
-            }
-          >
-            {view === "presenter" ? "🖥 SHARE" : "⬅ BACK"}
-          </Btn>
-          <Btn
-            onClick={() => setShowNotes((n) => !n)}
-            C={C}
-            style={{ color: showNotes ? C.primary : C.muted }}
-          >
+          <Btn onClick={() => setShowNotes(n => !n)} C={C} style={{ color: showNotes ? C.primary : C.muted }}>
             ✎ NOTES
           </Btn>
-          <Btn
-            onClick={() => setShowDemoPanel((d) => !d)}
-            C={C}
-            style={{ color: showDemoPanel ? C.primary : C.muted }}
-          >
-            {showDemoPanel ? "◧ HIDE PANEL" : "◨ SHOW PANEL"}
+          <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
+            {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
           </Btn>
-          <Btn
-            onClick={() => setShowLiveQA((q) => !q)}
-            C={C}
-            style={{ color: showLiveQA ? C.primary : C.muted }}
-          >
-            {showLiveQA ? "💬 HIDE Q&A" : "💬 SHOW Q&A"}
+          <Btn onClick={() => setShowLiveQA(q => !q)} C={C} style={{ color: showLiveQA ? C.primary : C.muted }}>
+            {showLiveQA ? '💬 HIDE Q&A' : '💬 SHOW Q&A'}
           </Btn>
-          <Btn
-            onClick={() => setEditMode((v) => !v)}
-            C={C}
-            primary={editMode}
-            style={!editMode ? { color: C.muted } : undefined}
-          >
-            {editMode ? "✓ DONE" : "✎ EDIT"}
+          <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
+            {editMode ? '✓ DONE' : '✎ EDIT'}
           </Btn>
           {editMode && (
-            <div
-              title={`Sync: ${syncStatus}`}
-              style={{
-                ...mono,
-                fontSize: 9,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color:
-                  syncStatus === "offline"
-                    ? "#b03a2e"
-                    : syncStatus === "saving"
-                      ? "#d4a92a"
-                      : C.primary,
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "currentColor",
-                  animation:
-                    syncStatus === "saving"
-                      ? "blink 1s ease-in-out infinite"
-                      : undefined,
-                }}
-              />
-              {syncStatus === "saving"
-                ? "SYNC"
-                : syncStatus === "synced"
-                  ? "CLOUD"
-                  : syncStatus === "offline"
-                    ? "OFFLINE"
-                    : "LOCAL"}
+            <div title={`Sync: ${syncStatus}`} style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: syncStatus === 'offline' ? '#b03a2e' : syncStatus === 'saving' ? '#d4a92a' : C.primary, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', animation: syncStatus === 'saving' ? 'blink 1s ease-in-out infinite' : undefined }} />
+              {syncStatus === 'saving' ? 'SYNC' : syncStatus === 'synced' ? 'CLOUD' : syncStatus === 'offline' ? 'OFFLINE' : 'LOCAL'}
             </div>
           )}
 
           {/* Theme toggle ~ TM / AM */}
-          <div
-            style={{
-              display: "flex",
-              gap: 0,
-              border: `1px solid ${C.border}`,
-              borderRadius: 100,
-              overflow: "hidden",
-              marginLeft: 4,
-            }}
-          >
-            {(["tm", "am"] as ThemeKey[]).map((t) => (
+          <div style={{ display: 'flex', gap: 0, border: `1px solid ${C.border}`, borderRadius: 100, overflow: 'hidden', marginLeft: 4 }}>
+            {(['tm', 'am'] as ThemeKey[]).map(t => (
               <button
                 key={t}
                 onClick={() => onThemeChange(t)}
                 title={THEMES[t].sub}
                 style={{
-                  padding: "4px 10px",
+                  padding: '4px 10px',
                   ...mono,
                   fontSize: 9,
                   fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  cursor: "pointer",
-                  border: "none",
-                  background: t === theme ? C.primary : "transparent",
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: t === theme ? C.primary : 'transparent',
                   color: t === theme ? (isDark ? C.bg : C.text) : C.muted,
-                  transition: "all 0.15s",
+                  transition: 'all 0.15s',
                 }}
               >
                 {THEMES[t].label}
@@ -960,114 +638,24 @@ function OSApp({
 
       {/* ── EDIT MODE TOOLBAR ── */}
       {editMode && (
-        <div
-          style={{
-            padding: "10px 16px",
-            background: "#fff8d6",
-            borderBottom: "2px solid #d4a92a",
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            flexWrap: "wrap",
-            ...mono,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "#7a5e10",
-            }}
-          >
+        <div style={{
+          padding: '10px 16px',
+          background: '#fff8d6', borderBottom: '2px solid #d4a92a',
+          flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+          ...mono,
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#7a5e10' }}>
             ✎ Edit mode
           </span>
-          <span style={{ fontSize: 10, color: "#7a5e10", opacity: 0.7 }}>
+          <span style={{ fontSize: 10, color: '#7a5e10', opacity: 0.7 }}>
             ~ Click any text to edit ~ saves automatically
           </span>
-          <span
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              gap: 6,
-              alignItems: "center",
-            }}
-          >
-            {editStatus && (
-              <span
-                style={{
-                  fontSize: 9,
-                  color: "#7a5e10",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {editStatus}
-              </span>
-            )}
-            <button
-              onClick={exportConfig}
-              style={{
-                padding: "5px 12px",
-                borderRadius: 100,
-                ...mono,
-                fontSize: 9,
-                fontWeight: 700,
-                cursor: "pointer",
-                background: "#3a3a3a",
-                color: "#fff",
-                border: "none",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              ↓ Export
-            </button>
-            <button
-              onClick={() => importInputRef.current?.click()}
-              style={{
-                padding: "5px 12px",
-                borderRadius: 100,
-                ...mono,
-                fontSize: 9,
-                fontWeight: 700,
-                cursor: "pointer",
-                background: "transparent",
-                color: "#7a5e10",
-                border: "1px solid #7a5e10",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              ↑ Import
-            </button>
-            <input
-              type="file"
-              ref={importInputRef}
-              accept=".json"
-              style={{ display: "none" }}
-              onChange={importConfig}
-            />
-            <button
-              onClick={resetEdits}
-              style={{
-                padding: "5px 12px",
-                borderRadius: 100,
-                ...mono,
-                fontSize: 9,
-                fontWeight: 700,
-                cursor: "pointer",
-                background: "transparent",
-                color: "#b03a2e",
-                border: "1px solid #b03a2e",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-              }}
-            >
-              ↺ Reset
-            </button>
+          <span style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+            {editStatus && <span style={{ fontSize: 9, color: '#7a5e10', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{editStatus}</span>}
+            <button onClick={exportConfig} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: '#3a3a3a', color: '#fff', border: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↓ Export</button>
+            <button onClick={() => importInputRef.current?.click()} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: 'transparent', color: '#7a5e10', border: '1px solid #7a5e10', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↑ Import</button>
+            <input type="file" ref={importInputRef} accept=".json" style={{ display: 'none' }} onChange={importConfig} />
+            <button onClick={resetEdits} style={{ padding: '5px 12px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: 'transparent', color: '#b03a2e', border: '1px solid #b03a2e', letterSpacing: '0.08em', textTransform: 'uppercase' }}>↺ Reset</button>
           </span>
         </div>
       )}
@@ -1083,228 +671,71 @@ function OSApp({
 
       {/* ── HANDOFF BANNER ── */}
       {beat && (
-        <div
-          style={{
-            padding: "5px 16px",
-            textAlign: "center",
-            ...mono,
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            background:
-              beat.speaker === "ABIE"
-                ? "rgba(250,248,245,0.05)"
-                : beat.speaker === "MERI"
-                  ? "rgba(125,107,90,0.18)"
-                  : "rgba(156,139,122,0.12)",
-            color: spkColor(beat.speaker),
-            flexShrink: 0,
-          }}
-        >
-          ↑ {handoffText()} ↑
+        <div style={{
+          padding: '5px 16px', textAlign: 'center', ...mono,
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+          background: beat.speaker === 'ABIE' ? 'rgba(250,248,245,0.05)' : beat.speaker === 'MERI' ? 'rgba(125,107,90,0.18)' : 'rgba(156,139,122,0.12)',
+          color: spkColor(beat.speaker),
+          flexShrink: 0,
+        }}>
+          ↑  {handoffText()}  ↑
         </div>
       )}
 
       {/* ── LEGEND ── */}
-      {view === "presenter" && (
-        <div
-          style={{
-            display: "flex",
-            gap: 14,
-            alignItems: "center",
-            padding: "5px 16px",
-            background: C.surface2,
-            borderBottom: `1px solid ${C.border}`,
-            flexShrink: 0,
-          }}
-        >
-          <span
-            style={{
-              ...mono,
-              fontSize: 9,
-              color: C.muted,
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-            }}
-          >
-            Roles ~
-          </span>
+      {view === 'presenter' && (
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '5px 16px', background: C.surface2, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+          <span style={{ ...mono, fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Roles ~</span>
           {Object.entries(SPEAKERS).map(([k, v]) => (
-            <div
-              key={k}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                ...mono,
-                fontSize: 9,
-                color: C.muted,
-              }}
-            >
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: spkColor(k),
-                }}
-              />
+            <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 5, ...mono, fontSize: 9, color: C.muted }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: spkColor(k) }} />
               {v.name}
             </div>
           ))}
-          <span
-            style={{
-              marginLeft: "auto",
-              ...mono,
-              fontSize: 9,
-              color: C.muted,
-              opacity: 0.55,
-            }}
-          >
-            ← → beats &nbsp;·&nbsp; SPACE timer &nbsp;·&nbsp; R reset
-            &nbsp;·&nbsp; V audience &nbsp;·&nbsp; N notes
+          <span style={{ marginLeft: 'auto', ...mono, fontSize: 9, color: C.muted, opacity: 0.55 }}>
+            ← → beats &nbsp;·&nbsp; SPACE timer &nbsp;·&nbsp; R reset &nbsp;·&nbsp; V audience &nbsp;·&nbsp; N notes
           </span>
         </div>
       )}
 
       {/* ── NOTES DRAWER ── */}
       {showNotes && (
-        <div
-          style={{
-            background: "#fff8d6",
-            borderBottom: "2px solid #d4a92a",
-            padding: "10px 16px",
-            flexShrink: 0,
-            display: "flex",
-            gap: 12,
-            alignItems: "flex-start",
-          }}
-        >
+        <div style={{ background: '#fff8d6', borderBottom: '2px solid #d4a92a', padding: '10px 16px', flexShrink: 0, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
-            <div
-              style={{
-                ...mono,
-                fontSize: 9,
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#7a5e10",
-                marginBottom: 6,
-              }}
-            >
+            <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7a5e10', marginBottom: 6 }}>
               Seg {seg.num} notes ~ auto-saved
             </div>
             <textarea
-              value={notes[seg.id] ?? ""}
-              onChange={(e) => saveNote(seg.id, e.target.value)}
+              value={notes[seg.id] ?? ''}
+              onChange={e => saveNote(seg.id, e.target.value)}
               placeholder="Type notes for this segment..."
-              style={{
-                width: "100%",
-                minHeight: 56,
-                background: "rgba(255,255,255,0.6)",
-                border: "1px solid rgba(212,169,42,0.4)",
-                borderRadius: 8,
-                padding: "8px 12px",
-                fontSize: 12,
-                fontFamily: "var(--font-manrope, sans-serif)",
-                color: "#3a3a3a",
-                resize: "vertical",
-                outline: "none",
-              }}
+              style={{ width: '100%', minHeight: 56, background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(212,169,42,0.4)', borderRadius: 8, padding: '8px 12px', fontSize: 12, fontFamily: 'var(--font-manrope, sans-serif)', color: '#3a3a3a', resize: 'vertical', outline: 'none' }}
             />
           </div>
-          <button
-            onClick={exportNotes}
-            style={{
-              padding: "6px 14px",
-              borderRadius: 100,
-              ...mono,
-              fontSize: 9,
-              fontWeight: 700,
-              cursor: "pointer",
-              background: "#3a3a3a",
-              color: "#fff",
-              border: "none",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <button onClick={exportNotes} style={{ padding: '6px 14px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', background: '#3a3a3a', color: '#fff', border: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
             ↓ Export notes
           </button>
         </div>
       )}
 
       {/* ── PRESENTER VIEW ── */}
-      {view === "presenter" && (
-        <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      {view === 'presenter' && (
+        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+
           {/* SIDEBAR */}
-          <div
-            style={{
-              width: 190,
-              background: C.surface,
-              borderRight: `1px solid ${C.border}`,
-              overflowY: "auto",
-              flexShrink: 0,
-              padding: "12px 0",
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: 9,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: C.muted,
-                padding: "0 12px 8px",
-              }}
-            >
-              Beats
-            </div>
+          <div style={{ width: 190, background: C.surface, borderRight: `1px solid ${C.border}`, overflowY: 'auto', flexShrink: 0, padding: '12px 0' }}>
+            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: C.muted, padding: '0 12px 8px' }}>Beats</div>
             {seg.beats.map((b, i) => (
-              <div
-                key={b.id}
-                onClick={() => goToBeat(i)}
-                style={{
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                  borderLeft: `3px solid ${i === beatIdx ? C.primary : "transparent"}`,
-                  background:
-                    i === beatIdx ? "rgba(125,107,90,0.1)" : "transparent",
-                  transition: "all 0.15s",
-                }}
-              >
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 9,
-                    color: C.muted,
-                    marginBottom: 2,
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {seg.num}.{String(i + 1).padStart(2, "0")}
+              <div key={b.id} onClick={() => goToBeat(i)} style={{
+                padding: '8px 12px', cursor: 'pointer', borderLeft: `3px solid ${i === beatIdx ? C.primary : 'transparent'}`,
+                background: i === beatIdx ? 'rgba(125,107,90,0.1)' : 'transparent',
+                transition: 'all 0.15s',
+              }}>
+                <div style={{ ...mono, fontSize: 9, color: C.muted, marginBottom: 2, letterSpacing: '0.06em' }}>
+                  {seg.num}.{String(i + 1).padStart(2, '0')}
                 </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: C.text,
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {b.title}
-                </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 9,
-                    marginTop: 2,
-                    color: spkColor(b.speaker),
-                    letterSpacing: "0.05em",
-                  }}
-                >
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.text, lineHeight: 1.35 }}>{b.title}</div>
+                <div style={{ ...mono, fontSize: 9, marginTop: 2, color: spkColor(b.speaker), letterSpacing: '0.05em' }}>
                   {SPEAKERS[b.speaker]?.name}
                 </div>
               </div>
@@ -1312,445 +743,138 @@ function OSApp({
           </div>
 
           {/* PROMPTER */}
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              borderRight: showDemoPanel ? `1px solid ${C.border}` : "none",
-              minWidth: 0,
-            }}
-          >
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: showDemoPanel ? `1px solid ${C.border}` : 'none', minWidth: 0 }}>
             {/* Seg header */}
-            <div
-              style={{
-                padding: "12px 24px 10px",
-                borderBottom: `1px solid ${C.border}`,
-                flexShrink: 0,
-                background: C.surface,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                gap: 12,
-              }}
-            >
+            <div style={{ padding: '12px 24px 10px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
               <div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 9,
-                    color: C.muted,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    marginBottom: 3,
-                  }}
-                >
+                <div style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 3 }}>
                   SEGMENT {seg.num}
                 </div>
-                <div
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 800,
-                    color: C.text,
-                    lineHeight: 1.1,
-                    letterSpacing: "-0.02em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <Editable
-                    key={`title-${segIdx}`}
-                    value={seg.title}
-                    editMode={editMode}
-                    onSave={(v) => saveEdit(`${segIdx}.title`, v)}
-                  />
-                  {(seg.titleItalic || editMode) && (
-                    <>
-                      {" "}
-                      <em
-                        style={{
-                          ...serif,
-                          fontWeight: 400,
-                          color: C.primary,
-                          textTransform: "none",
-                          letterSpacing: 0,
-                        }}
-                      >
-                        <Editable
-                          key={`titleI-${segIdx}`}
-                          value={seg.titleItalic}
-                          editMode={editMode}
-                          onSave={(v) => saveEdit(`${segIdx}.titleItalic`, v)}
-                        />
-                      </em>
-                    </>
-                  )}
+                <div style={{ fontSize: 18, fontWeight: 800, color: C.text, lineHeight: 1.1, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>
+                  <Editable key={`title-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.title`, v)} />
+                  {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+                    <Editable key={`titleI-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => saveEdit(`${segIdx}.titleItalic`, v)} />
+                  </em></>}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: 12,
-                    color: C.muted,
-                    marginTop: 3,
-                  }}
-                >
-                  <Editable
-                    key={`sub-${segIdx}`}
-                    value={seg.subtitle}
-                    editMode={editMode}
-                    onSave={(v) => saveEdit(`${segIdx}.subtitle`, v)}
-                  />
+                <div style={{ ...sans, fontSize: 14, color: C.muted, marginTop: 3 }}>
+                  <Editable key={`sub-${segIdx}`} value={seg.subtitle} editMode={editMode} onSave={v => saveEdit(`${segIdx}.subtitle`, v)} />
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 5,
-                    marginTop: 8,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {seg.speakers.map((sk) => (
-                    <div
-                      key={sk}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                        padding: "2px 9px",
-                        borderRadius: 100,
-                        border: `1px solid ${spkColor(sk)}`,
-                        ...mono,
-                        fontSize: 9,
-                        fontWeight: 500,
-                        color: spkColor(sk),
-                        letterSpacing: "0.07em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 4,
-                          height: 4,
-                          borderRadius: "50%",
-                          background: spkColor(sk),
-                        }}
-                      />
+                <div style={{ display: 'flex', gap: 5, marginTop: 8, flexWrap: 'wrap' }}>
+                  {seg.speakers.map(sk => (
+                    <div key={sk} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 9px', borderRadius: 100, border: `1px solid ${spkColor(sk)}`, ...mono, fontSize: 9, fontWeight: 500, color: spkColor(sk), letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+                      <div style={{ width: 4, height: 4, borderRadius: '50%', background: spkColor(sk) }} />
                       {SPEAKERS[sk]?.name}
                     </div>
                   ))}
                 </div>
               </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 9,
-                  color: C.muted,
-                  padding: "3px 10px",
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 100,
-                  whiteSpace: "nowrap",
-                  letterSpacing: "0.07em",
-                  textTransform: "uppercase",
-                  alignSelf: "flex-start",
-                  marginTop: 2,
-                }}
-              >
+              <div style={{ ...mono, fontSize: 9, color: C.muted, padding: '3px 10px', border: `1px solid ${C.border}`, borderRadius: 100, whiteSpace: 'nowrap', letterSpacing: '0.07em', textTransform: 'uppercase', alignSelf: 'flex-start', marginTop: 2 }}>
                 ⏱ {seg.duration}
               </div>
             </div>
 
             {/* Script */}
-            <div
-              ref={prompterRef}
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                padding: "20px 24px 60px",
-                background: C.bg,
-              }}
-            >
+            <div ref={prompterRef} style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 60px', background: C.bg }}>
               {seg.beats.map((b, bi) => (
-                <div
-                  key={b.id}
-                  id={`beat-${bi}`}
-                  style={{ marginBottom: bi < seg.beats.length - 1 ? 0 : 0 }}
-                >
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: 9,
-                      letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: C.muted,
-                      marginBottom: 14,
-                      paddingBottom: 7,
-                      borderBottom: `1px solid ${C.border}`,
-                    }}
-                  >
-                    {seg.num}.{String(bi + 1).padStart(2, "0")} ~{" "}
-                    <Editable
-                      key={`bt-${segIdx}-${bi}`}
-                      value={b.title}
-                      editMode={editMode}
-                      onSave={(v) => saveEdit(`${segIdx}.beats.${bi}.title`, v)}
-                    />
+                <div key={b.id} id={`beat-${bi}`} style={{ marginBottom: bi < seg.beats.length - 1 ? 0 : 0 }}>
+                  <div style={{ ...mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.muted, marginBottom: 14, paddingBottom: 7, borderBottom: `1px solid ${C.border}` }}>
+                    {seg.num}.{String(bi + 1).padStart(2, '0')} ~{' '}
+                    <Editable key={`bt-${segIdx}-${bi}`} value={b.title} editMode={editMode} onSave={v => saveEdit(`${segIdx}.beats.${bi}.title`, v)} />
                   </div>
                   {b.blocks.map((bl, bli) => {
                     const blPath = `${segIdx}.beats.${bi}.blocks.${bli}`;
                     return (
-                      <div
-                        key={bli}
-                        style={{
-                          marginBottom: 16,
-                          display: "flex",
-                          gap: 14,
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        {bl.type === "stage" && (
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: 11,
-                              color: C.muted,
-                              background: C.surface2,
-                              border: `1px dashed rgba(156,139,122,0.3)`,
-                              borderRadius: 6,
-                              padding: "8px 12px",
-                              letterSpacing: "0.03em",
-                              width: "100%",
-                            }}
-                          >
-                            🎬{" "}
-                            <Editable
-                              key={`stage-${segIdx}-${bi}-${bli}`}
-                              value={bl.text ?? ""}
-                              editMode={editMode}
-                              onSave={(v) => saveEdit(`${blPath}.text`, v)}
-                            />
+                    <div key={bli} style={{ marginBottom: 16, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                      {bl.type === 'stage' && (
+                        <div style={{ ...mono, fontSize: 11, color: C.muted, background: C.surface2, border: `1px dashed rgba(156,139,122,0.3)`, borderRadius: 6, padding: '8px 12px', letterSpacing: '0.03em', width: '100%' }}>
+                          🎬{' '}
+                          <Editable key={`stage-${segIdx}-${bi}-${bli}`} value={bl.text ?? ''} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v)} />
+                        </div>
+                      )}
+                      {bl.type === 'poll' && (
+                        <div style={{ background: 'rgba(125,107,90,0.12)', border: `1px solid rgba(125,107,90,0.3)`, borderRadius: 8, padding: '10px 14px', width: '100%' }}>
+                          <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: 6 }}>~ Audience moment</div>
+                          <div style={{ ...mono, fontSize: 11, color: C.text }}>
+                            <Editable key={`poll-${segIdx}-${bi}-${bli}`} value={(bl.text ?? '').replace(/\n/g, ' · ')} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v.replace(/ · /g, '\n'))} />
                           </div>
-                        )}
-                        {bl.type === "poll" && (
-                          <div
-                            style={{
-                              background: "rgba(125,107,90,0.12)",
-                              border: `1px solid rgba(125,107,90,0.3)`,
-                              borderRadius: 8,
-                              padding: "10px 14px",
-                              width: "100%",
-                            }}
-                          >
-                            <div
-                              style={{
-                                ...mono,
-                                fontSize: 9,
-                                fontWeight: 700,
-                                letterSpacing: "0.1em",
-                                textTransform: "uppercase",
-                                color: C.primary,
-                                marginBottom: 6,
-                              }}
-                            >
-                              ~ Audience moment
-                            </div>
-                            <div
-                              style={{ ...mono, fontSize: 11, color: C.text }}
-                            >
-                              <Editable
-                                key={`poll-${segIdx}-${bi}-${bli}`}
-                                value={(bl.text ?? "").replace(/\n/g, " · ")}
-                                editMode={editMode}
-                                onSave={(v) =>
-                                  saveEdit(
-                                    `${blPath}.text`,
-                                    v.replace(/ · /g, "\n"),
-                                  )
-                                }
-                              />
-                            </div>
+                        </div>
+                      )}
+                      {bl.type === 'workbook' && (
+                        <div style={{ background: 'rgba(156,139,122,0.12)', border: `1px solid rgba(156,139,122,0.3)`, borderRadius: 8, padding: '10px 14px', width: '100%' }}>
+                          <div style={{ ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8bab9a', marginBottom: 6 }}>~ Workbook moment</div>
+                          <div style={{ ...mono, fontSize: 11, color: C.text }}>
+                            <Editable key={`wb-${segIdx}-${bi}-${bli}`} value={bl.text ?? ''} editMode={editMode} onSave={v => saveEdit(`${blPath}.text`, v)} />
                           </div>
-                        )}
-                        {bl.type === "workbook" && (
-                          <div
-                            style={{
-                              background: "rgba(156,139,122,0.12)",
-                              border: `1px solid rgba(156,139,122,0.3)`,
-                              borderRadius: 8,
-                              padding: "10px 14px",
-                              width: "100%",
-                            }}
-                          >
-                            <div
-                              style={{
-                                ...mono,
-                                fontSize: 9,
-                                fontWeight: 700,
-                                letterSpacing: "0.1em",
-                                textTransform: "uppercase",
-                                color: "#8bab9a",
-                                marginBottom: 6,
-                              }}
-                            >
-                              ~ Workbook moment
-                            </div>
-                            <div
-                              style={{ ...mono, fontSize: 11, color: C.text }}
-                            >
-                              <Editable
-                                key={`wb-${segIdx}-${bi}-${bli}`}
-                                value={bl.text ?? ""}
-                                editMode={editMode}
-                                onSave={(v) => saveEdit(`${blPath}.text`, v)}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        {(bl.type === "scripted" || bl.type === "bullets") && (
-                          <>
-                            <div
-                              style={{
-                                width: 56,
-                                flexShrink: 0,
-                                paddingTop: 1,
-                              }}
-                            >
-                              {(() => {
-                                const sp = bl.speaker;
-                                if (!sp) return null;
-                                const color = spkColor(sp);
-                                return (
-                                  <button
-                                    onClick={() => {
-                                      const order: readonly string[] = [
-                                        "ABIE",
-                                        "MERI",
-                                        "BOTH",
-                                      ];
-                                      const cur = order.indexOf(sp);
-                                      const next =
-                                        order[(cur + 1) % order.length] ??
-                                        "ABIE";
-                                      saveEdit(`${blPath}.speaker`, next);
-                                    }}
-                                    title="Click to cycle: ABIE → MERI → BOTH"
-                                    style={{
-                                      ...mono,
-                                      fontSize: 9,
-                                      fontWeight: 500,
-                                      letterSpacing: "0.1em",
-                                      textTransform: "uppercase",
-                                      color,
-                                      background: "transparent",
-                                      border: `1px dashed ${color}50`,
-                                      borderRadius: 6,
-                                      padding: "3px 6px",
-                                      cursor: "pointer",
-                                      transition: "all 0.15s",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.background = `${color}15`;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.background =
-                                        "transparent";
-                                    }}
-                                  >
-                                    {SPEAKERS[sp]?.name}
-                                  </button>
-                                );
-                              })()}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              {bl.type === "scripted" ? (
-                                <Editable
-                                  key={`scr-${segIdx}-${bi}-${bli}`}
-                                  tagName="div"
-                                  value={(bl.text ?? "").replace(
-                                    /<em>/g,
-                                    `<em style="color:${C.primary}">`,
-                                  )}
-                                  editMode={editMode}
-                                  onSave={(v) =>
-                                    saveEdit(
-                                      `${blPath}.text`,
-                                      v.replace(/<em [^>]*>/g, "<em>"),
-                                    )
-                                  }
-                                  style={{
-                                    ...serif,
-                                    fontSize,
-                                    lineHeight: 1.75,
-                                    fontWeight: 400,
-                                    color: C.text,
+                        </div>
+                      )}
+                      {(bl.type === 'scripted' || bl.type === 'bullets') && (
+                        <>
+                          <div style={{ width: 56, flexShrink: 0, paddingTop: 1 }}>
+                            {(() => {
+                              const sp = bl.speaker;
+                              if (!sp) return null;
+                              const color = spkColor(sp);
+                              return (
+                                <button
+                                  onClick={() => {
+                                    const order: readonly string[] = ['ABIE', 'MERI', 'BOTH'];
+                                    const cur = order.indexOf(sp);
+                                    const next = order[(cur + 1) % order.length] ?? 'ABIE';
+                                    saveEdit(`${blPath}.speaker`, next);
                                   }}
-                                />
-                              ) : (
-                                <ul
+                                  title="Click to cycle: ABIE → MERI → BOTH"
                                   style={{
-                                    listStyle: "none",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 7,
+                                    ...mono, fontSize: 9, fontWeight: 500,
+                                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                                    color,
+                                    background: 'transparent',
+                                    border: `1px dashed ${color}50`,
+                                    borderRadius: 6,
+                                    padding: '3px 6px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
                                   }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = `${color}15`; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                                 >
-                                  {bl.items?.map((item, ii) => (
-                                    <li
-                                      key={ii}
-                                      style={{
-                                        display: "flex",
-                                        gap: 10,
-                                        alignItems: "flex-start",
-                                      }}
-                                    >
-                                      <span
-                                        style={{
-                                          ...mono,
-                                          fontSize: 12,
-                                          color: C.primary,
-                                          flexShrink: 0,
-                                          paddingTop: 3,
-                                        }}
-                                      >
-                                        ~
-                                      </span>
-                                      <Editable
-                                        key={`b-${segIdx}-${bi}-${bli}-${ii}`}
-                                        value={item.replace(
-                                          /<em>/g,
-                                          `<em style="color:${C.primary}">`,
-                                        )}
-                                        editMode={editMode}
-                                        onSave={(v) =>
-                                          saveEdit(
-                                            `${blPath}.items.${ii}`,
-                                            v.replace(/<em [^>]*>/g, "<em>"),
-                                          )
-                                        }
-                                        style={{
-                                          ...serif,
-                                          fontSize: fontSize - 2,
-                                          lineHeight: 1.6,
-                                          color: C.text,
-                                        }}
-                                      />
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
+                                  {SPEAKERS[sp]?.name}
+                                </button>
+                              );
+                            })()}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            {bl.type === 'scripted' ? (
+                              <Editable
+                                key={`scr-${segIdx}-${bi}-${bli}`}
+                                tagName="div"
+                                value={(bl.text ?? '').replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
+                                editMode={editMode}
+                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
+                                style={{ ...sans, fontSize, lineHeight: 1.75, fontWeight: 450, color: '#2A2520' }}
+                              />
+                            ) : (
+                              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
+                                {bl.items?.map((item, ii) => (
+                                  <li key={ii} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                    <span style={{ ...mono, fontSize: 12, color: C.primary, flexShrink: 0, paddingTop: 3 }}>~</span>
+                                    <Editable
+                                      key={`b-${segIdx}-${bi}-${bli}-${ii}`}
+                                      value={item.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
+                                      editMode={editMode}
+                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
+                                      style={{ ...sans, fontSize: fontSize - 2, lineHeight: 1.6, color: '#2A2520', fontWeight: 450 }}
+                                    />
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );})}
                   {bi < seg.beats.length - 1 && (
-                    <div
-                      style={{
-                        height: 1,
-                        background: C.border,
-                        margin: "16px 0 20px",
-                      }}
-                    />
+                    <div style={{ height: 1, background: C.border, margin: '16px 0 20px' }} />
                   )}
                 </div>
               ))}
@@ -1758,229 +882,100 @@ function OSApp({
 
             {/* Progress bar */}
             <div style={{ height: 3, background: C.surface2, flexShrink: 0 }}>
-              <div
-                style={{
-                  height: "100%",
-                  background: C.primary,
-                  width: `${progress}%`,
-                  transition: "width 0.3s",
-                }}
-              />
+              <div style={{ height: '100%', background: C.primary, width: `${progress}%`, transition: 'width 0.3s' }} />
             </div>
           </div>
 
           {/* DEMO PANEL ~ collapsed by default · toggle from the top bar (◧/◨ button) */}
           {showDemoPanel && (
-            <div
-              style={{
-                width: 420,
-                flexShrink: 0,
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                background: C.surface,
-              }}
-            >
-              {/* Panel header */}
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderBottom: `1px solid ${C.border}`,
-                  flexShrink: 0,
-                  background: C.surface2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 8,
-                }}
-              >
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: C.text,
-                  }}
-                >
-                  {
-                    {
-                      demo: "Live demo",
-                      compare: "Compare",
-                      products: "4 Claudes",
-                      showcase: "Behind scenes",
-                      qa: "Q&A queue",
-                    }[mode]
-                  }
-                </div>
-                <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
-                  {(
-                    ["demo", "compare", "products", "showcase", "qa"] as Mode[]
-                  ).map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setMode(m)}
-                      style={{
-                        padding: "3px 9px",
-                        borderRadius: 100,
-                        ...mono,
-                        fontSize: 9,
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                        border: `1px solid ${m === mode ? C.primary : C.border}`,
-                        background: m === mode ? C.primary : "transparent",
-                        color: m === mode ? C.bg : C.muted,
-                        transition: "all 0.15s",
-                      }}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
+          <div style={{ width: 420, flexShrink: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.surface }}>
+            {/* Panel header */}
+            <div style={{ padding: '10px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+              <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.text }}>
+                {{ demo: 'Live demo', compare: 'Compare', products: '4 Claudes', showcase: 'Behind scenes', qa: 'Q&A queue' }[mode]}
               </div>
-
-              {/* Panel content */}
-              <div
-                style={{
-                  flex: 1,
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {/* Demo iframe */}
-                {mode === "demo" && (
-                  <div
-                    style={{
-                      flex: 1,
-                      overflow: "hidden",
-                      position: "relative",
-                    }}
-                  >
-                    {seg.panelUrl ? (
-                      <iframe
-                        src={seg.panelUrl}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          border: "none",
-                          display: "block",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "100%",
-                          gap: 12,
-                          padding: 24,
-                        }}
-                      >
-                        <div style={{ fontSize: 28, opacity: 0.3 }}>↗</div>
-                        <div
-                          style={{
-                            ...serif,
-                            fontSize: 14,
-                            color: C.muted,
-                            textAlign: "center",
-                            lineHeight: 1.6,
-                          }}
-                        >
-                          Switch to compare, products,
-                          <br />
-                          or showcase for this segment
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Compare */}
-                {mode === "compare" && activePreset && (
-                  <ComparePanel
-                    preset={activePreset}
-                    state={compareState}
-                    onRun={runCompare}
-                    onReset={resetCompare}
-                    C={C}
-                    mono={mono}
-                    serif={serif}
-                  />
-                )}
-                {mode === "compare" && !activePreset && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flex: 1,
-                      ...serif,
-                      fontSize: 14,
-                      color: C.muted,
-                    }}
-                  >
-                    No compare preset for this segment
-                  </div>
-                )}
-
-                {/* Products */}
-                {mode === "products" && (
-                  <ProductsPanel C={C} mono={mono} serif={serif} />
-                )}
-
-                {/* Showcase */}
-                {mode === "showcase" && (
-                  <ShowcasePanel
-                    showTab={showTab}
-                    onTabChange={setShowTab}
-                    C={C}
-                    mono={mono}
-                    serif={serif}
-                  />
-                )}
-
-                {/* Q&A */}
-                {mode === "qa" && (
-                  <QAPanel
-                    qaList={qaList}
-                    qaInput={qaInput}
-                    inputRef={qaInputRef}
-                    onInput={setQaInput}
-                    onAdd={addQA}
-                    onVote={voteQA}
-                    onActive={toggleActiveQA}
-                    onDismiss={dismissQA}
-                    C={C}
-                    mono={mono}
-                    serif={serif}
-                  />
-                )}
+              <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                {(['demo', 'compare', 'products', 'showcase', 'qa'] as Mode[]).map(m => (
+                  <button key={m} onClick={() => setMode(m)} style={{
+                    padding: '3px 9px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700,
+                    cursor: 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase',
+                    border: `1px solid ${m === mode ? C.primary : C.border}`,
+                    background: m === mode ? C.primary : 'transparent',
+                    color: m === mode ? C.bg : C.muted,
+                    transition: 'all 0.15s',
+                  }}>{m}</button>
+                ))}
               </div>
             </div>
+
+            {/* Panel content */}
+            <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+
+              {/* Demo iframe */}
+              {mode === 'demo' && (
+                <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+                  {seg.panelUrl ? (
+                    <iframe src={seg.panelUrl} style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 24 }}>
+                      <div style={{ fontSize: 28, opacity: 0.3 }}>↗</div>
+                      <div style={{ ...sans, fontSize: 15, color: C.muted, textAlign: 'center', lineHeight: 1.6 }}>
+                        Switch to compare, products,<br />or showcase for this segment
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Compare */}
+              {mode === 'compare' && activePreset && (
+                <ComparePanel
+                  preset={activePreset}
+                  state={compareState}
+                  onRun={runCompare}
+                  onReset={resetCompare}
+                  C={C} mono={mono} sans={sans} serif={serif}
+                />
+              )}
+              {mode === 'compare' && !activePreset && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, ...sans, fontSize: 15, color: C.muted }}>
+                  No compare preset for this segment
+                </div>
+              )}
+
+              {/* Products */}
+              {mode === 'products' && <ProductsPanel C={C} mono={mono} sans={sans} serif={serif} />}
+
+              {/* Showcase */}
+              {mode === 'showcase' && (
+                <ShowcasePanel showTab={showTab} onTabChange={setShowTab} C={C} mono={mono} sans={sans} serif={serif} />
+              )}
+
+              {/* Q&A */}
+              {mode === 'qa' && (
+                <QAPanel
+                  qaList={qaList} qaInput={qaInput} inputRef={qaInputRef}
+                  onInput={setQaInput} onAdd={addQA}
+                  onVote={voteQA} onActive={toggleActiveQA} onDismiss={dismissQA}
+                  C={C} mono={mono} sans={sans} serif={serif}
+                />
+              )}
+            </div>
+          </div>
           )}
         </div>
       )}
 
       {/* ── AUDIENCE VIEW ── */}
-      {view === "audience" && (
+      {view === 'audience' && (
         <AudienceView
-          seg={seg}
-          segIdx={segIdx}
-          beat={beatIdx}
+          seg={seg} segIdx={segIdx} beat={beatIdx}
           totalSegs={segments.length}
-          wbBlock={wbBlock}
-          pollBlock={pollBlock}
+          wbBlock={wbBlock} pollBlock={pollBlock}
           timerSecs={eventSecs}
           fontSize={fontSize}
           segments={segments}
-          C={C}
-          mono={mono}
-          serif={serif}
-          sans={sans}
+          C={C} mono={mono} sans={sans} serif={serif}
           spkColor={spkColor}
           theme={theme}
           editMode={editMode}
@@ -1993,421 +988,108 @@ function OSApp({
 }
 
 // ── Reusable Btn ─────────────────────────────────────────────────────────────
-function Btn({
-  children,
-  onClick,
-  primary,
-  style,
-  C,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  primary?: boolean;
+function Btn({ children, onClick, primary, style, C }: {
+  children: React.ReactNode; onClick?: () => void; primary?: boolean;
   style?: React.CSSProperties;
   C?: Palette;
 }) {
-  const p = C?.primary ?? "#7D6B5A";
-  const bg = C?.bg ?? "#1a1613";
-  const text = C?.text ?? "#FAF8F5";
-  const border = C?.border ?? "rgba(156,139,122,0.3)";
+  const p = C?.primary ?? '#7D6B5A';
+  const bg = C?.bg ?? '#1a1613';
+  const text = C?.text ?? '#FAF8F5';
+  const border = C?.border ?? 'rgba(156,139,122,0.3)';
   return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "4px 12px",
-        borderRadius: 100,
-        fontSize: 9,
-        fontFamily: "ui-monospace, monospace",
-        fontWeight: 700,
-        cursor: "pointer",
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-        border: `1px solid ${primary ? p : border}`,
-        background: primary ? p : "transparent",
-        color: primary ? bg : text,
-        transition: "all 0.15s",
-        whiteSpace: "nowrap",
-        ...style,
-      }}
-    >
+    <button onClick={onClick} style={{
+      padding: '4px 12px', borderRadius: 100, fontSize: 9,
+      fontFamily: 'ui-monospace, monospace', fontWeight: 700,
+      cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase',
+      border: `1px solid ${primary ? p : border}`,
+      background: primary ? p : 'transparent',
+      color: primary ? bg : text,
+      transition: 'all 0.15s', whiteSpace: 'nowrap',
+      ...style,
+    }}>
       {children}
     </button>
   );
 }
 
 // ── Compare Panel ─────────────────────────────────────────────────────────────
-function ComparePanel({
-  preset,
-  state,
-  onRun,
-  onReset,
-  C,
-  mono,
-  serif,
-}: {
+function ComparePanel({ preset, state, onRun, onReset, C, mono, sans, serif }: {
   preset: ComparePreset;
   state: CompareState;
   onRun: () => void;
   onReset: () => void;
   C: Record<string, string>;
   mono: React.CSSProperties;
+  sans: React.CSSProperties;
   serif: React.CSSProperties;
 }) {
-  const steps = ["Ready", "Left runs", "Right runs", "Lands"];
+  const steps = ['Ready', 'Left runs', 'Right runs', 'Lands'];
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Steps */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "6px 14px",
-          borderBottom: `1px solid ${C.border}`,
-          flexShrink: 0,
-          background: C.surface,
-          overflowX: "auto",
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface, overflowX: 'auto' }}>
         {steps.map((s, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              ...mono,
-              fontSize: 9,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color:
-                state.step === i
-                  ? C.text
-                  : state.step > i
-                    ? C.primaryHover
-                    : C.muted,
-              whiteSpace: "nowrap",
-            }}
-          >
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background:
-                  state.step === i
-                    ? C.primary
-                    : state.step > i
-                      ? C.primaryHover
-                      : C.border,
-              }}
-            />
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, ...mono, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: state.step === i ? C.text : state.step > i ? C.primaryHover : C.muted, whiteSpace: 'nowrap' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: state.step === i ? C.primary : state.step > i ? C.primaryHover : C.border }} />
             {s}
-            {i < 3 && (
-              <span style={{ color: C.border, margin: "0 2px" }}>~</span>
-            )}
+            {i < 3 && <span style={{ color: C.border, margin: '0 2px' }}>~</span>}
           </div>
         ))}
       </div>
       {/* Run row */}
-      <div
-        style={{
-          display: "flex",
-          gap: 6,
-          padding: "7px 14px",
-          borderBottom: `1px solid ${C.border}`,
-          flexShrink: 0,
-          alignItems: "center",
-        }}
-      >
-        <button
-          onClick={onRun}
-          disabled={state.running}
-          style={{
-            padding: "5px 16px",
-            borderRadius: 100,
-            ...mono,
-            fontSize: 9,
-            fontWeight: 700,
-            cursor: state.running ? "not-allowed" : "pointer",
-            border: "none",
-            background: state.running ? C.border : C.primary,
-            color: state.running ? C.muted : C.bg,
-            letterSpacing: "0.09em",
-            textTransform: "uppercase",
-            opacity: state.running ? 0.5 : 1,
-          }}
-        >
-          {state.running ? "● RUNNING" : state.step === 3 ? "↺ AGAIN" : "▶ RUN"}
+      <div style={{ display: 'flex', gap: 6, padding: '7px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, alignItems: 'center' }}>
+        <button onClick={onRun} disabled={state.running} style={{ padding: '5px 16px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: state.running ? 'not-allowed' : 'pointer', border: 'none', background: state.running ? C.border : C.primary, color: state.running ? C.muted : C.bg, letterSpacing: '0.09em', textTransform: 'uppercase', opacity: state.running ? 0.5 : 1 }}>
+          {state.running ? '● RUNNING' : state.step === 3 ? '↺ AGAIN' : '▶ RUN'}
         </button>
-        <button
-          onClick={onReset}
-          style={{
-            padding: "5px 14px",
-            borderRadius: 100,
-            ...mono,
-            fontSize: 9,
-            fontWeight: 700,
-            cursor: "pointer",
-            border: `1px solid ${C.border}`,
-            background: "transparent",
-            color: C.muted,
-            letterSpacing: "0.09em",
-            textTransform: "uppercase",
-          }}
-        >
+        <button onClick={onReset} style={{ padding: '5px 14px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: C.muted, letterSpacing: '0.09em', textTransform: 'uppercase' }}>
           RESET
         </button>
-        <span
-          style={{
-            ...mono,
-            fontSize: 9,
-            color: C.muted,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-          }}
-        >
-          {preset.scenario}
-        </span>
+        <span style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{preset.scenario}</span>
       </div>
       {/* Columns */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {[
-          {
-            tag: preset.leftTag,
-            title: preset.leftTitle,
-            why: preset.leftWhy,
-            prompt: preset.leftPrompt,
-            output: state.leftText,
-            annLbl: preset.leftAnnLbl,
-            annTxt: preset.leftAnnTxt,
-            done: state.leftDone,
-            isLeft: true,
-          },
-          {
-            tag: preset.rightTag,
-            title: preset.rightTitle,
-            why: preset.rightWhy,
-            prompt: preset.rightPrompt,
-            output: state.rightText,
-            annLbl: preset.rightAnnLbl,
-            annTxt: preset.rightAnnTxt,
-            done: state.rightDone,
-            isLeft: false,
-          },
+          { tag: preset.leftTag, title: preset.leftTitle, why: preset.leftWhy, prompt: preset.leftPrompt, output: state.leftText, annLbl: preset.leftAnnLbl, annTxt: preset.leftAnnTxt, done: state.leftDone, isLeft: true },
+          { tag: preset.rightTag, title: preset.rightTitle, why: preset.rightWhy, prompt: preset.rightPrompt, output: state.rightText, annLbl: preset.rightAnnLbl, annTxt: preset.rightAnnTxt, done: state.rightDone, isLeft: false },
         ].map((col, ci) => (
-          <div
-            key={ci}
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              borderRight: ci === 0 ? `1px solid ${C.border}` : "none",
-            }}
-          >
-            <div
-              style={{
-                padding: "8px 12px 6px",
-                borderBottom: `1px solid ${C.border}`,
-                flexShrink: 0,
-                background: C.surface,
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  padding: "2px 8px",
-                  borderRadius: 100,
-                  ...mono,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  marginBottom: 5,
-                  background: col.isLeft
-                    ? "rgba(139,58,58,0.12)"
-                    : "rgba(74,124,89,0.12)",
-                  color: col.isLeft ? "#b06060" : "#4a7c59",
-                  border: `1px solid ${col.isLeft ? "rgba(139,58,58,0.25)" : "rgba(74,124,89,0.25)"}`,
-                }}
-              >
+          <div key={ci} style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRight: ci === 0 ? `1px solid ${C.border}` : 'none' }}>
+            <div style={{ padding: '8px 12px 6px', borderBottom: `1px solid ${C.border}`, flexShrink: 0, background: C.surface }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 8px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 5, background: col.isLeft ? 'rgba(139,58,58,0.12)' : 'rgba(74,124,89,0.12)', color: col.isLeft ? '#b06060' : '#4a7c59', border: `1px solid ${col.isLeft ? 'rgba(139,58,58,0.25)' : 'rgba(74,124,89,0.25)'}` }}>
                 {col.tag}
               </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  color: C.text,
-                  letterSpacing: "-0.01em",
-                  textTransform: "uppercase",
-                }}
-                dangerouslySetInnerHTML={{
-                  __html: col.title.replace(
-                    /<em>/g,
-                    `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary};text-transform:none">`,
-                  ),
-                }}
-              />
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 11,
-                  color: C.muted,
-                  marginTop: 3,
-                  lineHeight: 1.4,
-                }}
-              >
-                {col.why}
-              </div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: C.text, letterSpacing: '-0.01em', textTransform: 'uppercase' }}
+                dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary};text-transform:none">`) }} />
+              <div style={{ ...sans, fontSize: 13, color: C.muted, marginTop: 3, lineHeight: 1.4 }}>{col.why}</div>
             </div>
-            <div
-              style={{
-                padding: "6px 12px",
-                background: C.surface2,
-                flexShrink: 0,
-                borderBottom: `1px solid ${C.border}`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 9,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: C.muted,
-                  marginBottom: 3,
-                }}
-              >
-                Prompt
-              </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 10,
-                  lineHeight: 1.5,
-                  color: col.isLeft || state.step >= 2 ? C.text : C.muted,
-                  opacity: col.isLeft || state.step >= 2 ? 1 : 0.5,
-                  whiteSpace: "pre-wrap",
-                  maxHeight: 80,
-                  overflowY: "auto",
-                }}
-              >
+            <div style={{ padding: '6px 12px', background: C.surface2, flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
+              <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 3 }}>Prompt</div>
+              <div style={{ ...mono, fontSize: 10, lineHeight: 1.5, color: col.isLeft || state.step >= 2 ? C.text : C.muted, opacity: col.isLeft || state.step >= 2 ? 1 : 0.5, whiteSpace: 'pre-wrap', maxHeight: 80, overflowY: 'auto' }}>
                 {col.prompt}
               </div>
             </div>
-            <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 9,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: C.muted,
-                  marginBottom: 7,
-                }}
-              >
-                Response
-              </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 12,
-                  lineHeight: 1.65,
-                  color: C.text,
-                  whiteSpace: "pre-wrap",
-                  minHeight: 32,
-                }}
-              >
-                {col.output || (
-                  <span style={{ opacity: 0.4 }}>
-                    {col.isLeft ? "Hit RUN..." : "Unlocks after left..."}
-                  </span>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px' }}>
+              <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 7 }}>Response</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.65, color: C.text, whiteSpace: 'pre-wrap', minHeight: 32 }}>
+                {col.output || <span style={{ opacity: 0.4 }}>{col.isLeft ? 'Hit RUN...' : 'Unlocks after left...'}</span>}
+                {((col.isLeft && state.step === 1) || (!col.isLeft && state.step === 2)) && !col.done && (
+                  <span style={{ animation: 'blink 0.65s step-end infinite', color: C.primary }}>▋</span>
                 )}
-                {((col.isLeft && state.step === 1) ||
-                  (!col.isLeft && state.step === 2)) &&
-                  !col.done && (
-                    <span
-                      style={{
-                        animation: "blink 0.65s step-end infinite",
-                        color: C.primary,
-                      }}
-                    >
-                      ▋
-                    </span>
-                  )}
               </div>
             </div>
             {col.done && (
-              <div
-                style={{
-                  margin: "0 12px 10px",
-                  padding: "8px 12px",
-                  borderRadius: 7,
-                  border: `1px solid ${C.border}`,
-                  background: C.surface2,
-                }}
-              >
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 9,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: C.muted,
-                    marginBottom: 4,
-                  }}
-                >
-                  {col.annLbl}
-                </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: 11,
-                    color: C.text,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {col.annTxt}
-                </div>
+              <div style={{ margin: '0 12px 10px', padding: '8px 12px', borderRadius: 7, border: `1px solid ${C.border}`, background: C.surface2 }}>
+                <div style={{ ...mono, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, marginBottom: 4 }}>{col.annLbl}</div>
+                <div style={{ ...sans, fontSize: 13, color: C.text, lineHeight: 1.5 }}>{col.annTxt}</div>
               </div>
             )}
           </div>
         ))}
       </div>
       {state.step === 3 && (
-        <div
-          style={{
-            borderTop: `1px solid ${C.border}`,
-            padding: "10px 14px",
-            background: C.surface,
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              ...serif,
-              fontSize: 13,
-              color: C.text,
-              lineHeight: 1.6,
-              textAlign: "center",
-            }}
-            dangerouslySetInnerHTML={{
-              __html: preset.landing.replace(
-                /<em>/g,
-                `<em style="color:${C.primary};">`,
-              ),
-            }}
-          />
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: '10px 14px', background: C.surface, flexShrink: 0 }}>
+          <div style={{ ...sans, fontSize: 14, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
+            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }} />
         </div>
       )}
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
@@ -2419,49 +1101,33 @@ function ComparePanel({
 // Sample cities ~ used in the segment 00 welcome "where are you joining from?" feed
 // Scrolls through these so the audience sees a global welcome vibe before they've even typed
 const WELCOME_CITIES = [
-  "👋 Maria from Madrid",
-  "✨ Sarah from London",
-  "🌴 Jobell from Cebu",
-  "☕ Marcus from Berlin",
-  "🌊 Lisa from Lisbon",
-  "🍁 Anna from Toronto",
-  "🦘 Tom from Sydney",
-  "🌅 Priya from Mumbai",
-  "⚡ Diego from Buenos Aires",
-  "🌸 Yuki from Tokyo",
-  "🌵 Carlos from Mexico City",
-  "🍷 Sophie from Paris",
+  '👋 Maria from Madrid',
+  '✨ Sarah from London',
+  '🌴 Jobell from Cebu',
+  '☕ Marcus from Berlin',
+  '🌊 Lisa from Lisbon',
+  '🍁 Anna from Toronto',
+  '🦘 Tom from Sydney',
+  '🌅 Priya from Mumbai',
+  '⚡ Diego from Buenos Aires',
+  '🌸 Yuki from Tokyo',
+  '🌵 Carlos from Mexico City',
+  '🍷 Sophie from Paris',
 ];
 
 // VIP value stack ~ used in segment 07 audience view (the close)
 interface StackItem {
   name: string;
   desc: string;
-  value: number | "priceless";
+  value: number | 'priceless';
 }
 // VIP stack mirrors the landing page perks 1:1 so what people see at signup
 // matches what they see at the close (no surprises, builds trust)
 const VIP_STACK: StackItem[] = [
-  {
-    name: "Full replay + transcript",
-    desc: "Rewatch any demo · copy any prompt · 30-day access",
-    value: 97,
-  },
-  {
-    name: "The Claude Vault",
-    desc: "Private dashboard setups + Talent Mucho's premium proprietary Claude skills",
-    value: 297,
-  },
-  {
-    name: "VIP-only group follow-up",
-    desc: "45-min private session with Abie & Meri · small group",
-    value: "priceless",
-  },
-  {
-    name: "30-day Premium Skool access",
-    desc: "Closed mentorship · weekly Vibe Coding · €49/mo after, cancel anytime",
-    value: 49,
-  },
+  { name: 'Full replay + transcript',         desc: 'Rewatch any demo · copy any prompt · 30-day access',                                          value: 97 },
+  { name: 'The Claude Vault',                 desc: "Private dashboard setups + Talent Mucho's premium proprietary Claude skills",                  value: 297 },
+  { name: 'VIP-only group follow-up',         desc: '45-min private session with Abie & Meri · small group',                                       value: 'priceless' },
+  { name: '30-day Premium Skool access',      desc: "Closed mentorship · weekly Vibe Coding · €49/mo after, cancel anytime",                       value: 49 },
 ];
 
 // Three Doors Out ~ used in segment 07 audience view (the close)
@@ -2482,32 +1148,31 @@ interface DoorOption {
 }
 const THREE_DOORS: DoorOption[] = [
   {
-    label: "Door 1",
-    name: "Free",
-    italic: "just try it",
-    price: "€0",
-    pitch: "Open Claude tonight. Try one demo from what you saw.",
-    bestFor: "You're curious. Just exploring. Not ready to commit anything.",
+    label: 'Door 1',
+    name: 'Free',
+    italic: 'just try it',
+    price: '€0',
+    pitch: 'Open Claude tonight. Try one demo from what you saw.',
+    bestFor: 'You\'re curious. Just exploring. Not ready to commit anything.',
     whatYouGet: [
       "Our Skool community ~ free tier, 200+ already in",
       "Abie Maxey's AI Playbooks ~ free, growing every week",
       "The mindset shift you got tonight",
       "Whatever you remember from this session",
     ],
-    nextStep: "Join our Skool, grab the playbooks, open Claude tonight.",
-    cta: "Join the community",
-    ctaUrl: "https://www.skool.com/future-proof-with-ai-4339",
-    secondaryCta: "Get the AI Playbooks",
-    secondaryCtaUrl: "https://abiemaxey.com/playbooks",
+    nextStep: 'Join our Skool, grab the playbooks, open Claude tonight.',
+    cta: 'Join the community',
+    ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
+    secondaryCta: 'Get the AI Playbooks',
+    secondaryCtaUrl: 'https://abiemaxey.com/playbooks',
   },
   {
-    label: "Door 2",
-    name: "VIP",
-    italic: "€49 ~ the map",
-    price: "€49",
+    label: 'Door 2',
+    name: 'VIP',
+    italic: '€49 ~ the map',
+    price: '€49',
     pitch: "The recording, the skill library, 30 days inside our community.",
-    bestFor:
-      "Most of you. You don't want to figure this out alone over 6 months.",
+    bestFor: 'Most of you. You don\'t want to figure this out alone over 6 months.',
     whatYouGet: [
       "Full replay + transcript ~ 30-day access (€97)",
       "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
@@ -2515,18 +1180,17 @@ const THREE_DOORS: DoorOption[] = [
       "30-day Premium Skool · €49/mo after, cancel anytime",
       "Early access to the upcoming Bootcamp",
     ],
-    nextStep: "Click VIP link → Stripe → instant access tomorrow morning.",
-    cta: "Join VIP — €49",
-    ctaUrl: "https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04",
+    nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
+    cta: 'Join VIP — €49',
+    ctaUrl: 'https://buy.stripe.com/00w3cpd0W40HbGxgcl73G04',
     highlight: true,
   },
   {
-    label: "Door 3",
-    name: "Custom",
-    italic: "we build it",
-    price: "Talk to us",
-    pitch:
-      "We build the AI stack inside your business and place a trained VA inside your team.",
+    label: 'Door 3',
+    name: 'Custom',
+    italic: 'we build it',
+    price: 'Talk to us',
+    pitch: "We build the AI stack inside your business and place a trained VA inside your team.",
     bestFor: "Founders who are booked-out. Need this done, not learned.",
     whatYouGet: [
       "AI-Trained Ops Manager built for your business",
@@ -2534,9 +1198,9 @@ const THREE_DOORS: DoorOption[] = [
       "A trained VA placed inside your team",
       "Monthly partnership ~ the Operate pillar",
     ],
-    nextStep: "Book a free 30-min call at talentmucho.com/booking",
-    cta: "Book free call",
-    ctaUrl: "https://talentmucho.com/booking",
+    nextStep: 'Book a free 30-min call at talentmucho.com/booking',
+    cta: 'Book free call',
+    ctaUrl: 'https://talentmucho.com/booking',
   },
 ];
 
@@ -2555,163 +1219,144 @@ interface OpsEvent {
 
 const OPS_MANAGER_DAY: OpsEvent[] = [
   {
-    time: "6:45 AM",
-    icon: "☕",
+    time: '6:45 AM',
+    icon: '☕',
     title: "You're still asleep",
     oneLiner: "Sarah's about to clock in. You're snoring.",
-    detail:
-      "Sarah is your AI Ops Manager. She runs on a schedule, lives inside a Claude Project trained on your business, and has access to your tools. While you sleep, she's lining up the day so you can wake up to results, not a to-do list.",
-    skill: "Schedule trigger",
-    connectors: ["Calendar", "Drive"],
-    sample: "~ Sarah is reviewing her morning brief ~",
-    saved: "all of it",
+    detail: "Sarah is your AI Ops Manager. She runs on a schedule, lives inside a Claude Project trained on your business, and has access to your tools. While you sleep, she's lining up the day so you can wake up to results, not a to-do list.",
+    skill: 'Schedule trigger',
+    connectors: ['Calendar', 'Drive'],
+    sample: '~ Sarah is reviewing her morning brief ~',
+    saved: 'all of it',
   },
   {
-    time: "7:00 AM",
-    icon: "📧",
-    title: "Triages overnight inbox",
-    oneLiner:
-      "Reads 47 emails. Flags 3 for you. Drafts 12 replies in your voice.",
-    detail:
-      "Sarah opens Gmail, reads every overnight email, sorts by urgency, drafts replies in your tone for the easy ones, and flags only the 3 that need a human. The 12 drafts sit waiting for your one-click approval.",
-    skill: "Inbox Triage",
-    connectors: ["Gmail", "Drive"],
-    sample:
-      '"Hey Sarah, hope you\'re doing well! Quick one ~ invoice INV-204 hit the 7-day mark today..."',
-    saved: "~3 hours",
+    time: '7:00 AM',
+    icon: '📧',
+    title: 'Triages overnight inbox',
+    oneLiner: "Reads 47 emails. Flags 3 for you. Drafts 12 replies in your voice.",
+    detail: "Sarah opens Gmail, reads every overnight email, sorts by urgency, drafts replies in your tone for the easy ones, and flags only the 3 that need a human. The 12 drafts sit waiting for your one-click approval.",
+    skill: 'Inbox Triage',
+    connectors: ['Gmail', 'Drive'],
+    sample: '"Hey Sarah, hope you\'re doing well! Quick one ~ invoice INV-204 hit the 7-day mark today..."',
+    saved: '~3 hours',
   },
   {
-    time: "8:30 AM",
-    icon: "📊",
-    title: "Drafts the Monday report",
+    time: '8:30 AM',
+    icon: '📊',
+    title: 'Drafts the Monday report',
     oneLiner: "Pulls last week's metrics. Writes the recap. Spots 2 blockers.",
-    detail:
-      "Sarah pulls the numbers from your sheets, compares against last week, drafts the full Monday recap with bullet highlights, and flags 2 blockers she thinks deserve attention.",
-    skill: "Weekly Report",
-    connectors: ["Sheets", "Drive", "Slack"],
-    sample:
-      "Revenue +12% WoW · Outreach replies down 30% (needs a look) · Sarah's invoice still outstanding",
-    saved: "~1 hour",
+    detail: "Sarah pulls the numbers from your sheets, compares against last week, drafts the full Monday recap with bullet highlights, and flags 2 blockers she thinks deserve attention.",
+    skill: 'Weekly Report',
+    connectors: ['Sheets', 'Drive', 'Slack'],
+    sample: "Revenue +12% WoW · Outreach replies down 30% (needs a look) · Sarah's invoice still outstanding",
+    saved: '~1 hour',
   },
   {
-    time: "9:30 AM",
-    icon: "🎯",
-    title: "Qualifies 5 new leads",
+    time: '9:30 AM',
+    icon: '🎯',
+    title: 'Qualifies 5 new leads',
     oneLiner: "Scores them. Drafts a first reply. Updates the CRM.",
-    detail:
-      "5 new leads landed overnight. Sarah scans LinkedIn + their website, scores each one, drafts a tailored first reply, and updates the CRM with notes. You only see the qualified ones.",
-    skill: "Lead Qualification",
-    connectors: ["CRM", "Gmail", "Chrome agent"],
-    sample:
-      "Lead 4/5 (€8K agency, MVP fit, replied to Threads post) ~ ready to reply",
-    saved: "~45 minutes",
+    detail: "5 new leads landed overnight. Sarah scans LinkedIn + their website, scores each one, drafts a tailored first reply, and updates the CRM with notes. You only see the qualified ones.",
+    skill: 'Lead Qualification',
+    connectors: ['CRM', 'Gmail', 'Chrome agent'],
+    sample: 'Lead 4/5 (€8K agency, MVP fit, replied to Threads post) ~ ready to reply',
+    saved: '~45 minutes',
   },
   {
-    time: "11:00 AM",
-    icon: "🤝",
-    title: "Onboards a new client",
+    time: '11:00 AM',
+    icon: '🤝',
+    title: 'Onboards a new client',
     oneLiner: "Sends welcome email. Generates SOPs. Creates Day-1 task list.",
-    detail:
-      "New client signed yesterday. Sarah pulls the intake form, writes a personalised welcome email in your voice, generates the project SOP doc, schedules the kickoff, and posts the Day-1 task list to your project channel.",
-    skill: "Onboarding",
-    connectors: ["Gmail", "Drive", "Calendar", "Slack"],
-    sample:
-      "\"Welcome aboard, Maria! Couldn't be more excited. Here's how Week 1 looks...\"",
-    saved: "~2 hours",
+    detail: "New client signed yesterday. Sarah pulls the intake form, writes a personalised welcome email in your voice, generates the project SOP doc, schedules the kickoff, and posts the Day-1 task list to your project channel.",
+    skill: 'Onboarding',
+    connectors: ['Gmail', 'Drive', 'Calendar', 'Slack'],
+    sample: '"Welcome aboard, Maria! Couldn\'t be more excited. Here\'s how Week 1 looks..."',
+    saved: '~2 hours',
   },
   {
-    time: "2:00 PM",
-    icon: "📝",
-    title: "Updates your project notes",
+    time: '2:00 PM',
+    icon: '📝',
+    title: 'Updates your project notes',
     oneLiner: "Writes up yesterday's call. Drafts decisions. Pings the team.",
-    detail:
-      "Yesterday's client call was 47 minutes. Sarah pulls the transcript, extracts decisions made, writes the action items, updates the project doc, and pings the relevant teammates with their next-step assignments.",
-    skill: "Meeting Notes",
-    connectors: ["Notion", "Drive", "Slack"],
-    sample:
-      "3 decisions logged · 5 action items assigned · Meri tagged on the brief",
-    saved: "~40 minutes",
+    detail: "Yesterday's client call was 47 minutes. Sarah pulls the transcript, extracts decisions made, writes the action items, updates the project doc, and pings the relevant teammates with their next-step assignments.",
+    skill: 'Meeting Notes',
+    connectors: ['Notion', 'Drive', 'Slack'],
+    sample: '3 decisions logged · 5 action items assigned · Meri tagged on the brief',
+    saved: '~40 minutes',
   },
   {
-    time: "4:00 PM",
-    icon: "🚨",
-    title: "Chases overdue invoices",
+    time: '4:00 PM',
+    icon: '🚨',
+    title: 'Chases overdue invoices',
     oneLiner: "Finds 4 invoices past due. Drafts reminders in matching tone.",
-    detail:
-      "Sarah scans Stripe, finds invoices past 7 days, looks up each client's relationship history (first time late? pattern?), and drafts reminders in the right tone ~ gentle for first-timers, firmer for repeat offenders.",
-    skill: "Invoice Chaser",
-    connectors: ["Stripe", "Gmail", "CRM"],
-    sample:
-      "INV-204 (Sarah, gentle) · INV-198 (Marco, firm) · INV-187 (Lisa, final notice)",
-    saved: "~30 minutes",
+    detail: "Sarah scans Stripe, finds invoices past 7 days, looks up each client's relationship history (first time late? pattern?), and drafts reminders in the right tone ~ gentle for first-timers, firmer for repeat offenders.",
+    skill: 'Invoice Chaser',
+    connectors: ['Stripe', 'Gmail', 'CRM'],
+    sample: 'INV-204 (Sarah, gentle) · INV-198 (Marco, firm) · INV-187 (Lisa, final notice)',
+    saved: '~30 minutes',
   },
   {
-    time: "5:30 PM",
-    icon: "📤",
-    title: "Posts the EOD summary",
+    time: '5:30 PM',
+    icon: '📤',
+    title: 'Posts the EOD summary',
     oneLiner: "Done for the day. Posts a 5-line wrap-up to Slack.",
-    detail:
-      "Sarah closes out the day with a clean Slack summary: what got done, what got drafted, what needs your one-click sign-off tomorrow, and the 1 thing she couldn't figure out herself.",
-    skill: "EOD Summary",
-    connectors: ["Slack"],
-    sample:
-      "✓ 12 emails drafted · ✓ Monday report ready · ⏳ 3 awaiting your sign-off · ❓ 1 question for tomorrow",
-    saved: "mental load",
+    detail: "Sarah closes out the day with a clean Slack summary: what got done, what got drafted, what needs your one-click sign-off tomorrow, and the 1 thing she couldn't figure out herself.",
+    skill: 'EOD Summary',
+    connectors: ['Slack'],
+    sample: '✓ 12 emails drafted · ✓ Monday report ready · ⏳ 3 awaiting your sign-off · ❓ 1 question for tomorrow',
+    saved: 'mental load',
   },
 ];
 
-const OPS_TOTAL_SAVED = "~7+ hours per day";
+const OPS_TOTAL_SAVED = '~7+ hours per day';
 
 // Building blocks ~ the actual Claude features behind each level, in TM voice
 const CLAUDE_BUILDING_BLOCKS = [
   {
-    name: "Claude Skill",
-    short: "one-task pro",
+    name: 'Claude Skill',
+    short: 'one-task pro',
     desc: "A specific job Claude nails every time. Built once, reused forever.",
-    example:
-      "Our Carousel Generator ~ paste a blog, get 7 slides, copy in your voice, takes 30 seconds. We have one for proposals, one for Threads, one for client briefs. Build a few and your weeks change shape.",
+    example: "Our Carousel Generator ~ paste a blog, get 7 slides, copy in your voice, takes 30 seconds. We have one for proposals, one for Threads, one for client briefs. Build a few and your weeks change shape.",
     simulation: {
       prompt: "Turn this blog post into an Instagram carousel.",
       steps: [
-        "↳ Reading blog (1,200 words)",
-        "↳ Extracting the 3 key insights",
-        "↳ Structuring 7 slides ~ hook · setup · takeaways · CTA",
-        "↳ Writing each slide in your brand voice",
-        "✓ 7-slide carousel ready in 28 seconds",
+        '↳ Reading blog (1,200 words)',
+        '↳ Extracting the 3 key insights',
+        '↳ Structuring 7 slides ~ hook · setup · takeaways · CTA',
+        '↳ Writing each slide in your brand voice',
+        '✓ 7-slide carousel ready in 28 seconds',
       ],
     },
   },
   {
-    name: "Claude Project",
-    short: "trained employee",
+    name: 'Claude Project',
+    short: 'trained employee',
     desc: "A workspace where Claude has actually been onboarded to your business.",
-    example:
-      "Drop your docs, your tone, your clients, your offers ~ once. Every chat in there starts with Claude already knowing you. The difference between hiring a temp and hiring an employee.",
+    example: "Drop your docs, your tone, your clients, your offers ~ once. Every chat in there starts with Claude already knowing you. The difference between hiring a temp and hiring an employee.",
     simulation: {
       prompt: "Draft a follow-up to Sarah from the call yesterday.",
       steps: [
-        "↳ Pulling Sarah's profile from Project context",
-        "↳ Reading the call notes from yesterday",
+        '↳ Pulling Sarah\'s profile from Project context',
+        '↳ Reading the call notes from yesterday',
         '↳ Matching your tone (casual, no "kindly")',
-        "↳ Using your standard follow-up structure",
-        "✓ Draft ready ~ no re-explaining who Sarah is",
+        '↳ Using your standard follow-up structure',
+        '✓ Draft ready ~ no re-explaining who Sarah is',
       ],
     },
   },
   {
-    name: "Claude Team",
-    short: "shared employee",
+    name: 'Claude Team',
+    short: 'shared employee',
     desc: "Same trained employee. Everyone on your team has access to it.",
-    example:
-      "Add a new client to the Project on Monday ~ your VA's Claude knows about them by Tuesday's standup. No more \"have you got the latest brief?\" Same Claude, same context, same updates.",
+    example: "Add a new client to the Project on Monday ~ your VA's Claude knows about them by Tuesday's standup. No more \"have you got the latest brief?\" Same Claude, same context, same updates.",
     simulation: {
       prompt: "(Meri uploaded the Maria client brief on Monday)",
       steps: [
-        "↳ Project syncs the brief across the team",
-        "↳ Tuesday: Abie opens her Claude",
-        "↳ Claude already knows Maria, the offer, the timeline",
+        '↳ Project syncs the brief across the team',
+        '↳ Tuesday: Abie opens her Claude',
+        '↳ Claude already knows Maria, the offer, the timeline',
         '↳ No Slack ping. No "did you see the doc?"',
-        "✓ Same Claude. Same context. Same employee.",
+        '✓ Same Claude. Same context. Same employee.',
       ],
     },
   },
@@ -2719,76 +1364,21 @@ const CLAUDE_BUILDING_BLOCKS = [
 
 // Live demo options for the segment 04 spin wheel ~ demoed by TM AI Architects
 const LIVE_DEMOS = [
-  {
-    icon: "▣",
-    name: "Carousel Studio",
-    short: "Carousel",
-    desc: "Turn any idea, blog post, or voice note into a ready-to-post Instagram or Threads carousel ~ in your brand voice.",
-  },
-  {
-    icon: "⬛",
-    name: "Premium Dashboard & Command Centre",
-    short: "Dashboard",
-    desc: "Your custom AI home base ~ business metrics, task triage, and daily priorities in one place. No-code. Fully yours.",
-  },
-  {
-    icon: "◉",
-    name: "Profile Maker",
-    short: "Profile",
-    desc: "Drop in your background and let Claude write your LinkedIn, bio link, Instagram, and pitch deck intro ~ all consistent, all on-brand.",
-  },
-  {
-    icon: "▶",
-    name: "Video Editor",
-    short: "Video",
-    desc: "Script, trim, caption, and repurpose your videos with AI ~ from raw footage to polished content ready to post.",
-  },
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousel', desc: 'Turn any idea, blog post, or voice note into a ready-to-post Instagram or Threads carousel ~ in your brand voice.' },
+  { icon: '⬛', name: 'Premium Dashboard & Command Centre', short: 'Dashboard', desc: 'Your custom AI home base ~ business metrics, task triage, and daily priorities in one place. No-code. Fully yours.' },
+  { icon: '◉', name: 'Profile Maker', short: 'Profile', desc: 'Drop in your background and let Claude write your LinkedIn, bio link, Instagram, and pitch deck intro ~ all consistent, all on-brand.' },
+  { icon: '▶', name: 'Video Editor', short: 'Video', desc: 'Script, trim, caption, and repurpose your videos with AI ~ from raw footage to polished content ready to post.' },
 ];
 
 // Abie's actual stack ~ used in segment 06 showcase
 const ABIE_STACK = [
-  {
-    icon: "CLI",
-    name: "Email Co-pilot CLI",
-    short: "Email CLI",
-    desc: "One command checks, summarises, drafts replies in my voice.",
-  },
-  {
-    icon: "PRP",
-    name: "Proposal System",
-    short: "Proposals",
-    desc: "Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.",
-  },
-  {
-    icon: "DB",
-    name: "Personal Dashboard",
-    short: "Dashboard",
-    desc: "Replaces Notion + Coda. Custom-built, lives on my own site.",
-  },
-  {
-    icon: "⚡",
-    name: "ADHD Command Centre",
-    short: "ADHD CC",
-    desc: "Keeps me on track on the days my brain doesn't want to.",
-  },
-  {
-    icon: "▣",
-    name: "Carousel Studio",
-    short: "Carousels",
-    desc: "Drafts Threads & Instagram in my brand voice.",
-  },
-  {
-    icon: "UGC",
-    name: "UGC Pipeline",
-    short: "UGC",
-    desc: "Tracks every brand deal, deliverable, payment.",
-  },
-  {
-    icon: "$",
-    name: "Sales Pipeline",
-    short: "Sales",
-    desc: "Leads, follow-ups, proposals ~ one view.",
-  },
+  { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
+  { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
+  { icon: 'DB', name: 'Personal Dashboard', short: 'Dashboard', desc: 'Replaces Notion + Coda. Custom-built, lives on my own site.' },
+  { icon: '⚡', name: 'ADHD Command Centre', short: 'ADHD CC', desc: "Keeps me on track on the days my brain doesn't want to." },
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousels', desc: 'Drafts Threads & Instagram in my brand voice.' },
+  { icon: 'UGC', name: 'UGC Pipeline', short: 'UGC', desc: 'Tracks every brand deal, deliverable, payment.' },
+  { icon: '$', name: 'Sales Pipeline', short: 'Sales', desc: 'Leads, follow-ups, proposals ~ one view.' },
 ];
 
 interface ClaudeProduct {
@@ -2802,198 +1392,85 @@ interface ClaudeProduct {
 
 const CLAUDE_PRODUCTS: ClaudeProduct[] = [
   {
-    icon: "01",
-    name: "Claude Chat",
-    tag: "claude.ai ~ start here",
+    icon: '01', name: 'Claude Chat', tag: 'claude.ai ~ start here',
     desc: "The chat window. Where 90% of your wins start.",
-    best: "emails, content, replies, decisions",
+    best: 'emails, content, replies, decisions',
     simulation: {
       prompt: "Help me reply to this difficult client email...",
       steps: [
-        "↳ Reading your message + the client thread",
-        "↳ Drafting a reply that acknowledges + redirects",
-        "↳ Offering 3 versions: warm, neutral, firm",
-        "✓ Done in under 30 seconds",
+        '↳ Reading your message + the client thread',
+        '↳ Drafting a reply that acknowledges + redirects',
+        '↳ Offering 3 versions: warm, neutral, firm',
+        '✓ Done in under 30 seconds',
       ],
     },
   },
   {
-    icon: "02",
-    name: "Claude Cowork",
-    tag: "desktop ~ runs alongside your work",
+    icon: '02', name: 'Claude Cowork', tag: 'desktop ~ runs alongside your work',
     desc: "Lives next to your files. Stops the copy-paste tax.",
-    best: "client docs, daily ops, multi-file work",
+    best: 'client docs, daily ops, multi-file work',
     simulation: {
       prompt: "Organise my Downloads folder by category",
       steps: [
-        "↳ Scanning 247 files in /Downloads",
-        "↳ Sorting → Images / Documents / Spreadsheets / Invoices",
-        "↳ Renaming invoices by client + date",
-        "✓ All clean. 3 hours of admin done in 30 seconds.",
+        '↳ Scanning 247 files in /Downloads',
+        '↳ Sorting → Images / Documents / Spreadsheets / Invoices',
+        '↳ Renaming invoices by client + date',
+        '✓ All clean. 3 hours of admin done in 30 seconds.',
       ],
     },
   },
   {
-    icon: "03",
-    name: "Claude Code",
-    tag: "terminal ~ for builders",
+    icon: '03', name: 'Claude Code', tag: 'terminal ~ for builders',
     desc: "Plain-English coding. You describe, it builds.",
-    best: "automations, CSV cleaners, custom tools",
+    best: 'automations, CSV cleaners, custom tools',
     simulation: {
       prompt: "Add a Privacy Policy page to talentmucho.com",
       steps: [
-        "↳ Reading repo structure",
-        "↳ Writing /app/privacy/page.tsx with GDPR copy",
+        '↳ Reading repo structure',
+        '↳ Writing /app/privacy/page.tsx with GDPR copy',
         '↳ git commit -m "feat: add privacy policy"',
-        "↳ Deploying to Vercel",
-        "✓ Live at talentmucho.com/privacy in 90 seconds",
+        '↳ Deploying to Vercel',
+        '✓ Live at talentmucho.com/privacy in 90 seconds',
       ],
     },
   },
   {
-    icon: "04",
-    name: "Claude in Chrome",
-    tag: "browser agent ~ does tasks for you",
+    icon: '04', name: 'Claude in Chrome', tag: 'browser agent ~ does tasks for you',
     desc: "Browses, clicks, fills forms on your behalf.",
-    best: "research, lead gen, repetitive web tasks",
+    best: 'research, lead gen, repetitive web tasks',
     simulation: {
       prompt: "Find 10 marketing agencies in Madrid hiring VAs",
       steps: [
-        "↳ Opening LinkedIn + filtering by industry + city",
+        '↳ Opening LinkedIn + filtering by industry + city',
         '↳ Scanning 60 profiles for "hiring" + "remote"',
-        "↳ Pulling: name, role, contact, recent post",
-        "↳ Saving to Google Sheet you can act on",
-        "✓ 10 qualified leads, ready to outreach",
+        '↳ Pulling: name, role, contact, recent post',
+        '↳ Saving to Google Sheet you can act on',
+        '✓ 10 qualified leads, ready to outreach',
       ],
     },
   },
 ];
 
-function ProductsPanel({
-  C,
-  mono,
-  serif,
-}: {
-  C: Record<string, string>;
-  mono: React.CSSProperties;
-  serif: React.CSSProperties;
-}) {
+function ProductsPanel({ C, mono, sans, serif }: { C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties }) {
   const products = CLAUDE_PRODUCTS;
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "16px 14px" }}>
-      <div
-        style={{
-          fontSize: 14,
-          fontWeight: 800,
-          color: C.text,
-          textTransform: "uppercase",
-          letterSpacing: "-0.01em",
-          marginBottom: 4,
-        }}
-      >
-        The four{" "}
-        <em
-          style={{
-            ...serif,
-            fontWeight: 400,
-            color: C.primary,
-            textTransform: "none",
-          }}
-        >
-          Claudes
-        </em>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px' }}>
+      <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
+        The four <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>Claudes</em>
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: 12,
-          color: C.muted,
-          marginBottom: 14,
-          lineHeight: 1.5,
-        }}
-      >
-        Same brain. Four doors. Pick the one that matches what you&apos;re
-        trying to do.
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 14, lineHeight: 1.5 }}>
+        Same brain. Four doors. Pick the one that matches what you&apos;re trying to do.
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {products.map((p) => (
-          <div
-            key={p.icon}
-            style={{
-              padding: "11px 13px",
-              borderRadius: 9,
-              border: `1px solid ${C.border}`,
-              background: C.surface2,
-              display: "flex",
-              gap: 11,
-              alignItems: "flex-start",
-            }}
-          >
-            <div
-              style={{
-                width: 30,
-                height: 30,
-                flexShrink: 0,
-                borderRadius: 7,
-                background: "rgba(125,107,90,0.2)",
-                color: C.text,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                ...mono,
-                fontSize: 11,
-                fontWeight: 900,
-              }}
-            >
-              {p.icon}
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {products.map(p => (
+          <div key={p.icon} style={{ padding: '11px 13px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.surface2, display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+            <div style={{ width: 30, height: 30, flexShrink: 0, borderRadius: 7, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 900 }}>{p.icon}</div>
             <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 800,
-                  color: C.text,
-                  textTransform: "uppercase",
-                  letterSpacing: "-0.01em",
-                  marginBottom: 2,
-                }}
-              >
-                {p.name}
-              </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 9,
-                  color: C.primary,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  marginBottom: 5,
-                }}
-              >
-                {p.tag}
-              </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 12,
-                  lineHeight: 1.5,
-                  color: C.text,
-                }}
-              >
-                {p.desc}
-              </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 9,
-                  color: C.muted,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  marginTop: 5,
-                }}
-              >
-                Best for ~{" "}
-                <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
+              <div style={{ fontSize: 12, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{p.name}</div>
+              <div style={{ ...mono, fontSize: 9, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5 }}>{p.tag}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
+              <div style={{ ...mono, fontSize: 9, color: C.muted, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: 5 }}>
+                Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
               </div>
             </div>
           </div>
@@ -3004,563 +1481,165 @@ function ProductsPanel({
 }
 
 // ── Showcase Panel ────────────────────────────────────────────────────────────
-function ShowcasePanel({
-  showTab,
-  onTabChange,
-  C,
-  mono,
-  serif,
-}: {
-  showTab: ShowTab;
-  onTabChange: (t: ShowTab) => void;
-  C: Record<string, string>;
-  mono: React.CSSProperties;
-  serif: React.CSSProperties;
+function ShowcasePanel({ showTab, onTabChange, C, mono, sans, serif }: {
+  showTab: ShowTab; onTabChange: (t: ShowTab) => void;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
   const abieItems = ABIE_STACK;
   const meriItems = [
-    {
-      icon: "📥",
-      name: "Inbox Triage AI",
-      desc: "Sorts, drafts replies in client voice, flags only what needs a human. 3hr/day > 30min.",
-    },
-    {
-      icon: "🎯",
-      name: "Lead Qualification AI",
-      desc: "Scores leads, drafts first reply. VA only handles real prospects.",
-    },
-    {
-      icon: "✍",
-      name: "Content Review AI",
-      desc: "Checks every post against client's brand voice before going out.",
-    },
-    {
-      icon: "🤝",
-      name: "Onboarding AI",
-      desc: "Generates the full onboarding brief, SOPs, Day-1 task list.",
-    },
-    {
-      icon: "📊",
-      name: "Weekly Report AI",
-      desc: "Pulls metrics, drafts the recap, flags blockers.",
-    },
-    {
-      icon: "🔁",
-      name: "FAQ Voice AI",
-      desc: "Trained on each client's past replies. Same 10 questions handled in their voice.",
-    },
+    { icon: '📥', name: 'Inbox Triage AI', desc: 'Sorts, drafts replies in client voice, flags only what needs a human. 3hr/day > 30min.' },
+    { icon: '🎯', name: 'Lead Qualification AI', desc: 'Scores leads, drafts first reply. VA only handles real prospects.' },
+    { icon: '✍', name: 'Content Review AI', desc: "Checks every post against client's brand voice before going out." },
+    { icon: '🤝', name: 'Onboarding AI', desc: 'Generates the full onboarding brief, SOPs, Day-1 task list.' },
+    { icon: '📊', name: 'Weekly Report AI', desc: 'Pulls metrics, drafts the recap, flags blockers.' },
+    { icon: '🔁', name: 'FAQ Voice AI', desc: "Trained on each client's past replies. Same 10 questions handled in their voice." },
   ];
 
-  const items = showTab === "abie" ? abieItems : meriItems;
+  const items = showTab === 'abie' ? abieItems : meriItems;
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "14px" }}>
-      <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-        {(["abie", "meri"] as ShowTab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => onTabChange(t)}
-            style={{
-              padding: "4px 13px",
-              borderRadius: 100,
-              ...mono,
-              fontSize: 9,
-              fontWeight: 700,
-              cursor: "pointer",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              border: `1px solid ${t === showTab ? C.text : C.border}`,
-              background: t === showTab ? C.surface : "transparent",
-              color: t === showTab ? C.primary : C.muted,
-              transition: "all 0.15s",
-            }}
-          >
-            {t === "abie" ? "Abie's stack" : "AI employees"}
+    <div style={{ flex: 1, overflowY: 'auto', padding: '14px' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        {(['abie', 'meri'] as ShowTab[]).map(t => (
+          <button key={t} onClick={() => onTabChange(t)} style={{ padding: '4px 13px', borderRadius: 100, ...mono, fontSize: 9, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase', border: `1px solid ${t === showTab ? C.text : C.border}`, background: t === showTab ? C.surface : 'transparent', color: t === showTab ? C.primary : C.muted, transition: 'all 0.15s' }}>
+            {t === 'abie' ? "Abie's stack" : 'AI employees'}
           </button>
         ))}
       </div>
-      <div
-        style={{
-          fontSize: 14,
-          fontWeight: 800,
-          color: C.text,
-          textTransform: "uppercase",
-          letterSpacing: "-0.01em",
-          marginBottom: 4,
-        }}
-      >
-        {showTab === "abie" ? (
-          <>
-            Abie&apos;s{" "}
-            <em
-              style={{
-                ...serif,
-                fontWeight: 400,
-                color: C.primary,
-                textTransform: "none",
-              }}
-            >
-              setup
-            </em>
-          </>
-        ) : (
-          <>
-            Talent Mucho&apos;s{" "}
-            <em
-              style={{
-                ...serif,
-                fontWeight: 400,
-                color: C.primary,
-                textTransform: "none",
-              }}
-            >
-              AI employees
-            </em>
-          </>
-        )}
+      <div style={{ fontSize: 14, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 4 }}>
+        {showTab === 'abie' ? <>Abie&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>setup</em></> : <>Talent Mucho&apos;s <em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none' }}>AI employees</em></>}
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: 12,
-          color: C.muted,
-          marginBottom: 12,
-          lineHeight: 1.5,
-        }}
-      >
-        {showTab === "abie"
-          ? "Most days I don't open Gmail. I open my terminal."
-          : "We don't replace VAs. We multiply what one VA can do."}
+      <div style={{ ...sans, fontSize: 14, color: C.muted, marginBottom: 12, lineHeight: 1.5 }}>
+        {showTab === 'abie' ? "Most days I don't open Gmail. I open my terminal." : "We don't replace VAs. We multiply what one VA can do."}
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         {items.map((item, i) => (
-          <div
-            key={i}
-            style={{
-              padding: "10px 12px",
-              borderRadius: 8,
-              border: `1px solid ${C.border}`,
-              background: C.surface2,
-              display: "flex",
-              gap: 10,
-              alignItems: "flex-start",
-            }}
-          >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                flexShrink: 0,
-                borderRadius: 6,
-                background: "rgba(125,107,90,0.2)",
-                color: C.text,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                ...mono,
-                fontSize: 10,
-                fontWeight: 900,
-              }}
-            >
-              {item.icon}
-            </div>
+          <div key={i} style={{ padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.surface2, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <div style={{ width: 28, height: 28, flexShrink: 0, borderRadius: 6, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 10, fontWeight: 900 }}>{item.icon}</div>
             <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: C.text,
-                  textTransform: "uppercase",
-                  letterSpacing: "-0.01em",
-                  marginBottom: 3,
-                }}
-              >
-                {item.name}
-              </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 12,
-                  lineHeight: 1.5,
-                  color: C.muted,
-                }}
-              >
-                {item.desc}
-              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 3 }}>{item.name}</div>
+              <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.muted }}>{item.desc}</div>
             </div>
           </div>
         ))}
       </div>
-      <div
-        style={{
-          marginTop: 12,
-          padding: "10px 12px",
-          borderRadius: 7,
-          background: C.surface,
-          color: C.primary,
-          ...serif,
-          fontSize: 12,
-          lineHeight: 1.55,
-          textAlign: "center",
-        }}
-      >
-        {showTab === "abie" ? (
-          <>
-            Everyone should have{" "}
-            <em style={{ color: C.text }}>a system that&apos;s yours.</em>
-            <br />
-            Not rented from someone else&apos;s tool.
-          </>
-        ) : (
-          <>
-            Same hours, more clients ~ <em style={{ color: C.text }}>or</em>{" "}
-            same clients, less burnout.
-            <br />
-            The VA chooses.
-          </>
-        )}
+      <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 7, background: C.surface, color: C.primary, ...sans, fontSize: 14, lineHeight: 1.55, textAlign: 'center' }}>
+        {showTab === 'abie'
+          ? <>Everyone should have <em style={{ color: C.text }}>a system that&apos;s yours.</em><br />Not rented from someone else&apos;s tool.</>
+          : <>Same hours, more clients ~ <em style={{ color: C.text }}>or</em> same clients, less burnout.<br />The VA chooses.</>
+        }
       </div>
     </div>
   );
 }
 
 // ── Q&A Panel ─────────────────────────────────────────────────────────────────
-function QAPanel({
-  qaList,
-  qaInput,
-  inputRef,
-  onInput,
-  onAdd,
-  onVote,
-  onActive,
-  onDismiss,
-  C,
-  mono,
-  serif,
-}: {
-  qaList: QAItem[];
-  qaInput: string;
-  inputRef: React.RefObject<HTMLInputElement | null>;
-  onInput: (v: string) => void;
-  onAdd: () => void;
-  onVote: (id: number, d: number) => void;
-  onActive: (id: number) => void;
-  onDismiss: (id: number) => void;
-  C: Record<string, string>;
-  mono: React.CSSProperties;
-  serif: React.CSSProperties;
+function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, onDismiss, C, mono, sans, serif }: {
+  qaList: QAItem[]; qaInput: string; inputRef: React.RefObject<HTMLInputElement | null>;
+  onInput: (v: string) => void; onAdd: () => void;
+  onVote: (id: number, d: number) => void; onActive: (id: number) => void; onDismiss: (id: number) => void;
+  C: Record<string, string>; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties;
 }) {
-  const live = qaList
-    .filter((q) => !q.answered)
-    .sort((a, b) => b.votes - a.votes);
+  const live = qaList.filter(q => !q.answered).sort((a, b) => b.votes - a.votes);
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 7,
-          padding: "11px 14px",
-          borderBottom: `1px solid ${C.border}`,
-          flexShrink: 0,
-        }}
-      >
-        <input
-          ref={inputRef}
-          type="text"
-          value={qaInput}
-          onChange={(e) => onInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onAdd()}
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', gap: 7, padding: '11px 14px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+        <input ref={inputRef} type="text" value={qaInput} onChange={e => onInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && onAdd()}
           placeholder="Question from chat..."
-          style={{
-            flex: 1,
-            padding: "7px 12px",
-            border: `1px solid ${C.border}`,
-            borderRadius: 100,
-            ...mono,
-            fontSize: 11,
-            background: C.bg,
-            color: C.text,
-            outline: "none",
-          }}
-        />
-        <button
-          onClick={onAdd}
-          style={{
-            padding: "7px 16px",
-            borderRadius: 100,
-            ...mono,
-            fontSize: 10,
-            fontWeight: 700,
-            cursor: "pointer",
-            border: "none",
-            background: C.primary,
-            color: C.bg,
-            letterSpacing: "0.07em",
-            textTransform: "uppercase",
-          }}
-        >
-          + Add
-        </button>
+          style={{ flex: 1, padding: '7px 12px', border: `1px solid ${C.border}`, borderRadius: 100, ...mono, fontSize: 11, background: C.bg, color: C.text, outline: 'none' }} />
+        <button onClick={onAdd} style={{ padding: '7px 16px', borderRadius: 100, ...mono, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: 'none', background: C.primary, color: C.bg, letterSpacing: '0.07em', textTransform: 'uppercase' }}>+ Add</button>
       </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: "10px 14px" }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '10px 14px' }}>
         {live.length === 0 ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              gap: 10,
-              opacity: 0.45,
-            }}
-          >
-            <div style={{ ...serif, fontSize: 14, color: C.muted }}>
-              No questions yet
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 10, opacity: 0.45 }}>
+            <div style={{ ...sans, fontSize: 15, color: C.muted }}>No questions yet</div>
+            <div style={{ ...mono, fontSize: 9, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Meri pulls from chat</div>
+          </div>
+        ) : live.map(q => (
+          <div key={q.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px', borderRadius: 10, marginBottom: 7, border: `1px solid ${q.active ? C.primary : C.border}`, background: q.active ? 'rgba(125,107,90,0.08)' : C.surface, transition: 'all 0.15s' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+              <button onClick={() => onVote(q.id, 1)} style={{ fontSize: 13, cursor: 'pointer', background: 'none', border: 'none', lineHeight: 1, padding: 2, opacity: 0.5, color: C.text }}>▲</button>
+              <div style={{ ...mono, fontSize: 11, fontWeight: 500, color: C.muted }}>{q.votes}</div>
+              <button onClick={() => onVote(q.id, -1)} style={{ fontSize: 13, cursor: 'pointer', background: 'none', border: 'none', lineHeight: 1, padding: 2, opacity: 0.5, color: C.text }}>▼</button>
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: 9,
-                color: C.muted,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-              }}
-            >
-              Meri pulls from chat
+            <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text, flex: 1, paddingTop: 2 }}>{q.text}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+              <button onClick={() => onActive(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: q.active ? C.primary : C.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                {q.active ? '✓ Live' : 'Go live'}
+              </button>
+              <button onClick={() => onDismiss(q.id)} style={{ padding: '3px 8px', borderRadius: 100, ...mono, fontSize: 9, cursor: 'pointer', border: `1px solid ${C.border}`, background: 'transparent', color: C.muted, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Done ✕
+              </button>
             </div>
           </div>
-        ) : (
-          live.map((q) => (
-            <div
-              key={q.id}
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 10,
-                padding: "10px 12px",
-                borderRadius: 10,
-                marginBottom: 7,
-                border: `1px solid ${q.active ? C.primary : C.border}`,
-                background: q.active ? "rgba(125,107,90,0.08)" : C.surface,
-                transition: "all 0.15s",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 3,
-                  flexShrink: 0,
-                }}
-              >
-                <button
-                  onClick={() => onVote(q.id, 1)}
-                  style={{
-                    fontSize: 13,
-                    cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                    lineHeight: 1,
-                    padding: 2,
-                    opacity: 0.5,
-                    color: C.text,
-                  }}
-                >
-                  ▲
-                </button>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 11,
-                    fontWeight: 500,
-                    color: C.muted,
-                  }}
-                >
-                  {q.votes}
-                </div>
-                <button
-                  onClick={() => onVote(q.id, -1)}
-                  style={{
-                    fontSize: 13,
-                    cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                    lineHeight: 1,
-                    padding: 2,
-                    opacity: 0.5,
-                    color: C.text,
-                  }}
-                >
-                  ▼
-                </button>
-              </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 13,
-                  lineHeight: 1.5,
-                  color: C.text,
-                  flex: 1,
-                  paddingTop: 2,
-                }}
-              >
-                {q.text}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 4,
-                  flexShrink: 0,
-                }}
-              >
-                <button
-                  onClick={() => onActive(q.id)}
-                  style={{
-                    padding: "3px 8px",
-                    borderRadius: 100,
-                    ...mono,
-                    fontSize: 9,
-                    cursor: "pointer",
-                    border: `1px solid ${C.border}`,
-                    background: "transparent",
-                    color: q.active ? C.primary : C.muted,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {q.active ? "✓ Live" : "Go live"}
-                </button>
-                <button
-                  onClick={() => onDismiss(q.id)}
-                  style={{
-                    padding: "3px 8px",
-                    borderRadius: 100,
-                    ...mono,
-                    fontSize: 9,
-                    cursor: "pointer",
-                    border: `1px solid ${C.border}`,
-                    background: "transparent",
-                    color: C.muted,
-                    opacity: 0.6,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  Done ✕
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+        ))}
       </div>
     </div>
   );
 }
 
+
 // ── AILandscape ~ segment 02 audience view: what is AI + the major models ─────
 const AI_EXPLAINER = [
-  {
-    label: "It reads",
-    desc: "Trained on billions of pages ~ books, websites, conversations",
-  },
-  {
-    label: "It connects",
-    desc: "Learns patterns in language ~ what usually follows what",
-  },
-  {
-    label: "It generates",
-    desc: "Predicts the best next word, thousands of times per second",
-  },
-  {
-    label: "The result",
-    desc: "A well-read colleague who never sleeps and never forgets",
-  },
+  { label: 'You ask', desc: 'Type a question, paste a doc, drop in your email ~ anything' },
+  { label: 'It thinks', desc: 'Reads everything you gave it. Pulls from billions of pages it learned from' },
+  { label: 'It answers', desc: 'Writes back in seconds. In your tone. As long or short as you need' },
+  { label: 'You review', desc: 'Edit, refine, or ask it again. You stay in charge ~ it does the heavy lifting' },
 ];
 
 const AI_WRAPPERS = [
-  { tool: "Notion AI", uses: "Claude", accent: "#d97706" },
-  { tool: "Canva AI", uses: "GPT + others", accent: "#10a37f" },
-  { tool: "Jasper", uses: "GPT", accent: "#10a37f" },
-  { tool: "Grammarly AI", uses: "GPT + others", accent: "#10a37f" },
-  { tool: "Perplexity", uses: "Claude + GPT", accent: "#d97706" },
-  { tool: "Cursor", uses: "Claude + GPT", accent: "#d97706" },
-  { tool: "lovable.dev", uses: "Claude + GPT", accent: "#d97706" },
-  { tool: "Replit", uses: "Claude + GPT", accent: "#d97706" },
-  { tool: "Poe", uses: "All of them", accent: "#888" },
+  { tool: 'Notion AI', uses: 'Claude', accent: '#d97706' },
+  { tool: 'Canva AI', uses: 'GPT + others', accent: '#10a37f' },
+  { tool: 'Perplexity', uses: 'Claude + GPT', accent: '#d97706' },
+  { tool: 'Cursor', uses: 'Claude + GPT', accent: '#d97706' },
 ];
 
 const AI_MODELS = [
   {
-    name: "ChatGPT",
-    maker: "OpenAI",
-    accent: "#10a37f",
-    vibe: "The one everyone knows",
-    superpower:
-      "Fast, general-purpose, great at brainstorming and creative writing",
-    bestFor: "Quick answers, first drafts, coding help",
-    wow: "Can browse the web, generate images, and analyze data ~ all in one conversation",
+    name: 'ChatGPT', maker: 'OpenAI', accent: '#10a37f',
+    vibe: 'The one everyone knows',
+    pricing: 'Free · $20/mo Plus',
+    superpower: 'Fast, general-purpose, great at brainstorming and creative writing',
+    bestFor: 'Quick answers, first drafts, coding help',
+    wow: 'Can browse the web, generate images, and analyze data ~ all in one conversation',
   },
   {
-    name: "Gemini",
-    maker: "Google",
-    accent: "#4285f4",
-    vibe: "The Google-connected brain",
-    superpower: "Deep integration with Gmail, Docs, Calendar, and Search",
-    bestFor: "People who live in Google Workspace",
-    wow: "Can search your entire email history and summarize what matters in seconds",
+    name: 'Gemini', maker: 'Google', accent: '#4285f4',
+    vibe: 'The Google-connected brain',
+    pricing: 'Free · $20/mo Advanced',
+    superpower: 'Deep integration with Gmail, Docs, Calendar, and Search',
+    bestFor: 'People who live in Google Workspace',
+    wow: 'Can search your entire email history and summarize what matters in seconds',
   },
   {
-    name: "Claude",
-    maker: "Anthropic",
-    accent: "#d97706",
-    highlight: true,
-    vibe: "The thinking partner",
-    superpower:
-      "Asks questions back, reasons carefully, handles long documents",
-    bestFor: "Business writing, strategy, complex tasks that need nuance",
-    wow: "Can read a 200-page PDF in one go ~ and organize your computer while you sleep",
+    name: 'Claude', maker: 'Anthropic', accent: '#d97706', highlight: true,
+    vibe: 'The thinking partner',
+    pricing: 'Free · $20/mo Pro',
+    superpower: 'Asks questions back, reasons carefully, handles long documents',
+    bestFor: 'Business writing, strategy, complex tasks that need nuance',
+    wow: 'Can read a 200-page PDF in one go ~ and organize your computer while you sleep',
   },
   {
-    name: "Copilot",
-    maker: "Microsoft",
-    accent: "#0078d4",
-    vibe: "The Office assistant",
-    superpower: "Built into Word, Excel, PowerPoint, and Teams",
-    bestFor: "Corporate teams already paying for Microsoft 365",
-    wow: "Can turn a rough email thread into a polished PowerPoint deck in 30 seconds",
+    name: 'Copilot', maker: 'Microsoft', accent: '#0078d4',
+    vibe: 'The Office assistant',
+    pricing: '$30/mo · M365 add-on',
+    superpower: 'Built into Word, Excel, PowerPoint, and Teams',
+    bestFor: 'Corporate teams already paying for Microsoft 365',
+    wow: 'Can turn a rough email thread into a polished PowerPoint deck in 30 seconds',
   },
   {
-    name: "Llama",
-    maker: "Meta",
-    accent: "#0668E1",
-    vibe: "The open-source one",
-    superpower: "Free, customizable, runs on your own hardware",
-    bestFor: "Developers and companies who want full control",
-    wow: "Powers thousands of apps you use daily ~ without you even knowing",
+    name: 'Llama', maker: 'Meta', accent: '#0668E1',
+    vibe: 'The open-source one',
+    pricing: 'Free · self-hosted',
+    superpower: 'Free, customizable, runs on your own hardware',
+    bestFor: 'Developers and companies who want full control',
+    wow: 'Powers thousands of apps you use daily ~ without you even knowing',
   },
 ];
 
-function AILandscape({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: React.CSSProperties;
-  sans: React.CSSProperties;
-  serif: React.CSSProperties;
-  scale?: number;
+function AILandscape({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
 }) {
   const sz = (px: number) => Math.round(px * scale);
   const [revealed, setRevealed] = useState(0);
@@ -3579,113 +1658,41 @@ function AILandscape({
   }, []);
 
   const handleModelClick = (idx: number) => {
-    setActiveModel((prev) => (prev === idx ? null : idx));
+    setActiveModel(prev => prev === idx ? null : idx);
     if (!everClicked) setEverClicked(true);
   };
 
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto 36px" }}>
+    <div style={{ maxWidth: 1280, margin: '0 auto 36px' }}>
       {/* Section A ~ What is AI */}
-      <div
-        style={{
-          padding: "28px 30px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          marginBottom: 24,
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(13),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 8,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+      <div style={{
+        padding: '28px 30px', borderRadius: 18,
+        background: C.surface, border: `1px solid ${C.border}`, marginBottom: 24,
+      }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           What is AI? ~ in 10 seconds
         </div>
-        <div
-          style={{
-            ...serif,
-            fontStyle: "italic",
-            fontSize: sz(15),
-            color: C.muted,
-            marginBottom: 22,
-            lineHeight: 1.5,
-          }}
-        >
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
           No jargon. No PhD required.
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
           {AI_EXPLAINER.map((step, i) => (
-            <div
-              key={step.label}
-              style={{
-                padding: "20px 18px",
-                borderRadius: 14,
-                background: `${C.primary}${i === 3 ? "18" : "08"}`,
-                border: `1px solid ${i === 3 ? `${C.primary}40` : C.border}`,
-                opacity: revealed >= i + 1 ? 1 : 0,
-                transform:
-                  revealed >= i + 1 ? "translateY(0)" : "translateY(16px)",
-                transition: `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: C.primary,
-                  marginBottom: 8,
-                }}
-              >
-                {String(i + 1).padStart(2, "0")}
+            <div key={step.label} style={{
+              padding: '20px 18px', borderRadius: 14,
+              background: `${C.primary}${i === 3 ? '18' : '08'}`,
+              border: `1px solid ${i === 3 ? `${C.primary}40` : C.border}`,
+              opacity: revealed >= i + 1 ? 1 : 0,
+              transform: revealed >= i + 1 ? 'translateY(0)' : 'translateY(16px)',
+              transition: `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`,
+            }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 8 }}>
+                {String(i + 1).padStart(2, '0')}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(16),
-                  fontWeight: 700,
-                  color: C.text,
-                  marginBottom: 6,
-                  letterSpacing: "-0.01em",
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, marginBottom: 6, letterSpacing: '-0.01em' }}>
                 {step.label}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontStyle: "italic",
-                  fontSize: sz(13),
-                  color: C.muted,
-                  lineHeight: 1.45,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.45 }}>
                 {step.desc}
               </div>
             </div>
@@ -3694,154 +1701,73 @@ function AILandscape({
       </div>
 
       {/* Section B ~ The AI Landscape */}
-      <div
-        style={{
-          padding: "28px 30px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          opacity: revealed >= 5 ? 1 : 0,
-          transform: revealed >= 5 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(13),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 8,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+      <div style={{
+        padding: '28px 30px', borderRadius: 18,
+        background: C.surface, border: `1px solid ${C.border}`,
+        opacity: revealed >= 5 ? 1 : 0,
+        transform: revealed >= 5 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           The AI landscape ~ 2025
         </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            color: C.muted,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 22,
-            opacity: 0.7,
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.7 }}>
           click any model to explore
         </div>
 
         {/* Model cards grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: 12,
-            marginBottom: activeModel !== null ? 20 : 0,
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: activeModel !== null ? 20 : 0 }}>
           {AI_MODELS.map((model, i) => {
             const isActive = activeModel === i;
-            const isHighlight = "highlight" in model && model.highlight;
+            const isHighlight = 'highlight' in model && model.highlight;
             return (
               <div
                 key={model.name}
                 onClick={() => handleModelClick(i)}
                 style={{
-                  padding: "18px 16px",
-                  borderRadius: 14,
-                  cursor: "pointer",
-                  background: isActive
-                    ? C.text
-                    : isHighlight
-                      ? `${C.primary}10`
-                      : C.bg,
+                  padding: '18px 16px', borderRadius: 14, cursor: 'pointer',
+                  background: isActive ? C.text : isHighlight ? `${C.primary}10` : C.bg,
                   border: `2px solid ${isActive ? C.text : isHighlight ? `${C.primary}50` : C.border}`,
-                  boxShadow: isActive ? `0 8px 24px -8px ${C.text}40` : "none",
-                  transform: isActive ? "translateY(-3px)" : "translateY(0)",
-                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  position: "relative",
+                  boxShadow: isActive ? `0 8px 24px -8px ${C.text}40` : 'none',
+                  transform: isActive ? 'translateY(-3px)' : 'translateY(0)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
                   opacity: revealed >= 5 ? 1 : 0,
                 }}
               >
                 {isHighlight && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -10,
-                      right: 12,
-                      ...mono,
-                      fontSize: sz(9),
-                      fontWeight: 700,
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      background: C.primary,
-                      color: "#FAF8F5",
-                      padding: "3px 10px",
-                      borderRadius: 6,
-                    }}
-                  >
+                  <div style={{
+                    position: 'absolute', top: -10, right: 12,
+                    ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
+                    background: C.primary, color: '#FAF8F5', padding: '3px 10px', borderRadius: 6,
+                  }}>
                     Tonight&apos;s focus
                   </div>
                 )}
-                <div
-                  style={{
-                    width: sz(10),
-                    height: sz(10),
-                    borderRadius: "50%",
-                    background: model.accent,
-                    marginBottom: 10,
-                    boxShadow: isActive ? `0 0 12px ${model.accent}` : "none",
-                    transition: "box-shadow 0.3s",
-                  }}
-                />
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(17),
-                    fontWeight: 700,
-                    color: isActive ? "#FAF8F5" : C.text,
-                    letterSpacing: "-0.01em",
-                    marginBottom: 3,
-                  }}
-                >
+                <div style={{
+                  width: sz(10), height: sz(10), borderRadius: '50%',
+                  background: model.accent, marginBottom: 10,
+                  boxShadow: isActive ? `0 0 12px ${model.accent}` : 'none',
+                  transition: 'box-shadow 0.3s',
+                }} />
+                <div style={{ ...sans, fontSize: sz(17), fontWeight: 700, color: isActive ? '#FAF8F5' : C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
                   {model.name}
                 </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(10),
-                    fontWeight: 600,
-                    color: isActive ? "rgba(250,248,245,0.5)" : C.muted,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    marginBottom: 8,
-                  }}
-                >
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, color: isActive ? 'rgba(250,248,245,0.5)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
                   {model.maker}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontStyle: "italic",
-                    fontSize: sz(12),
-                    color: isActive ? "rgba(250,248,245,0.7)" : C.muted,
-                    lineHeight: 1.4,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4, marginBottom: 8 }}>
                   {model.vibe}
+                </div>
+                <div style={{
+                  ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.08em',
+                  color: isActive ? 'rgba(250,248,245,0.85)' : model.accent,
+                  padding: '3px 8px', borderRadius: 6,
+                  background: isActive ? 'rgba(250,248,245,0.12)' : `${model.accent}12`,
+                  display: 'inline-block',
+                }}>
+                  {model.pricing}
                 </div>
               </div>
             );
@@ -3849,246 +1775,126 @@ function AILandscape({
         </div>
 
         {/* Expanded detail card */}
-        {activeModel !== null &&
-          (() => {
-            const m = AI_MODELS[activeModel];
-            return (
-              <div
-                style={{
-                  padding: "24px 28px",
-                  borderRadius: 16,
-                  background: C.text,
-                  color: "#FAF8F5",
-                  animation: "aiLandFadeIn 0.4s ease",
-                }}
-              >
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr",
-                    gap: 20,
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: sz(10),
-                        fontWeight: 700,
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        color: m.accent,
-                        marginBottom: 8,
-                      }}
-                    >
-                      Superpower
-                    </div>
-                    <div
-                      style={{
-                        ...sans,
-                        fontSize: sz(14),
-                        color: "#FAF8F5",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {m.superpower}
-                    </div>
+        {activeModel !== null && (() => {
+          const m = AI_MODELS[activeModel];
+          return (
+            <div style={{
+              padding: '24px 28px', borderRadius: 16,
+              background: C.text, color: '#FAF8F5',
+              animation: 'aiLandFadeIn 0.4s ease',
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    Superpower
                   </div>
-                  <div>
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: sz(10),
-                        fontWeight: 700,
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        color: m.accent,
-                        marginBottom: 8,
-                      }}
-                    >
-                      Best for
-                    </div>
-                    <div
-                      style={{
-                        ...sans,
-                        fontSize: sz(14),
-                        color: "#FAF8F5",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {m.bestFor}
-                    </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.superpower}
                   </div>
-                  <div>
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: sz(10),
-                        fontWeight: 700,
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        color: m.accent,
-                        marginBottom: 8,
-                      }}
-                    >
-                      The wow factor
-                    </div>
-                    <div
-                      style={{
-                        ...serif,
-                        fontStyle: "italic",
-                        fontSize: sz(14),
-                        color: "#FAF8F5",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      {m.wow}
-                    </div>
+                </div>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    Best for
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.bestFor}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: m.accent, marginBottom: 8 }}>
+                    The wow factor
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(14), color: '#FAF8F5', lineHeight: 1.5 }}>
+                    {m.wow}
                   </div>
                 </div>
               </div>
-            );
-          })()}
+            </div>
+          );
+        })()}
 
         {/* Wrapper reveal */}
         {everClicked && (
-          <div
-            style={{
-              marginTop: 22,
-              padding: "22px 26px",
-              borderRadius: 16,
-              background: `${C.primary}08`,
-              border: `1px solid ${C.primary}20`,
-              animation: "aiLandFadeIn 0.5s ease",
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: C.primary,
-                marginBottom: 6,
-              }}
-            >
+          <div style={{
+            marginTop: 22, padding: '22px 26px', borderRadius: 16,
+            background: `${C.primary}08`, border: `1px solid ${C.primary}20`,
+            animation: 'aiLandFadeIn 0.5s ease',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 6 }}>
               The part nobody tells you
             </div>
-            <div
-              style={{
-                ...serif,
-                fontStyle: "italic",
-                fontSize: sz(16),
-                color: C.text,
-                marginBottom: 16,
-                lineHeight: 1.5,
-              }}
-            >
-              Most AI tools you&apos;ve seen? They&apos;re{" "}
-              <em style={{ color: C.primary }}>wrappers</em>. Same brain
-              underneath ~ just a different interface.
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, marginBottom: 16, lineHeight: 1.5 }}>
+              Most AI tools you&apos;ve seen? They&apos;re <em style={{ color: C.primary }}>wrappers</em>. Same brain underneath ~ just a different interface.
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                marginBottom: 14,
-              }}
-            >
-              {AI_WRAPPERS.map((w) => (
-                <div
-                  key={w.tool}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "7px 14px",
-                    borderRadius: 10,
-                    background: C.bg,
-                    border: `1px solid ${C.border}`,
-                  }}
-                >
-                  <div
-                    style={{
-                      ...sans,
-                      fontSize: sz(13),
-                      fontWeight: 600,
-                      color: C.text,
-                    }}
-                  >
-                    {w.tool}
-                  </div>
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(9),
-                      color: C.muted,
-                      letterSpacing: "0.06em",
-                    }}
-                  >
-                    ~
-                  </div>
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(10),
-                      fontWeight: 700,
-                      color: w.accent,
-                      padding: "2px 8px",
-                      borderRadius: 6,
-                      background: `${w.accent}15`,
-                      letterSpacing: "0.04em",
-                    }}
-                  >
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              {AI_WRAPPERS.map(w => (
+                <div key={w.tool} style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '7px 14px', borderRadius: 10,
+                  background: C.bg, border: `1px solid ${C.border}`,
+                }}>
+                  <div style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: C.text }}>{w.tool}</div>
+                  <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.06em' }}>~</div>
+                  <div style={{
+                    ...mono, fontSize: sz(10), fontWeight: 700, color: w.accent,
+                    padding: '2px 8px', borderRadius: 6,
+                    background: `${w.accent}15`, letterSpacing: '0.04em',
+                  }}>
                     {w.uses}
                   </div>
                 </div>
               ))}
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(14),
-                color: C.text,
-                lineHeight: 1.55,
-                fontWeight: 500,
-              }}
-            >
-              When you learn{" "}
-              <em style={{ color: C.primary, fontStyle: "italic" }}>
-                the source
-              </em>{" "}
-              directly, you don&apos;t need the wrapper. You get more control,
-              more power, and you stop paying for a pretty interface on top of
-              the same intelligence.
+            <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.55, fontWeight: 500 }}>
+              When you learn <em style={{ color: C.primary }}>the source</em> directly, you don&apos;t need the wrapper. You get more control, more power, and you stop paying for a pretty interface on top of the same intelligence.
+            </div>
+          </div>
+        )}
+
+        {/* How to start tonight */}
+        {everClicked && (
+          <div style={{
+            marginTop: 22, padding: '22px 26px', borderRadius: 16,
+            background: C.text, color: '#FAF8F5',
+            animation: 'aiLandFadeIn 0.5s ease',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 14 }}>
+              How to start tonight ~ literally 60 seconds
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              {[
+                { num: '01', title: 'Open claude.ai', desc: 'On your phone or laptop. No app needed.' },
+                { num: '02', title: 'Sign up free', desc: 'Email or Google. Takes 30 seconds.' },
+                { num: '03', title: 'Ask it anything', desc: 'Your real work. Watch what happens.' },
+              ].map(step => (
+                <div key={step.num} style={{
+                  padding: '14px 16px', borderRadius: 12,
+                  background: 'rgba(250,248,245,0.06)', border: '1px solid rgba(250,248,245,0.12)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 6 }}>
+                    {step.num}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: '#FAF8F5', marginBottom: 4 }}>
+                    {step.title}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.65)', lineHeight: 1.45 }}>
+                    {step.desc}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
         {/* Landing line */}
         {everClicked && (
-          <div
-            style={{
-              marginTop: 24,
-              textAlign: "center",
-              opacity: 1,
-              animation: "aiLandFadeIn 0.6s ease",
-            }}
-          >
-            <div
-              style={{
-                ...serif,
-                fontStyle: "italic",
-                fontSize: sz(18),
-                color: C.muted,
-                lineHeight: 1.5,
-              }}
-            >
-              Now you know the players. Let&apos;s zoom in on the one that
-              changes how you{" "}
-              <em style={{ color: C.primary, fontStyle: "italic" }}>work</em>.
+          <div style={{
+            marginTop: 24, textAlign: 'center',
+            opacity: 1,
+            animation: 'aiLandFadeIn 0.6s ease',
+          }}>
+            <div style={{ ...sans, fontSize: sz(18), color: C.muted, lineHeight: 1.5 }}>
+              Now you know the players. Let&apos;s zoom in on the one that changes how you <em style={{ color: C.primary }}>work</em>.
             </div>
           </div>
         )}
@@ -4106,33 +1912,12 @@ function AILandscape({
 
 // ── LiveBuildGuide ~ segment 06 audience view: the 3-step process card ────────
 const BUILD_STEPS = [
-  {
-    num: "01",
-    label: "DEFINE",
-    title: "Name the problem",
-    desc: "What goes in, what comes out. One sentence.",
-  },
-  {
-    num: "02",
-    label: "CONTEXT",
-    title: "Feed Claude",
-    desc: "Paste an example. Describe the tone. Set constraints.",
-  },
-  {
-    num: "03",
-    label: "RUN",
-    title: "Execute + refine",
-    desc: "Review the output. Tweak. Run again. Ship it.",
-  },
+  { num: '01', label: 'DEFINE', title: 'Name the problem', desc: 'What goes in, what comes out. One sentence.' },
+  { num: '02', label: 'CONTEXT', title: 'Feed Claude', desc: 'Paste an example. Describe the tone. Set constraints.' },
+  { num: '03', label: 'RUN', title: 'Execute + refine', desc: 'Review the output. Tweak. Run again. Ship it.' },
 ];
 
-function LiveBuildGuide({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -4142,191 +1927,57 @@ function LiveBuildGuide({
   const sz = (px: number) => Math.round(px * scale);
 
   return (
-    <div
-      style={{
-        maxWidth: 1280,
-        margin: "36px auto 0",
-        display: "flex",
-        flexDirection: "column",
-        gap: 28,
-      }}
-    >
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 28 }}>
+
       {/* Call to action */}
-      <div
-        style={{
-          padding: "32px 36px",
-          borderRadius: 18,
-          background: C.text,
-          color: "#FAF8F5",
-          textAlign: "center",
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 10,
-          }}
-        >
+      <div style={{
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.text,
+        color: '#FAF8F5',
+        textAlign: 'center',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
           Your turn
         </div>
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(24),
-            color: "#FAF8F5",
-            lineHeight: 1.45,
-            marginBottom: 12,
-          }}
-        >
+        <div style={{ ...serif, fontSize: sz(24), color: '#FAF8F5', lineHeight: 1.45, marginBottom: 12 }}>
           Drop your problem in the chat.
         </div>
-        <div
-          style={{
-            ...sans,
-            fontSize: sz(14),
-            color: "rgba(250,248,245,0.6)",
-            lineHeight: 1.6,
-          }}
-        >
-          One sentence. &quot;I spend 3 hours a week doing X.&quot; We&apos;ll
-          pick one and build it live.
+        <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.6)', lineHeight: 1.6 }}>
+          One sentence. &quot;I spend 3 hours a week doing X.&quot; We&apos;ll pick one and build it live.
         </div>
       </div>
 
       {/* 3-step process */}
       <div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 6,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           The process ~ every time
         </div>
         <div style={{ marginBottom: 22 }}>
-          <span
-            style={{
-              ...sans,
-              fontSize: sz(26),
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            3 steps to solve{" "}
-          </span>
-          <span
-            style={{
-              ...serif,
-              fontSize: sz(26),
-              fontWeight: 400,
-              color: C.text,
-            }}
-          >
-            any problem with Claude.
-          </span>
+          <span style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: C.text }}>3 steps to solve </span>
+          <span style={{ ...serif, fontSize: sz(26), fontWeight: 400, color: C.text }}>any problem with Claude.</span>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 16,
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {BUILD_STEPS.map((step, i) => (
-            <div
-              key={step.num}
-              style={{
-                padding: "28px 24px",
-                borderRadius: 16,
-                background: C.surface,
-                border: `1px solid ${C.border}`,
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(48),
-                  color: C.primary,
-                  opacity: 0.12,
-                  position: "absolute",
-                  top: 12,
-                  right: 18,
-                  lineHeight: 1,
-                }}
-              >
-                {step.num}
-              </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  color: C.primary,
-                  marginBottom: 10,
-                }}
-              >
-                {step.label}
-              </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(18),
-                  fontWeight: 700,
-                  color: C.text,
-                  marginBottom: 8,
-                }}
-              >
-                {step.title}
-              </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(13),
-                  color: C.muted,
-                  lineHeight: 1.5,
-                }}
-              >
-                {step.desc}
-              </div>
+            <div key={step.num} style={{
+              padding: '28px 24px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              <div style={{ ...serif, fontSize: sz(48), color: C.primary, opacity: 0.12, position: 'absolute', top: 12, right: 18, lineHeight: 1 }}>{step.num}</div>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 10 }}>{step.label}</div>
+              <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, marginBottom: 8 }}>{step.title}</div>
+              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{step.desc}</div>
               {i < BUILD_STEPS.length - 1 && (
-                <div
-                  style={{
-                    position: "absolute",
-                    right: -12,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    ...mono,
-                    fontSize: sz(18),
-                    color: C.primary,
-                    opacity: 0.4,
-                    zIndex: 2,
-                  }}
-                >
+                <div style={{
+                  position: 'absolute', right: -12, top: '50%', transform: 'translateY(-50%)',
+                  ...mono, fontSize: sz(18), color: C.primary, opacity: 0.4, zIndex: 2,
+                }}>
                   &rarr;
                 </div>
               )}
@@ -4336,51 +1987,22 @@ function LiveBuildGuide({
       </div>
 
       {/* Key message */}
-      <div
-        style={{
-          padding: "24px 30px",
-          borderRadius: 16,
-          background: `${C.primary}10`,
-          border: `1px solid ${C.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 20,
-        }}
-      >
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(36),
-            color: C.primary,
-            opacity: 0.3,
-            flexShrink: 0,
-          }}
-        >
-          &#9733;
-        </div>
+      <div style={{
+        padding: '24px 30px',
+        borderRadius: 16,
+        background: `${C.primary}10`,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 20,
+      }}>
+        <div style={{ ...serif, fontSize: sz(36), color: C.primary, opacity: 0.3, flexShrink: 0 }}>&#9733;</div>
         <div>
-          <div
-            style={{
-              ...sans,
-              fontSize: sz(15),
-              fontWeight: 600,
-              color: C.text,
-              lineHeight: 1.5,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
             No magic. No code. Just a clear problem and a good prompt.
           </div>
-          <div
-            style={{
-              ...sans,
-              fontSize: sz(13),
-              color: C.muted,
-              marginTop: 4,
-              lineHeight: 1.5,
-            }}
-          >
-            The most annoying repetitive thing in your week? That&apos;s what
-            you build first.
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginTop: 4, lineHeight: 1.5 }}>
+            The most annoying repetitive thing in your week? That&apos;s what you build first.
           </div>
         </div>
       </div>
@@ -4388,97 +2010,42 @@ function LiveBuildGuide({
   );
 }
 
+
 // ── AIEmployeeLayers ~ segment 05 audience view: 4 capabilities + 4 levels ───
 const AI_CAPABILITIES = [
-  {
-    num: "01",
-    title: "Knowledge",
-    subtitle: "THE BRAIN",
-    body: "What it knows about your business.",
-    detail:
-      "Claude Project loaded with your playbook, ICP, voice, processes, customer data, brand guidelines.",
-  },
-  {
-    num: "02",
-    title: "Skills",
-    subtitle: "WHAT IT DOES",
-    body: "The prompts that execute the work.",
-    detail:
-      "Call analysis, proposal writing, content repurposing, expense categorization.",
-  },
-  {
-    num: "03",
-    title: "Connectors",
-    subtitle: "WHERE IT REACHES",
-    body: "Notion, Gmail, Slack, your CRM, Drive.",
-    detail:
-      "The AI doesn't just talk ~ it works inside the tools you already use.",
-  },
-  {
-    num: "04",
-    title: "Memory",
-    subtitle: "WHAT IT LEARNS",
-    body: "Every interaction trains it.",
-    detail:
-      "Every correction sharpens it. The longer it works for you, the more valuable it becomes.",
-  },
+  { num: '01', title: 'Knowledge', subtitle: 'THE BRAIN', body: 'What it knows about your business.', detail: 'Claude Project loaded with your playbook, ICP, voice, processes, customer data, brand guidelines.' },
+  { num: '02', title: 'Skills', subtitle: 'WHAT IT DOES', body: 'The prompts that execute the work.', detail: 'Call analysis, proposal writing, content repurposing, expense categorization.' },
+  { num: '03', title: 'Connectors', subtitle: 'WHERE IT REACHES', body: 'Notion, Gmail, Slack, your CRM, Drive.', detail: "The AI doesn't just talk ~ it works inside the tools you already use." },
+  { num: '04', title: 'Memory', subtitle: 'WHAT IT LEARNS', body: 'Every interaction trains it.', detail: 'Every correction sharpens it. The longer it works for you, the more valuable it becomes.' },
 ];
 
 const AI_LEVELS = [
   {
-    q: "Q1",
-    title: "The Foundation",
-    question: "What do you do repetitively?",
-    action: "Save it as a skill.",
+    q: 'Q1', title: 'The Foundation', question: 'What do you do repetitively?', action: 'Save it as a skill.',
     no: null,
     yes: null,
   },
   {
-    q: "Q2",
-    title: "Context?",
-    question: "Does this job need living context that changes over time?",
-    detail:
-      "ICP, brand voice, pricing, objection library, case studies, files, transcripts.",
-    no: { level: 1, name: "CONTRACTOR", desc: "Just a skill in chat." },
-    yes: {
-      level: 2,
-      name: "TRAINED EMPLOYEE",
-      desc: "+ Brain. Skill running inside a workspace loaded with your context.",
-    },
+    q: 'Q2', title: 'Context?', question: 'Does this job need living context that changes over time?',
+    detail: 'ICP, brand voice, pricing, objection library, case studies, files, transcripts.',
+    no: { level: 1, name: 'CONTRACTOR', desc: 'Just a skill in chat.' },
+    yes: { level: 2, name: 'TRAINED EMPLOYEE', desc: '+ Brain. Skill running inside a workspace loaded with your context.' },
   },
   {
-    q: "Q3",
-    title: "Tools?",
-    question: "Does it need to pull from ~ or push into ~ other tools?",
-    detail: "Notion, Gmail, Slack, CRM, Drive, calendar.",
-    no: { level: 2, name: "TRAINED EMPLOYEE", desc: "Brain is enough." },
-    yes: {
-      level: 3,
-      name: "CONNECTED EMPLOYEE",
-      desc: "+ Connectors. Reads from and writes to the apps you already use.",
-    },
+    q: 'Q3', title: 'Tools?', question: 'Does it need to pull from ~ or push into ~ other tools?',
+    detail: 'Notion, Gmail, Slack, CRM, Drive, calendar.',
+    no: { level: 2, name: 'TRAINED EMPLOYEE', desc: 'Brain is enough.' },
+    yes: { level: 3, name: 'CONNECTED EMPLOYEE', desc: '+ Connectors. Reads from and writes to the apps you already use.' },
   },
   {
-    q: "Q4",
-    title: "Autonomy?",
-    question: "Should ~ and could ~ this run without you?",
-    detail: "Only after extensive testing at Level 3.",
-    no: { level: 3, name: "CONNECTED EMPLOYEE", desc: "You stay in the loop." },
-    yes: {
-      level: 4,
-      name: "AUTONOMOUS EMPLOYEE",
-      desc: '+ Schedule. "It just ran."',
-    },
+    q: 'Q4', title: 'Autonomy?', question: 'Should ~ and could ~ this run without you?',
+    detail: 'Only after extensive testing at Level 3.',
+    no: { level: 3, name: 'CONNECTED EMPLOYEE', desc: 'You stay in the loop.' },
+    yes: { level: 4, name: 'AUTONOMOUS EMPLOYEE', desc: '+ Schedule. "It just ran."' },
   },
 ];
 
-function AIEmployeeLayers({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function AIEmployeeLayers({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -4486,167 +2053,45 @@ function AIEmployeeLayers({
   scale?: number;
 }) {
   const sz = (px: number) => Math.round(px * scale);
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
 
   return (
-    <div
-      style={{
-        maxWidth: 1280,
-        margin: "36px auto 0",
-        display: "flex",
-        flexDirection: "column",
-        gap: 36,
-      }}
-    >
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 36 }}>
+
       {/* ── Section 1: The 4 Capabilities ── */}
       <div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 6,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           An AI employee, in four layers
         </div>
         <div style={{ marginBottom: 8 }}>
-          <span
-            style={{
-              ...sans,
-              fontSize: sz(28),
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            The 4 Capabilities of{" "}
-          </span>
-          <span
-            style={{
-              ...sans,
-              fontSize: sz(28),
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            an{" "}
-          </span>
-          <span
-            style={{
-              ...serif,
-              fontSize: sz(28),
-              fontWeight: 400,
-              color: C.text,
-            }}
-          >
-            AI Employee.
-          </span>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>The 4 Capabilities of </span>
+          <span style={{ ...sans, fontSize: sz(28), fontWeight: 800, color: C.text }}>an </span>
+          <span style={{ ...serif, fontSize: sz(28), fontWeight: 400, color: C.text }}>AI Employee.</span>
         </div>
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(15),
-            color: C.muted,
-            marginBottom: 22,
-            lineHeight: 1.5,
-          }}
-        >
-          Not a chatbot. A trained team member with four distinct layers ~ and
-          most people only ever build the second.
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
+          Not a chatbot. A trained team member with four distinct layers ~ and most people only ever build the second.
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 16,
-          }}
-        >
-          {AI_CAPABILITIES.map((cap) => (
-            <div
-              key={cap.num}
-              style={{
-                padding: "24px 22px",
-                borderRadius: 16,
-                background: C.surface,
-                border: `1px solid ${C.border}`,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
-            >
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(22),
-                  color: C.muted,
-                  opacity: 0.5,
-                }}
-              >
-                {cap.num}
-              </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          {AI_CAPABILITIES.map(cap => (
+            <div key={cap.num} style={{
+              padding: '24px 22px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}>
+              <div style={{ ...sans, fontSize: sz(22), color: C.muted, opacity: 0.5 }}>{cap.num}</div>
               <div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(20),
-                    fontWeight: 700,
-                    color: C.text,
-                  }}
-                >
-                  {cap.title}
-                </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(10),
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: C.primary,
-                    marginTop: 4,
-                  }}
-                >
-                  {cap.subtitle}
-                </div>
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text }}>{cap.title}</div>
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginTop: 4 }}>{cap.subtitle}</div>
               </div>
-              <div style={{ marginTop: "auto" }}>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(13),
-                    color: C.text,
-                    fontWeight: 600,
-                    lineHeight: 1.5,
-                    marginBottom: 4,
-                  }}
-                >
-                  {cap.body}
-                </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(12),
-                    color: C.muted,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {cap.detail}
-                </div>
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...sans, fontSize: sz(13), color: C.text, fontWeight: 600, lineHeight: 1.5, marginBottom: 4 }}>{cap.body}</div>
+                <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.5 }}>{cap.detail}</div>
               </div>
             </div>
           ))}
@@ -4655,226 +2100,71 @@ function AIEmployeeLayers({
 
       {/* ── Section 2: The 4 Levels ladder ── */}
       <div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: 6,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           Four questions. Each yes climbs one rung.
         </div>
-        <div style={{ marginBottom: 22 }}>
-          <span
-            style={{
-              ...sans,
-              fontSize: sz(28),
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            How to pick the right level{" "}
-          </span>
-          <span
-            style={{
-              ...serif,
-              fontSize: sz(28),
-              fontWeight: 400,
-              color: C.text,
-            }}
-          >
-            for the job.
-          </span>
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 22 }}>
+          How to pick the right level <span style={{ color: C.primary, fontWeight: 500 }}>for the job.</span>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {AI_LEVELS.map((lvl, i) => (
-            <div
-              key={lvl.q}
-              style={{
-                padding: "22px 28px",
-                borderRadius: 16,
-                background: C.surface,
-                border: `1px solid ${C.border}`,
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 24,
-              }}
-            >
+            <div key={lvl.q} style={{
+              padding: '22px 28px',
+              borderRadius: 16,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 24,
+            }}>
               {/* Left: Q number + title */}
               <div style={{ flexShrink: 0, minWidth: sz(110) }}>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 700,
-                    letterSpacing: "0.12em",
-                    color: C.primary,
-                  }}
-                >
-                  {lvl.q}
-                </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(22),
-                    color: C.text,
-                    lineHeight: 1.2,
-                    marginTop: 4,
-                  }}
-                >
-                  {lvl.title}
-                </div>
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.12em', color: C.primary }}>{lvl.q}</div>
+                <div style={{ ...sans, fontSize: sz(22), color: C.text, lineHeight: 1.2, marginTop: 4 }}>{lvl.title}</div>
               </div>
 
               {/* Middle: Question + detail */}
               <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(14),
-                    color: C.text,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {lvl.question}{" "}
-                  {i === 0 && <strong>Save it as a skill.</strong>}
+                <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.5 }}>
+                  {lvl.question} {i === 0 && <strong>Save it as a skill.</strong>}
                 </div>
                 {lvl.detail && (
-                  <div
-                    style={{
-                      ...sans,
-                      fontSize: sz(12),
-                      color: C.muted,
-                      marginTop: 4,
-                    }}
-                  >
-                    {lvl.detail}
-                  </div>
+                  <div style={{ ...sans, fontSize: sz(12), color: C.muted, marginTop: 4 }}>{lvl.detail}</div>
                 )}
               </div>
 
               {/* Right: NO/YES outcomes */}
               {(lvl.no || lvl.yes) && (
-                <div
-                  style={{
-                    flexShrink: 0,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                    minWidth: sz(300),
-                  }}
-                >
+                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10, minWidth: sz(300) }}>
                   {lvl.no && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 12,
-                      }}
-                    >
-                      <span
-                        style={{
-                          ...mono,
-                          fontSize: sz(9),
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          padding: "4px 10px",
-                          borderRadius: 100,
-                          background: `${C.muted}20`,
-                          color: C.muted,
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
-                        NO · STAY
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.muted}20`, color: C.muted,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>NO · STAY</span>
                       <div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: sz(11),
-                            fontWeight: 700,
-                            letterSpacing: "0.1em",
-                            color: C.text,
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
                           LEVEL {lvl.no.level} · {lvl.no.name}
                         </div>
-                        <div
-                          style={{
-                            ...sans,
-                            fontSize: sz(11),
-                            color: C.muted,
-                            marginTop: 2,
-                          }}
-                        >
-                          {lvl.no.desc}
-                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.no.desc}</div>
                       </div>
                     </div>
                   )}
                   {lvl.yes && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 12,
-                      }}
-                    >
-                      <span
-                        style={{
-                          ...mono,
-                          fontSize: sz(9),
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          padding: "4px 10px",
-                          borderRadius: 100,
-                          background: `${C.primary}25`,
-                          color: C.primary,
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                        }}
-                      >
-                        YES · CLIMB
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <span style={{
+                        ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.1em',
+                        padding: '4px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary,
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                      }}>YES · CLIMB</span>
                       <div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: sz(11),
-                            fontWeight: 700,
-                            letterSpacing: "0.1em",
-                            color: C.text,
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.1em', color: C.text }}>
                           LEVEL {lvl.yes.level} · {lvl.yes.name}
                         </div>
-                        <div
-                          style={{
-                            ...sans,
-                            fontSize: sz(11),
-                            color: C.muted,
-                            marginTop: 2,
-                          }}
-                        >
-                          {lvl.yes.desc}
-                        </div>
+                        <div style={{ ...sans, fontSize: sz(11), color: C.muted, marginTop: 2 }}>{lvl.yes.desc}</div>
                       </div>
                     </div>
                   )}
@@ -4888,14 +2178,9 @@ function AIEmployeeLayers({
   );
 }
 
+
 // ── OpsManagerDay ~ segment 05 audience view: a day with your AI Ops Manager ─
-function OpsManagerDay({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function OpsManagerDay({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -4906,19 +2191,14 @@ function OpsManagerDay({
   const [autoplay, setAutoplay] = useState(false);
   const [activeBlock, setActiveBlock] = useState<number | null>(null);
   const [blockSteps, setBlockSteps] = useState(0);
-  const [expandedExamples, setExpandedExamples] = useState<Set<number>>(
-    new Set(),
-  );
-  const onDark = "#FAF8F5";
+  const [expandedExamples, setExpandedExamples] = useState<Set<number>>(new Set());
+  const onDark = '#FAF8F5';
   const active = OPS_MANAGER_DAY[activeIdx];
   const sz = (px: number) => Math.round(px * scale);
 
   // Stagger reveal of simulation steps for the active building block
   useEffect(() => {
-    if (activeBlock === null) {
-      setBlockSteps(0);
-      return;
-    }
+    if (activeBlock === null) { setBlockSteps(0); return; }
     const total = CLAUDE_BUILDING_BLOCKS[activeBlock].simulation.steps.length;
     setBlockSteps(0);
     let i = 0;
@@ -4935,71 +2215,25 @@ function OpsManagerDay({
   useEffect(() => {
     if (!autoplay) return;
     const t = setInterval(() => {
-      setActiveIdx((i) => (i + 1) % OPS_MANAGER_DAY.length);
+      setActiveIdx(i => (i + 1) % OPS_MANAGER_DAY.length);
     }, 5000);
     return () => clearInterval(t);
   }, [autoplay]);
 
   return (
-    <div style={{ maxWidth: 1280, margin: "48px auto 0" }}>
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
       {/* ── Building blocks ~ the concepts that make Sarah possible ── */}
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         First, the building blocks
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 16,
-          lineHeight: 1.5,
-        }}
-      >
-        Three Claude features that turn &ldquo;cool AI tool&rdquo; into
-        &ldquo;an employee that runs without you.&rdquo;
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+        Three Claude features that turn &ldquo;cool AI tool&rdquo; into &ldquo;an employee that runs without you.&rdquo;
       </div>
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(12),
-          color: C.muted,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          marginBottom: 22,
-          opacity: 0.75,
-        }}
-      >
+      <div style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.75 }}>
         ↓ click any block to see it run live
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 16,
-          marginBottom: 60,
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 60 }}>
         {CLAUDE_BUILDING_BLOCKS.map((b, i) => {
           const isActive = activeBlock === i;
           return (
@@ -5007,65 +2241,30 @@ function OpsManagerDay({
               key={b.name}
               onClick={() => setActiveBlock(isActive ? null : i)}
               style={{
-                padding: "26px 28px",
+                padding: '26px 28px',
                 borderRadius: 16,
                 background: isActive ? C.text : C.surface,
                 color: isActive ? onDark : C.text,
                 border: `2px solid ${isActive ? C.primary : C.border}`,
-                position: "relative",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
                 gap: 12,
-                cursor: "pointer",
-                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                transform: isActive ? "translateY(-2px)" : "none",
-                boxShadow: isActive
-                  ? `0 18px 36px -12px ${C.primary}55`
-                  : "none",
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: isActive ? 'translateY(-2px)' : 'none',
+                boxShadow: isActive ? `0 18px 36px -12px ${C.primary}55` : 'none',
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: 4,
-                  height: "100%",
-                  background: C.primary,
-                }}
-              />
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(11),
-                  fontWeight: 800,
-                  color: C.primary,
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {String(i + 1).padStart(2, "0")} · {b.short}
+              <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+              <div style={{ ...mono, fontSize: sz(11), fontWeight: 800, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                {String(i + 1).padStart(2, '0')} · {b.short}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(28),
-                  fontWeight: 700,
-                  color: isActive ? onDark : C.text,
-                  letterSpacing: "-0.01em",
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em' }}>
                 {b.name}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(20),
-                  lineHeight: 1.5,
-                  color: isActive ? onDark : C.text,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(20), lineHeight: 1.5, color: isActive ? onDark : C.text }}>
                 {b.desc}
               </div>
 
@@ -5073,16 +2272,14 @@ function OpsManagerDay({
               {(() => {
                 const isExpanded = expandedExamples.has(i);
                 return (
-                  <div
-                    style={{
-                      paddingTop: 10,
-                      borderTop: `1px solid ${isActive ? "rgba(250,248,245,0.15)" : C.border}`,
-                    }}
-                  >
+                  <div style={{
+                    paddingTop: 10,
+                    borderTop: `1px solid ${isActive ? 'rgba(250,248,245,0.15)' : C.border}`,
+                  }}>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setExpandedExamples((prev) => {
+                        setExpandedExamples(prev => {
                           const next = new Set(prev);
                           if (next.has(i)) next.delete(i);
                           else next.add(i);
@@ -5090,45 +2287,27 @@ function OpsManagerDay({
                         });
                       }}
                       style={{
-                        ...mono,
-                        fontSize: sz(10),
-                        fontWeight: 700,
-                        color: C.primary,
-                        letterSpacing: "0.16em",
-                        textTransform: "uppercase",
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
+                        ...mono, fontSize: sz(10), fontWeight: 700,
+                        color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase',
+                        background: 'transparent', border: 'none',
+                        cursor: 'pointer', padding: 0,
+                        display: 'flex', alignItems: 'center', gap: 6,
                       }}
                     >
-                      <span
-                        style={{
-                          display: "inline-block",
-                          transform: isExpanded
-                            ? "rotate(90deg)"
-                            : "rotate(0deg)",
-                          transition: "transform 0.2s",
-                        }}
-                      >
-                        ▸
-                      </span>
+                      <span style={{
+                        display: 'inline-block',
+                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
+                      }}>▸</span>
                       How we use it
                     </button>
                     {isExpanded && (
-                      <div
-                        style={{
-                          ...serif,
-                          fontSize: sz(17),
-                          lineHeight: 1.6,
-                          color: isActive ? "rgba(250,248,245,0.78)" : C.muted,
-                          marginTop: 10,
-                          animation: "fadeInUp 0.25s ease",
-                        }}
-                      >
+                      <div style={{
+                        ...sans, fontSize: sz(17), lineHeight: 1.6,
+                        color: isActive ? 'rgba(250,248,245,0.78)' : C.muted,
+                        marginTop: 10,
+                        animation: 'fadeInUp 0.25s ease',
+                      }}>
                         {b.example}
                       </div>
                     )}
@@ -5138,90 +2317,37 @@ function OpsManagerDay({
 
               {/* Simulation log when active */}
               {isActive && (
-                <div
-                  style={{
-                    marginTop: 6,
-                    padding: "14px 16px",
-                    background: "rgba(250,248,245,0.06)",
-                    borderRadius: 10,
-                    border: "1px solid rgba(250,248,245,0.1)",
-                  }}
-                >
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(10),
-                      fontWeight: 700,
-                      color: C.primary,
-                      letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      marginBottom: 6,
-                    }}
-                  >
+                <div style={{
+                  marginTop: 6,
+                  padding: '14px 16px',
+                  background: 'rgba(250,248,245,0.06)',
+                  borderRadius: 10,
+                  border: '1px solid rgba(250,248,245,0.1)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
                     You ~
                   </div>
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(13),
-                      lineHeight: 1.5,
-                      color: onDark,
-                      marginBottom: 12,
-                    }}
-                  >
+                  <div style={{ ...mono, fontSize: sz(13), lineHeight: 1.5, color: onDark, marginBottom: 12 }}>
                     &ldquo;{b.simulation.prompt}&rdquo;
                   </div>
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(10),
-                      fontWeight: 700,
-                      color: C.primary,
-                      letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      marginBottom: 6,
-                    }}
-                  >
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
                     Claude ~
                   </div>
-                  <div
-                    style={{ display: "flex", flexDirection: "column", gap: 5 }}
-                  >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     {b.simulation.steps.slice(0, blockSteps).map((step, si) => (
-                      <div
-                        key={si}
-                        style={{
-                          ...mono,
-                          fontSize: sz(12),
-                          lineHeight: 1.5,
-                          color: step.startsWith("✓")
-                            ? C.primary
-                            : "rgba(250,248,245,0.85)",
-                          fontWeight: step.startsWith("✓") ? 700 : 400,
-                          opacity: 0,
-                          animation: "fadeInUp 0.4s ease forwards",
-                        }}
-                      >
+                      <div key={si} style={{
+                        ...mono, fontSize: sz(12), lineHeight: 1.5,
+                        color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                        fontWeight: step.startsWith('✓') ? 700 : 400,
+                        opacity: 0,
+                        animation: 'fadeInUp 0.4s ease forwards',
+                      }}>
                         {step}
                       </div>
                     ))}
                     {blockSteps < b.simulation.steps.length && (
-                      <div
-                        style={{
-                          ...mono,
-                          fontSize: sz(12),
-                          color: C.primary,
-                          opacity: 0.7,
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "inline-block",
-                            animation: "blink 0.8s step-end infinite",
-                          }}
-                        >
-                          ▋
-                        </span>
+                      <div style={{ ...mono, fontSize: sz(12), color: C.primary, opacity: 0.7 }}>
+                        <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
                       </div>
                     )}
                   </div>
@@ -5240,292 +2366,118 @@ function OpsManagerDay({
       `}</style>
 
       {/* ── Now ~ the Talent Mucho AI-Trained Operations Manager ── */}
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
-        A day with a Talent Mucho{" "}
-        <em
-          style={{
-            ...serif,
-            fontWeight: 400,
-            textTransform: "none",
-            letterSpacing: 0,
-          }}
-        >
-          AI-Trained
-        </em>{" "}
-        Ops Manager
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+        A day with a Talent Mucho <em style={{ ...serif, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>AI-Trained</em> Ops Manager
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 32,
-          lineHeight: 1.5,
-        }}
-      >
-        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~
-        this is what we place inside our clients&apos; businesses. Same Claude
-        underneath, trained on your business (Project), plugged into your tools
-        (Connectors), on a schedule.
-        <span style={{ color: C.primary }}>
-          {" "}
-          Click any moment to see what she&apos;s doing.
-        </span>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Meet <span style={{ color: C.primary, fontWeight: 600 }}>Sarah</span> ~ this is what we place inside our clients&apos; businesses.
+        Same Claude underneath, trained on your business (Project), plugged into your tools (Connectors), on a schedule.
+        <span style={{ color: C.primary }}> Click any moment to see what she&apos;s doing.</span>
       </div>
 
       {/* Profile card */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          gap: 22,
-          alignItems: "center",
-          padding: "22px 26px",
-          borderRadius: 18,
-          background: C.text,
-          color: onDark,
-          marginBottom: 28,
-          boxShadow: `0 18px 40px -14px ${C.text}40`,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <div
-            style={{
-              width: sz(72),
-              height: sz(72),
-              flexShrink: 0,
-              borderRadius: "50%",
-              background: C.primary,
-              color: C.text,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              ...mono,
-              fontSize: sz(26),
-              fontWeight: 800,
-              boxShadow: `0 0 0 4px ${C.primary}30`,
-            }}
-          >
-            tm
-          </div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        gap: 22,
+        alignItems: 'center',
+        padding: '22px 26px',
+        borderRadius: 18,
+        background: C.text,
+        color: onDark,
+        marginBottom: 28,
+        boxShadow: `0 18px 40px -14px ${C.text}40`,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div style={{
+            width: sz(72), height: sz(72), flexShrink: 0,
+            borderRadius: '50%',
+            background: C.primary, color: C.text,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            ...mono, fontSize: sz(26), fontWeight: 800,
+            boxShadow: `0 0 0 4px ${C.primary}30`,
+          }}>tm</div>
           <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                color: C.primary,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                marginBottom: 4,
-              }}
-            >
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
               Talent Mucho ~ AI-Trained Ops Manager
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(32),
-                fontWeight: 700,
-                color: onDark,
-                letterSpacing: "-0.01em",
-                lineHeight: 1.1,
-              }}
-            >
-              Sarah{" "}
-              <em style={{ ...serif, fontWeight: 400, color: C.primary }}>
-                ~ your second pair of hands
-              </em>
+            <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: onDark, letterSpacing: '-0.01em', lineHeight: 1.1 }}>
+              Sarah <em style={{ ...serif, fontWeight: 400, color: C.primary }}>~ your second pair of hands</em>
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(17),
-                color: "rgba(250,248,245,0.65)",
-                marginTop: 8,
-              }}
-            >
-              Reports to: you · Salary: €0 · Sleeps: never · Asks dumb
-              questions: also never
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.65)', marginTop: 8 }}>
+              Reports to: you · Salary: €0 · Sleeps: never · Asks dumb questions: also never
             </div>
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              color: "rgba(250,248,245,0.5)",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              marginBottom: 4,
-            }}
-          >
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
             Saves you ~
           </div>
-          <div
-            style={{
-              ...sans,
-              fontSize: sz(38),
-              fontWeight: 800,
-              color: C.primary,
-              letterSpacing: "-0.02em",
-              lineHeight: 1,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(38), fontWeight: 800, color: C.primary, letterSpacing: '-0.02em', lineHeight: 1 }}>
             {OPS_TOTAL_SAVED}
           </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              color: "rgba(250,248,245,0.5)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginTop: 4,
-            }}
-          >
+          <div style={{ ...mono, fontSize: sz(11), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
             every weekday
           </div>
         </div>
       </div>
 
       {/* Two-column: timeline + active-event detail */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "0.85fr 1.15fr",
-          gap: 26,
-          alignItems: "flex-start",
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 26, alignItems: 'flex-start' }}>
+
         {/* Timeline */}
-        <div style={{ position: "relative" }}>
-          <div
-            style={{
-              position: "absolute",
-              left: 23,
-              top: 16,
-              bottom: 16,
-              width: 2,
-              background: `linear-gradient(to bottom, ${C.primary}, ${C.muted}40)`,
-              borderRadius: 2,
-              zIndex: 0,
-            }}
-          />
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            position: 'absolute',
+            left: 23, top: 16, bottom: 16,
+            width: 2,
+            background: `linear-gradient(to bottom, ${C.primary}, ${C.muted}40)`,
+            borderRadius: 2,
+            zIndex: 0,
+          }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {OPS_MANAGER_DAY.map((ev, i) => {
               const isActive = activeIdx === i;
               const isPast = i < activeIdx;
               return (
                 <div
                   key={ev.time}
-                  onClick={() => {
-                    setActiveIdx(i);
-                    setAutoplay(false);
-                  }}
+                  onClick={() => { setActiveIdx(i); setAutoplay(false); }}
                   style={{
-                    position: "relative",
-                    display: "grid",
-                    gridTemplateColumns: "50px 1fr",
+                    position: 'relative',
+                    display: 'grid',
+                    gridTemplateColumns: '50px 1fr',
                     gap: 14,
-                    padding: "14px 16px 14px 0",
-                    cursor: "pointer",
+                    padding: '14px 16px 14px 0',
+                    cursor: 'pointer',
                     borderRadius: 12,
-                    background: isActive ? `${C.primary}10` : "transparent",
-                    transition: "background 0.2s",
+                    background: isActive ? `${C.primary}10` : 'transparent',
+                    transition: 'background 0.2s',
                   }}
                 >
-                  <div
-                    style={{
-                      position: "relative",
-                      zIndex: 1,
-                      display: "flex",
-                      justifyContent: "center",
-                      paddingTop: 2,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: sz(40),
-                        height: sz(40),
-                        borderRadius: "50%",
-                        background: isActive
-                          ? C.primary
-                          : isPast
-                            ? `${C.primary}50`
-                            : C.surface,
-                        border: `2px solid ${isActive ? C.primary : C.border}`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: sz(20),
-                        transition: "all 0.2s",
-                        boxShadow: isActive
-                          ? `0 0 0 4px ${C.primary}25`
-                          : "none",
-                      }}
-                    >
+                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
+                    <div style={{
+                      width: sz(40), height: sz(40),
+                      borderRadius: '50%',
+                      background: isActive ? C.primary : (isPast ? `${C.primary}50` : C.surface),
+                      border: `2px solid ${isActive ? C.primary : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: sz(20),
+                      transition: 'all 0.2s',
+                      boxShadow: isActive ? `0 0 0 4px ${C.primary}25` : 'none',
+                    }}>
                       {ev.icon}
                     </div>
                   </div>
                   <div>
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: sz(11),
-                        fontWeight: 700,
-                        color: isActive ? C.primary : C.muted,
-                        letterSpacing: "0.16em",
-                        textTransform: "uppercase",
-                        marginBottom: 4,
-                      }}
-                    >
+                    <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: isActive ? C.primary : C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
                       {ev.time}
                     </div>
-                    <div
-                      style={{
-                        ...sans,
-                        fontSize: sz(19),
-                        fontWeight: 700,
-                        color: C.text,
-                        letterSpacing: "-0.01em",
-                        lineHeight: 1.3,
-                        marginBottom: 4,
-                      }}
-                    >
+                    <div style={{ ...sans, fontSize: sz(19), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.3, marginBottom: 4 }}>
                       {ev.title}
                     </div>
-                    <div
-                      style={{
-                        ...serif,
-                        fontSize: sz(15),
-                        color: C.muted,
-                        lineHeight: 1.45,
-                      }}
-                    >
+                    <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45 }}>
                       {ev.oneLiner}
                     </div>
                   </div>
@@ -5534,326 +2486,132 @@ function OpsManagerDay({
             })}
           </div>
 
-          <div
-            style={{
-              marginTop: 14,
-              display: "flex",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
+          <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center', gap: 8 }}>
             <button
-              onClick={() => setAutoplay((a) => !a)}
+              onClick={() => setAutoplay(a => !a)}
               style={{
-                padding: "8px 18px",
-                borderRadius: 100,
-                ...mono,
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                background: autoplay ? C.primary : "transparent",
-                color: autoplay
-                  ? C.text === "#2A2520"
-                    ? onDark
-                    : C.bg
-                  : C.primary,
+                padding: '8px 18px', borderRadius: 100,
+                ...mono, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                cursor: 'pointer',
+                background: autoplay ? C.primary : 'transparent',
+                color: autoplay ? (C.text === '#2A2520' ? onDark : C.bg) : C.primary,
                 border: `1px solid ${C.primary}`,
               }}
             >
-              {autoplay ? "⏸ Pause autoplay" : "▶ Play her day"}
+              {autoplay ? '⏸ Pause autoplay' : '▶ Play her day'}
             </button>
           </div>
 
           {/* Brand stamp */}
-          <div
-            style={{
-              marginTop: 26,
-              padding: "16px 18px",
-              borderRadius: 12,
-              background: `${C.primary}15`,
-              border: `1px solid ${C.primary}40`,
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                color: C.primary,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
+          <div style={{
+            marginTop: 26,
+            padding: '16px 18px',
+            borderRadius: 12,
+            background: `${C.primary}15`,
+            border: `1px solid ${C.primary}40`,
+            textAlign: 'center',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               ↳ This is the Operate pillar
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(16),
-                color: C.text,
-                lineHeight: 1.5,
-              }}
-            >
-              We build, train, and place these inside our clients&apos;
-              businesses.
+            <div style={{ ...sans, fontSize: sz(16), color: C.text, lineHeight: 1.5 }}>
+              We build, train, and place these inside our clients&apos; businesses.
             </div>
           </div>
         </div>
 
         {/* Active event detail */}
-        <div
-          style={{
-            padding: "28px 30px",
-            borderRadius: 18,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            position: "sticky",
-            top: 20,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-              marginBottom: 18,
-            }}
-          >
-            <div
-              style={{
-                width: sz(60),
-                height: sz(60),
-                flexShrink: 0,
-                borderRadius: 14,
-                background: `${C.primary}20`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: sz(30),
-              }}
-            >
-              {active.icon}
-            </div>
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+          position: 'sticky',
+          top: 20,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
+            <div style={{
+              width: sz(60), height: sz(60), flexShrink: 0,
+              borderRadius: 14,
+              background: `${C.primary}20`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: sz(30),
+            }}>{active.icon}</div>
             <div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(12),
-                  fontWeight: 700,
-                  color: C.primary,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  marginBottom: 4,
-                }}
-              >
+              <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
                 {active.time}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(28),
-                  fontWeight: 700,
-                  color: C.text,
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.2,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
                 {active.title}
               </div>
             </div>
           </div>
 
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(20),
-              color: C.text,
-              lineHeight: 1.5,
-              marginBottom: 20,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(20), color: C.text, lineHeight: 1.5, marginBottom: 20 }}>
             {active.oneLiner}
           </div>
 
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(18),
-              lineHeight: 1.65,
-              color: C.text,
-              opacity: 0.88,
-              marginBottom: 24,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(18), lineHeight: 1.65, color: C.text, opacity: 0.88, marginBottom: 24 }}>
             {active.detail}
           </div>
 
-          <div
-            style={{
-              padding: "16px 20px",
-              background: C.surface2,
-              borderRadius: 10,
-              borderLeft: `3px solid ${C.primary}`,
-              marginBottom: 24,
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(10),
-                fontWeight: 700,
-                color: C.primary,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
+          <div style={{
+            padding: '16px 20px',
+            background: C.surface2,
+            borderRadius: 10,
+            borderLeft: `3px solid ${C.primary}`,
+            marginBottom: 24,
+          }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
               Sample output ~
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(15),
-                lineHeight: 1.55,
-                color: C.text,
-              }}
-            >
+            <div style={{ ...mono, fontSize: sz(15), lineHeight: 1.55, color: C.text }}>
               {active.sample}
             </div>
           </div>
 
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
-          >
-            <div
-              style={{
-                padding: "14px 16px",
-                background: `${C.primary}12`,
-                borderRadius: 10,
-                border: `1px solid ${C.primary}25`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  color: C.primary,
-                  letterSpacing: "0.16em",
-                  textTransform: "uppercase",
-                  marginBottom: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-              >
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: sz(16),
-                    height: sz(16),
-                    borderRadius: "50%",
-                    background: C.primary,
-                    color: C.text,
-                    fontSize: sz(8),
-                    fontWeight: 800,
-                  }}
-                >
-                  tm
-                </span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ padding: '14px 16px', background: `${C.primary}12`, borderRadius: 10, border: `1px solid ${C.primary}25` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: sz(16), height: sz(16),
+                  borderRadius: '50%',
+                  background: C.primary, color: C.text,
+                  fontSize: sz(8), fontWeight: 800,
+                }}>tm</span>
                 Talent Mucho Skill
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(16),
-                  fontWeight: 700,
-                  color: C.text,
-                  letterSpacing: "-0.01em",
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                 {active.skill}
               </div>
             </div>
-            <div
-              style={{
-                padding: "14px 16px",
-                background: `${C.primary}15`,
-                borderRadius: 10,
-                border: `1px solid ${C.primary}30`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  color: C.primary,
-                  letterSpacing: "0.16em",
-                  textTransform: "uppercase",
-                  marginBottom: 4,
-                }}
-              >
+            <div style={{ padding: '14px 16px', background: `${C.primary}15`, borderRadius: 10, border: `1px solid ${C.primary}30` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>
                 Time saved
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(16),
-                  fontWeight: 700,
-                  color: C.text,
-                  letterSpacing: "-0.01em",
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                 {active.saved}
               </div>
             </div>
           </div>
 
           {active.connectors.length > 0 && (
-            <div
-              style={{
-                marginTop: 12,
-                padding: "14px 16px",
-                background: `${C.muted}10`,
-                borderRadius: 10,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  color: C.muted,
-                  letterSpacing: "0.16em",
-                  textTransform: "uppercase",
-                  marginBottom: 6,
-                }}
-              >
+            <div style={{ marginTop: 12, padding: '14px 16px', background: `${C.muted}10`, borderRadius: 10 }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                 Connectors plugged in
               </div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {active.connectors.map((con) => (
-                  <div
-                    key={con}
-                    style={{
-                      padding: "5px 12px",
-                      borderRadius: 100,
-                      background: C.surface,
-                      border: `1px solid ${C.border}`,
-                      ...mono,
-                      fontSize: sz(13),
-                      fontWeight: 600,
-                      color: C.text,
-                      letterSpacing: "0.04em",
-                    }}
-                  >
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {active.connectors.map(con => (
+                  <div key={con} style={{
+                    padding: '5px 12px',
+                    borderRadius: 100,
+                    background: C.surface,
+                    border: `1px solid ${C.border}`,
+                    ...mono, fontSize: sz(13), fontWeight: 600, color: C.text,
+                    letterSpacing: '0.04em',
+                  }}>
                     {con}
                   </div>
                 ))}
@@ -5868,13 +2626,7 @@ function OpsManagerDay({
 
 // ── SpinWheel ~ random demo picker, used in segment 04 audience view ─────────
 type SpinItem = { name: string; short?: string; desc: string; icon?: string };
-function SpinWheel({
-  items,
-  C,
-  mono,
-  sans,
-  serif,
-}: {
+function SpinWheel({ items, C, mono, sans, serif }: {
   items: SpinItem[];
   C: Palette;
   mono: React.CSSProperties;
@@ -5887,15 +2639,13 @@ function SpinWheel({
   const [history, setHistory] = useState<number[]>([]);
   const wedgeAngle = 360 / items.length;
   const radius = 200;
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
 
   function spin() {
     if (spinning) return;
 
     // Step 1: pick a target wedge (skipping ones already demoed)
-    const available = items
-      .map((_, i) => i)
-      .filter((i) => !history.includes(i));
+    const available = items.map((_, i) => i).filter(i => !history.includes(i));
     const pool = available.length ? available : items.map((_, i) => i);
     const targetIndex = pool[Math.floor(Math.random() * pool.length)];
 
@@ -5915,7 +2665,7 @@ function SpinWheel({
 
     setSpinning(true);
     setWinner(null);
-    setRotation((prev) => prev + totalDelta);
+    setRotation(prev => prev + totalDelta);
 
     setTimeout(() => {
       // Step 4: derive the winner from the actual final rotation, so the
@@ -5924,14 +2674,11 @@ function SpinWheel({
       const finalRot = rotation + totalDelta;
       const finalMod = ((finalRot % 360) + 360) % 360;
       // Solve (i + 0.5) * wedgeAngle ≡ -finalMod (mod 360) for i
-      const raw =
-        (((-finalMod / wedgeAngle - 0.5) % items.length) + items.length) %
-        items.length;
-      const derivedWinner =
-        ((Math.round(raw) % items.length) + items.length) % items.length;
+      const raw = ((-finalMod / wedgeAngle - 0.5) % items.length + items.length) % items.length;
+      const derivedWinner = ((Math.round(raw) % items.length) + items.length) % items.length;
       setSpinning(false);
       setWinner(derivedWinner);
-      setHistory((h) => [...h, derivedWinner]);
+      setHistory(h => [...h, derivedWinner]);
     }, 4200);
   }
 
@@ -5940,103 +2687,43 @@ function SpinWheel({
     setWinner(null);
   }
 
-  const wedgeColors = [
-    C.primary,
-    C.surface2,
-    C.muted + "40",
-    C.peach || C.surface2,
-  ];
+  const wedgeColors = [C.primary, C.surface2, C.muted + '40', C.peach || C.surface2];
 
   return (
-    <div style={{ maxWidth: 1280, margin: "48px auto 0" }}>
-      <div
-        style={{
-          ...mono,
-          fontSize: 12,
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         What we demo live
       </div>
-      <div
-        style={{
-          ...mono,
-          fontSize: 12,
-          color: C.muted,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          marginBottom: 28,
-          opacity: 0.7,
-        }}
-      >
-        ↓ Pick someone in chat to spin · our AI Architects demo whatever it
-        lands on
+      <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
+        ↓ Pick someone in chat to spin · our AI Architects demo whatever it lands on
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(360px, 1fr) 1.1fr",
-          gap: 40,
-          alignItems: "center",
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
         {/* Wheel */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: 460,
-            justifySelf: "center",
-            aspectRatio: "1 / 1",
-          }}
-        >
+        <div style={{ position: 'relative', width: '100%', maxWidth: 460, justifySelf: 'center', aspectRatio: '1 / 1' }}>
           {/* Pointer at top */}
-          <div
-            style={{
-              position: "absolute",
-              top: -10,
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: 0,
-              height: 0,
-              borderLeft: "14px solid transparent",
-              borderRight: "14px solid transparent",
-              borderTop: `22px solid ${C.text}`,
-              zIndex: 3,
-              filter: `drop-shadow(0 4px 8px ${C.text}40)`,
-            }}
-          />
+          <div style={{
+            position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+            width: 0, height: 0,
+            borderLeft: '14px solid transparent',
+            borderRight: '14px solid transparent',
+            borderTop: `22px solid ${C.text}`,
+            zIndex: 3,
+            filter: `drop-shadow(0 4px 8px ${C.text}40)`,
+          }} />
           <svg
             viewBox={`-${radius + 10} -${radius + 10} ${(radius + 10) * 2} ${(radius + 10) * 2}`}
-            width="100%"
-            height="100%"
+            width="100%" height="100%"
             style={{
               transform: `rotate(${rotation}deg)`,
-              transition: spinning
-                ? "transform 4.2s cubic-bezier(0.17, 0.67, 0.21, 1)"
-                : "none",
+              transition: spinning ? 'transform 4.2s cubic-bezier(0.17, 0.67, 0.21, 1)' : 'none',
               filter: `drop-shadow(0 18px 32px ${C.text}25)`,
             }}
           >
             {items.map((item, i) => {
-              const startAngle = ((i * wedgeAngle - 90) * Math.PI) / 180;
-              const endAngle = (((i + 1) * wedgeAngle - 90) * Math.PI) / 180;
+              const startAngle = (i * wedgeAngle - 90) * Math.PI / 180;
+              const endAngle = ((i + 1) * wedgeAngle - 90) * Math.PI / 180;
               const x1 = radius * Math.cos(startAngle);
               const y1 = radius * Math.sin(startAngle);
               const x2 = radius * Math.cos(endAngle);
@@ -6048,13 +2735,12 @@ function SpinWheel({
 
               // text positioning ~ middle of wedge, rotated to read radially
               const midAngleDeg = i * wedgeAngle - 90 + wedgeAngle / 2;
-              const midRad = (midAngleDeg * Math.PI) / 180;
+              const midRad = midAngleDeg * Math.PI / 180;
               const textR = radius * 0.62;
               const textX = textR * Math.cos(midRad);
               const textY = textR * Math.sin(midRad);
               const textRotation = midAngleDeg + 90;
-              const isLightWedge =
-                fill === C.surface2 || fill === C.muted + "40";
+              const isLightWedge = fill === C.surface2 || fill === (C.muted + '40');
 
               return (
                 <g key={i}>
@@ -6064,34 +2750,18 @@ function SpinWheel({
                     stroke={C.bg}
                     strokeWidth={3}
                     style={{
-                      filter: isWinner
-                        ? `drop-shadow(0 0 16px ${C.primary})`
-                        : undefined,
-                      transition: "filter 0.4s",
+                      filter: isWinner ? `drop-shadow(0 0 16px ${C.primary})` : undefined,
+                      transition: 'filter 0.4s',
                     }}
                   />
                   <text
-                    x={textX}
-                    y={textY}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
+                    x={textX} y={textY}
+                    textAnchor="middle" dominantBaseline="middle"
                     fontFamily={String(mono.fontFamily)}
-                    fontSize={13}
-                    fontWeight={800}
-                    fill={
-                      isLightWedge
-                        ? C.text
-                        : fill === C.primary
-                          ? C.text === "#2A2520"
-                            ? onDark
-                            : C.bg
-                          : C.text
-                    }
+                    fontSize={13} fontWeight={800}
+                    fill={isLightWedge ? C.text : (fill === C.primary ? (C.text === '#2A2520' ? onDark : C.bg) : C.text)}
                     transform={`rotate(${textRotation} ${textX} ${textY})`}
-                    style={{
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                    }}
+                    style={{ letterSpacing: '0.06em', textTransform: 'uppercase' }}
                   >
                     {item.short ?? item.name}
                   </text>
@@ -6105,148 +2775,73 @@ function SpinWheel({
         </div>
 
         {/* Result panel */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-            minHeight: 320,
-          }}
-        >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 320 }}>
           {winner === null ? (
-            <div
-              style={{
-                flex: 1,
-                borderRadius: 18,
-                border: `2px dashed ${C.border}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 32,
-                textAlign: "center",
-                minHeight: 220,
-              }}
-            >
+            <div style={{
+              flex: 1,
+              borderRadius: 18, border: `2px dashed ${C.border}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 32, textAlign: 'center',
+              minHeight: 220,
+            }}>
               <div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    color: C.primary,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    fontWeight: 700,
-                    marginBottom: 12,
-                  }}
-                >
+                <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
                   Awaiting the spin
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: 22,
-                    color: C.muted,
-                    lineHeight: 1.4,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: 22, color: C.muted, lineHeight: 1.4 }}>
                   Wherever it lands, that&apos;s what we demo live.
                 </div>
               </div>
             </div>
           ) : (
-            <div
-              style={{
-                borderRadius: 18,
-                padding: "28px 30px",
-                background: C.text,
-                color: onDark,
-                boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}40`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 12,
-                  color: C.primary,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  fontWeight: 700,
-                  marginBottom: 14,
-                }}
-              >
+            <div style={{
+              borderRadius: 18, padding: '28px 30px',
+              background: C.text, color: onDark,
+              boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}40`,
+            }}>
+              <div style={{ ...mono, fontSize: 12, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 14 }}>
                 The wheel says ~
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: 36,
-                  fontWeight: 800,
-                  color: onDark,
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.1,
-                  marginBottom: 14,
-                }}
-              >
+              <div style={{ ...sans, fontSize: 36, fontWeight: 800, color: onDark, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
                 {items[winner].name}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: 19,
-                  lineHeight: 1.55,
-                  color: "rgba(250,248,245,0.8)",
-                }}
-              >
+              <div style={{ ...sans, fontSize: 19, lineHeight: 1.55, color: 'rgba(250,248,245,0.8)' }}>
                 {items[winner].desc}
               </div>
             </div>
           )}
 
           {/* Controls */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button
               onClick={spin}
               disabled={spinning}
               style={{
-                flex: 1,
-                minWidth: 160,
-                padding: "16px 28px",
-                borderRadius: 100,
-                ...mono,
-                fontSize: 14,
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                cursor: spinning ? "not-allowed" : "pointer",
+                flex: 1, minWidth: 160,
+                padding: '16px 28px', borderRadius: 100,
+                ...mono, fontSize: 14, fontWeight: 700,
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                cursor: spinning ? 'not-allowed' : 'pointer',
                 background: spinning ? C.muted : C.primary,
-                color: C.text === "#2A2520" ? onDark : C.bg,
-                border: "none",
-                boxShadow: spinning ? "none" : `0 8px 20px -4px ${C.primary}55`,
-                transition: "transform 0.15s, box-shadow 0.15s",
+                color: C.text === '#2A2520' ? onDark : C.bg,
+                border: 'none',
+                boxShadow: spinning ? 'none' : `0 8px 20px -4px ${C.primary}55`,
+                transition: 'transform 0.15s, box-shadow 0.15s',
                 opacity: spinning ? 0.6 : 1,
               }}
             >
-              {spinning
-                ? "● Spinning..."
-                : winner !== null
-                  ? "↻ Spin again"
-                  : "▸ SPIN"}
+              {spinning ? '● Spinning...' : winner !== null ? '↻ Spin again' : '▸ SPIN'}
             </button>
             {history.length > 0 && (
               <button
                 onClick={reset}
                 disabled={spinning}
                 style={{
-                  padding: "14px 22px",
-                  borderRadius: 100,
-                  ...mono,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  cursor: "pointer",
-                  background: "transparent",
-                  color: C.muted,
+                  padding: '14px 22px', borderRadius: 100,
+                  ...mono, fontSize: 12, fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  background: 'transparent', color: C.muted,
                   border: `1px solid ${C.border}`,
                 }}
               >
@@ -6257,18 +2852,8 @@ function SpinWheel({
 
           {/* History tally */}
           {history.length > 0 && (
-            <div
-              style={{
-                ...mono,
-                fontSize: 11,
-                color: C.muted,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginTop: 4,
-              }}
-            >
-              Demoed so far ~{" "}
-              {history.map((i) => items[i].short ?? items[i].name).join(" · ")}
+            <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+              Demoed so far ~ {history.map(i => items[i].short ?? items[i].name).join(' · ')}
             </div>
           )}
         </div>
@@ -6282,55 +2867,17 @@ function SpinWheel({
 // arrows (or autoplay). Adds visceral 'live event' feel without needing a real
 // chat backend tonight.
 const SAMPLE_QUESTIONS = [
-  {
-    theme: "Pricing",
-    text: "Will Claude Pro be worth it for me as a solo founder?",
-    from: "Marco, Berlin",
-  },
-  {
-    theme: "Skills",
-    text: "How long does it take to build a custom skill like the carousel one?",
-    from: "Lisa, Lisbon",
-  },
-  {
-    theme: "Project setup",
-    text: "Should I have one Project per client or one big Project?",
-    from: "Priya, Mumbai",
-  },
-  {
-    theme: "Connectors",
-    text: "Can Claude really read my Gmail without me sending each email?",
-    from: "Diego, Buenos Aires",
-  },
-  {
-    theme: "For VAs",
-    text: "Is this going to replace my job or make me more valuable?",
-    from: "Maria, Madrid",
-  },
-  {
-    theme: "Implementation",
-    text: "Where do I start tomorrow ~ I have so many tools already?",
-    from: "Sophie, Paris",
-  },
-  {
-    theme: "Time",
-    text: "Realistically, how many hours per week to set this up?",
-    from: "Tom, Sydney",
-  },
-  {
-    theme: "Costs",
-    text: "What's the actual monthly cost to run an AI employee?",
-    from: "Anna, Toronto",
-  },
+  { theme: 'Pricing',        text: "Will Claude Pro be worth it for me as a solo founder?", from: "Marco, Berlin" },
+  { theme: 'Skills',         text: "How long does it take to build a custom skill like the carousel one?", from: "Lisa, Lisbon" },
+  { theme: 'Project setup',  text: "Should I have one Project per client or one big Project?", from: "Priya, Mumbai" },
+  { theme: 'Connectors',     text: "Can Claude really read my Gmail without me sending each email?", from: "Diego, Buenos Aires" },
+  { theme: 'For VAs',        text: "Is this going to replace my job or make me more valuable?", from: "Maria, Madrid" },
+  { theme: 'Implementation', text: "Where do I start tomorrow ~ I have so many tools already?", from: "Sophie, Paris" },
+  { theme: 'Time',           text: "Realistically, how many hours per week to set this up?", from: "Tom, Sydney" },
+  { theme: 'Costs',          text: "What's the actual monthly cost to run an AI employee?", from: "Anna, Toronto" },
 ];
 
-function LiveQAFeed({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function LiveQAFeed({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -6340,14 +2887,14 @@ function LiveQAFeed({
   const [activeIdx, setActiveIdx] = useState(0);
   const [autoplay, setAutoplay] = useState(false);
   const [answered, setAnswered] = useState<Set<number>>(new Set());
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
 
   useEffect(() => {
     if (!autoplay) return;
     const t = setInterval(() => {
-      setAnswered((prev) => new Set([...prev, activeIdx]));
-      setActiveIdx((i) => (i + 1) % SAMPLE_QUESTIONS.length);
+      setAnswered(prev => new Set([...prev, activeIdx]));
+      setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
     }, 8000);
     return () => clearInterval(t);
   }, [autoplay, activeIdx]);
@@ -6356,8 +2903,8 @@ function LiveQAFeed({
   const upNext = SAMPLE_QUESTIONS.slice(activeIdx + 1, activeIdx + 4);
 
   function markAnsweredAndAdvance() {
-    setAnswered((prev) => new Set([...prev, activeIdx]));
-    setActiveIdx((i) => (i + 1) % SAMPLE_QUESTIONS.length);
+    setAnswered(prev => new Set([...prev, activeIdx]));
+    setActiveIdx(i => (i + 1) % SAMPLE_QUESTIONS.length);
   }
   function reset() {
     setAnswered(new Set());
@@ -6366,204 +2913,69 @@ function LiveQAFeed({
   }
 
   return (
-    <div style={{ maxWidth: 1280, margin: "24px auto 0" }}>
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          justifyContent: "space-between",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
-          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              style={{
-                display: "inline-block",
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#ff5e5e",
-                animation: "pulse 1.4s ease-in-out infinite",
-              }}
-            />
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite' }} />
             Live questions
           </span>
         </span>
-        <span
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            color: C.muted,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-          }}
-        >
+        <span style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
           {answered.size} of {SAMPLE_QUESTIONS.length} answered
         </span>
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 24,
-          lineHeight: 1.5,
-        }}
-      >
-        Real questions from real people in the chat. Drop yours in ~ we&apos;ll
-        get to it.
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+        Real questions from real people in the chat. Drop yours in ~ we&apos;ll get to it.
       </div>
 
       {/* Active question card */}
-      <div
-        style={{
-          padding: "32px 36px",
-          borderRadius: 20,
-          background: C.text,
-          color: onDark,
-          boxShadow: `0 24px 48px -12px ${C.text}40`,
-          marginBottom: 18,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            top: -30,
-            right: 22,
-            ...serif,
-            fontSize: sz(180),
-            lineHeight: 1,
-            color: C.primary,
-            opacity: 0.18,
-            userSelect: "none",
-          }}
-        >
-          "
-        </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            color: C.primary,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              padding: "3px 10px",
-              borderRadius: 100,
-              background: `${C.primary}25`,
-              color: C.primary,
-              ...mono,
-              fontSize: sz(10),
-              fontWeight: 800,
-            }}
-          >
+      <div style={{
+        padding: '32px 36px',
+        borderRadius: 20,
+        background: C.text,
+        color: onDark,
+        boxShadow: `0 24px 48px -12px ${C.text}40`,
+        marginBottom: 18,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: -30, right: 22, ...serif, fontSize: sz(180), lineHeight: 1, color: C.primary, opacity: 0.18, userSelect: 'none' }}>"</div>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 100, background: `${C.primary}25`, color: C.primary, ...mono, fontSize: sz(10), fontWeight: 800 }}>
             {current.theme}
           </span>
           <span style={{ opacity: 0.5 }}>~ now answering</span>
         </div>
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(28),
-            color: onDark,
-            lineHeight: 1.35,
-            marginBottom: 16,
-            position: "relative",
-          }}
-        >
+        <div style={{ ...serif, fontSize: sz(28), color: onDark, lineHeight: 1.35, marginBottom: 16, position: 'relative' }}>
           &ldquo;{current.text}&rdquo;
         </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(12),
-            color: "rgba(250,248,245,0.55)",
-            letterSpacing: "0.08em",
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(12), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.08em' }}>
           ~ {current.from}
         </div>
       </div>
 
       {/* Up next + controls */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          gap: 20,
-          alignItems: "flex-start",
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 20, alignItems: 'flex-start' }}>
         <div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              color: C.muted,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              marginBottom: 10,
-            }}
-          >
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
             Up next ~
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {upNext.map((q, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 10,
-                  background: C.surface,
-                  border: `1px solid ${C.border}`,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  opacity: 1 - i * 0.2,
-                }}
-              >
-                <span
-                  style={{
-                    ...mono,
-                    fontSize: sz(9),
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                  }}
-                >
+              <div key={i} style={{
+                padding: '10px 14px',
+                borderRadius: 10,
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                display: 'flex', alignItems: 'center', gap: 10,
+                opacity: 1 - i * 0.2,
+              }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                   {q.theme}
                 </span>
-                <span style={{ ...serif, fontSize: sz(15), color: C.text }}>
+                <span style={{ ...sans, fontSize: sz(15), color: C.text }}>
                   &ldquo;{q.text}&rdquo;
                 </span>
               </div>
@@ -6571,63 +2983,44 @@ function LiveQAFeed({
           </div>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            minWidth: 200,
-          }}
-        >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
           <button
             onClick={markAnsweredAndAdvance}
             style={{
-              padding: "12px 22px",
-              borderRadius: 100,
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 800,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              cursor: "pointer",
+              padding: '12px 22px', borderRadius: 100,
+              ...mono, fontSize: sz(11), fontWeight: 800,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              cursor: 'pointer',
               background: C.primary,
-              color: C.text === "#2A2520" ? onDark : C.bg,
-              border: "none",
+              color: C.text === '#2A2520' ? onDark : C.bg,
+              border: 'none',
               boxShadow: `0 6px 16px -4px ${C.primary}55`,
             }}
           >
             ✓ Answered, next →
           </button>
           <button
-            onClick={() => setAutoplay((a) => !a)}
+            onClick={() => setAutoplay(a => !a)}
             style={{
-              padding: "10px 18px",
-              borderRadius: 100,
-              ...mono,
-              fontSize: sz(10),
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              background: autoplay ? `${C.primary}20` : "transparent",
+              padding: '10px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: autoplay ? `${C.primary}20` : 'transparent',
               color: C.primary,
               border: `1px solid ${C.primary}`,
             }}
           >
-            {autoplay ? "⏸ Pause autoplay" : "▶ Auto-cycle"}
+            {autoplay ? '⏸ Pause autoplay' : '▶ Auto-cycle'}
           </button>
           <button
             onClick={reset}
             style={{
-              padding: "8px 18px",
-              borderRadius: 100,
-              ...mono,
-              fontSize: sz(10),
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              background: "transparent",
+              padding: '8px 18px', borderRadius: 100,
+              ...mono, fontSize: sz(10), fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              background: 'transparent',
               color: C.muted,
               border: `1px solid ${C.border}`,
             }}
@@ -6641,34 +3034,22 @@ function LiveQAFeed({
 }
 
 // ── ValueStack ~ segment 07 audience view: the €47 math ─────────────────────
-function ValueStack({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
   serif: React.CSSProperties;
   scale?: number;
 }) {
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
-  const totalNumeric = VIP_STACK.reduce(
-    (s, item) => s + (typeof item.value === "number" ? item.value : 0),
-    0,
-  );
+  const totalNumeric = VIP_STACK.reduce((s, item) => s + (typeof item.value === 'number' ? item.value : 0), 0);
   // Hide the prices initially. Click "Reveal the math" to show them with a stagger.
   const [pricesRevealed, setPricesRevealed] = useState(false);
   const [revealedItems, setRevealedItems] = useState(0);
 
   useEffect(() => {
-    if (!pricesRevealed) {
-      setRevealedItems(0);
-      return;
-    }
+    if (!pricesRevealed) { setRevealedItems(0); return; }
     setRevealedItems(0);
     let i = 0;
     const tick = () => {
@@ -6683,161 +3064,76 @@ function ValueStack({
   const allItemsRevealed = revealedItems >= VIP_STACK.length;
 
   return (
-    <div style={{ maxWidth: 1280, margin: "48px auto 0" }}>
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          justifyContent: "space-between",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+    <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           The VIP stack
         </span>
         <button
-          onClick={() => setPricesRevealed((p) => !p)}
+          onClick={() => setPricesRevealed(p => !p)}
           style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: pricesRevealed
-              ? C.muted
-              : C.text === "#2A2520"
-                ? onDark
-                : C.bg,
-            background: pricesRevealed ? "transparent" : C.primary,
+            ...mono, fontSize: sz(11), fontWeight: 700,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: pricesRevealed ? C.muted : (C.text === '#2A2520' ? onDark : C.bg),
+            background: pricesRevealed ? 'transparent' : C.primary,
             border: `1px solid ${pricesRevealed ? C.border : C.primary}`,
             borderRadius: 100,
-            padding: "6px 16px",
-            cursor: "pointer",
-            transition: "all 0.2s",
+            padding: '6px 16px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
           }}
         >
-          {pricesRevealed ? "↺ Hide the math" : "▸ Reveal the math"}
+          {pricesRevealed ? '↺ Hide the math' : '▸ Reveal the math'}
         </button>
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 26,
-          lineHeight: 1.5,
-        }}
-      >
-        {pricesRevealed
-          ? "Honest values. Math doesn't lie."
-          : "Click reveal when you're ready to drop the math."}
+      <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: 26, lineHeight: 1.5, fontWeight: 400 }}>
+        {pricesRevealed ? "Honest values. Math doesn't lie." : "Click reveal when you're ready to drop the math."}
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: 8,
-          marginBottom: 18,
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 18 }}>
         {VIP_STACK.map((item, i) => {
-          const isPriceless = item.value === "priceless";
+          const isPriceless = item.value === 'priceless';
           const showPrice = pricesRevealed && i < revealedItems;
           return (
-            <div
-              key={item.name}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "auto 1fr auto",
-                gap: 18,
-                alignItems: "center",
-                padding: "18px 22px",
-                borderRadius: 12,
-                background: C.surface,
-                border: `1px solid ${C.border}`,
-              }}
-            >
-              <div
-                style={{
-                  width: sz(34),
-                  height: sz(34),
-                  borderRadius: "50%",
-                  background: `${C.primary}20`,
-                  color: C.primary,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ...mono,
-                  fontSize: sz(13),
-                  fontWeight: 800,
-                }}
-              >
-                {String(i + 1).padStart(2, "0")}
-              </div>
+            <div key={item.name} style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto',
+              gap: 18,
+              alignItems: 'center',
+              padding: '18px 22px',
+              borderRadius: 12,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+            }}>
+              <div style={{
+                width: sz(34), height: sz(34),
+                borderRadius: '50%',
+                background: `${C.primary}20`,
+                color: C.primary,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...mono, fontSize: sz(13), fontWeight: 800,
+              }}>{String(i + 1).padStart(2, '0')}</div>
               <div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(20),
-                    fontWeight: 700,
-                    color: C.text,
-                    letterSpacing: "-0.01em",
-                    marginBottom: 3,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(20), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 3 }}>
                   {item.name}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(15),
-                    color: C.muted,
-                    lineHeight: 1.45,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.45, fontWeight: 400 }}>
                   {item.desc}
                 </div>
               </div>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(16),
-                  fontWeight: 800,
-                  color: showPrice
-                    ? isPriceless
-                      ? C.primary
-                      : C.text
-                    : C.muted,
-                  letterSpacing: "0.02em",
-                  whiteSpace: "nowrap",
-                  opacity: showPrice ? 1 : 0.4,
-                  transition: "all 0.4s ease",
-                  transform: showPrice ? "translateY(0)" : "translateY(4px)",
-                  filter: showPrice ? "none" : "blur(6px)",
-                  userSelect: showPrice ? "auto" : "none",
-                }}
-              >
-                {showPrice
-                  ? isPriceless
-                    ? "priceless"
-                    : `€${item.value}`
-                  : "€▒▒▒"}
+              <div style={{
+                ...mono, fontSize: sz(16), fontWeight: 800,
+                color: showPrice ? (isPriceless ? C.primary : C.text) : C.muted,
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
+                opacity: showPrice ? 1 : 0.4,
+                transition: 'all 0.4s ease',
+                transform: showPrice ? 'translateY(0)' : 'translateY(4px)',
+                filter: showPrice ? 'none' : 'blur(6px)',
+                userSelect: showPrice ? 'auto' : 'none',
+              }}>
+                {showPrice ? (isPriceless ? 'priceless' : `€${item.value}`) : '€▒▒▒'}
               </div>
             </div>
           );
@@ -6846,76 +3142,116 @@ function ValueStack({
 
       {/* Total + price reveal ~ only shown after all per-item prices revealed */}
       {allItemsRevealed && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 18,
-            padding: "24px 28px",
-            borderRadius: 16,
-            background: C.text,
-            color: onDark,
-            boxShadow: `0 18px 40px -14px ${C.text}40`,
-            animation: "fadeInUp 0.5s ease forwards",
-          }}
-        >
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18,
+          padding: '24px 28px', borderRadius: 16,
+          background: C.text, color: onDark,
+          boxShadow: `0 18px 40px -14px ${C.text}40`,
+          animation: 'fadeInUp 0.5s ease forwards',
+        }}>
           <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                color: "rgba(250,248,245,0.5)",
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               Real value if bought separately
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(36),
-                fontWeight: 700,
-                color: "rgba(250,248,245,0.6)",
-                letterSpacing: "-0.02em",
-                textDecoration: "line-through",
-                textDecorationThickness: 2,
-              }}
-            >
+            <div style={{ ...sans, fontSize: sz(36), fontWeight: 700, color: 'rgba(250,248,245,0.6)', letterSpacing: '-0.02em', textDecoration: 'line-through', textDecorationThickness: 2 }}>
               €{totalNumeric}+
             </div>
           </div>
-          <div style={{ textAlign: "right" }}>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                color: C.primary,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>
               Tonight only
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(48),
-                fontWeight: 800,
-                color: C.primary,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-              }}
-            >
+            <div style={{ ...sans, fontSize: sz(48), fontWeight: 800, color: C.primary, letterSpacing: '-0.03em', lineHeight: 1 }}>
               €49
             </div>
           </div>
         </div>
       )}
+
+    </div>
+  );
+}
+
+// ── FreeGuideCTA ~ segment 08 closing remark: Skool QR + free guide drop ─────
+const SKOOL_FREE_URL = 'https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7';
+
+function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
+}) {
+  const sz = (px: number) => Math.round(px * scale);
+  const onDark = '#FAF8F5';
+
+  return (
+    <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
+      <div style={{
+        position: 'relative',
+        background: C.text,
+        color: onDark,
+        borderRadius: sz(24),
+        padding: `${sz(48)}px ${sz(44)}px`,
+        overflow: 'hidden',
+        boxShadow: `0 32px 64px -20px ${C.text}55`,
+      }}>
+        {/* Glow accent */}
+        <div style={{
+          position: 'absolute', top: '-30%', right: '-10%',
+          width: '50%', height: '160%',
+          background: `radial-gradient(ellipse, ${C.primary}40 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
+        {/* Grid pattern */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr auto', gap: sz(48), alignItems: 'center' }}>
+          <div>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(14), display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ display: 'inline-block', width: sz(8), height: sz(8), borderRadius: '50%', background: C.primary, animation: 'pulse 1.6s ease-in-out infinite' }} />
+              Tonight only ~ free guide drop
+            </div>
+            <div style={{ ...serif, fontSize: sz(56), fontWeight: 300, color: onDark, letterSpacing: '-0.025em', lineHeight: 1.05, marginBottom: sz(18) }}>
+              Everything you saw tonight ~<br />
+              <span style={{ color: C.primary }}>turned into your starter playbook.</span>
+            </div>
+            <div style={{ ...sans, fontSize: sz(17), color: 'rgba(250,248,245,0.78)', lineHeight: 1.55, maxWidth: sz(560) }}>
+              We're posting it inside Skool ~ for free ~ at midnight tonight. Every prompt, every framework, every demo we just ran. Cleaned up, copy-paste ready, and yours forever.
+            </div>
+          </div>
+
+          {/* QR + scan instruction */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14) }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+              Scan to claim
+            </div>
+            <div style={{
+              background: '#FAF8F5',
+              padding: sz(14),
+              borderRadius: sz(16),
+              boxShadow: `0 16px 32px -10px ${C.primary}80`,
+              border: `2px solid ${C.primary}`,
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(220)}x${sz(220)}&data=${encodeURIComponent(SKOOL_FREE_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(200)}
+                height={sz(200)}
+                alt="Scan to join the free Skool community"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: onDark, letterSpacing: '0.02em', textAlign: 'center' }}>
+              Future Proof with AI
+            </div>
+            <div style={{ ...sans, fontSize: sz(11), color: 'rgba(250,248,245,0.55)', textAlign: 'center' }}>
+              Free tier · join in 30 seconds
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -6923,316 +3259,128 @@ function ValueStack({
 // ── BootcampPreview ~ segment 08: 3-day intensive teaser ────────────────────
 const BOOTCAMP_DAYS = [
   {
-    day: "Day 01",
-    title: "Create",
-    subtitle: "Your AI content machine",
-    color: "#C4A882",
-    pain: "Your #1 pain: content takes too long",
+    day: 'Day 01',
+    title: 'Create',
+    subtitle: 'Your AI content machine',
+    color: '#C4A882',
+    pain: 'Your #1 pain: content takes too long',
     sessions: [
-      "Build your Claude content brain ~ voice, ICP, brand in one Project",
-      "Generate a week of content in 20 minutes ~ captions, scripts, carousels",
-      "Write emails that sound like you ~ outreach, newsletters, follow-ups",
-      "Live build: your own content workflow, ready to use Monday",
+      'Build your Claude content brain ~ voice, ICP, brand in one Project',
+      'Generate a week of content in 20 minutes ~ captions, scripts, carousels',
+      'Write emails that sound like you ~ outreach, newsletters, follow-ups',
+      'Live build: your own content workflow, ready to use Monday',
     ],
-    outcome: "Leave with a running content system.",
+    outcome: 'Leave with a running content system.',
   },
   {
-    day: "Day 02",
-    title: "Operate",
-    subtitle: "Your AI back office",
-    color: "#7D6B5A",
-    pain: "Your #2 pain: admin eating your day",
+    day: 'Day 02',
+    title: 'Operate',
+    subtitle: 'Your AI back office',
+    color: '#7D6B5A',
+    pain: 'Your #2 pain: admin eating your day',
     sessions: [
-      "Automate your inbox ~ triage, draft, respond without touching it",
-      "Build AI SOPs ~ Claude runs your recurring tasks so you don't have to",
-      "Research & analysis in minutes ~ reports, competitor intel, summaries",
-      "Live build: one repeating task fully off your plate by end of day",
+      'Automate your inbox ~ triage, draft, respond without touching it',
+      'Build AI SOPs ~ Claude runs your recurring tasks so you don\'t have to',
+      'Research & analysis in minutes ~ reports, competitor intel, summaries',
+      'Live build: one repeating task fully off your plate by end of day',
     ],
-    outcome: "Leave with hours back every week.",
+    outcome: 'Leave with hours back every week.',
   },
   {
-    day: "Day 03",
-    title: "Build",
-    subtitle: "Your first AI tool",
-    color: "#5A6B5A",
-    pain: "Your #3 pain: tech feels out of reach",
+    day: 'Day 03',
+    title: 'Build',
+    subtitle: 'Your first AI tool',
+    color: '#5A6B5A',
+    pain: 'Your #3 pain: tech feels out of reach',
     sessions: [
-      "Vibe coding session ~ build a real thing with Claude, no experience needed",
-      "Your AI dashboard ~ a custom home base for your business",
-      "Connect your tools ~ Claude + your CRM, calendar, docs",
-      "Live build: ship something to your audience by end of day",
+      'Vibe coding session ~ build a real thing with Claude, no experience needed',
+      'Your AI dashboard ~ a custom home base for your business',
+      'Connect your tools ~ Claude + your CRM, calendar, docs',
+      'Live build: ship something to your audience by end of day',
     ],
-    outcome: "Leave having built something real.",
+    outcome: 'Leave having built something real.',
   },
 ];
 
-function BootcampPreview({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: object;
-  sans: object;
-  serif: object;
-  scale?: number;
+function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
   return (
     <div style={{ marginTop: sz(48) }}>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          marginBottom: sz(28),
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: sz(28) }}>
         <div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: sz(6),
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Coming soon ~ members only
           </div>
-          <div
-            style={{
-              ...sans,
-              fontSize: sz(32),
-              fontWeight: 700,
-              color: C.text,
-              letterSpacing: "-0.02em",
-              lineHeight: 1.1,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
             The 3-Day AI Intensive Bootcamp
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(16),
-              color: C.muted,
-              fontStyle: "italic",
-              marginTop: sz(6),
-            }}
-          >
-            Built around what you told us hurts most. Small groups. Hands-on.
-            You ship something every day.
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginTop: sz(6) }}>
+            Built around what you told us hurts most. Small groups. Hands-on. You ship something every day.
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: sz(8), marginTop: sz(14), padding: `${sz(8)}px ${sz(14)}px`, borderRadius: sz(10), background: `${C.primary}12`, border: `1px solid ${C.primary}30` }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>From</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€197</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted }}>· members 30% off</div>
           </div>
         </div>
         {/* Member badge */}
-        <div
-          style={{
-            flexShrink: 0,
-            padding: `${sz(16)}px ${sz(24)}px`,
-            borderRadius: sz(16),
-            background: C.primary,
-            textAlign: "center",
-            marginLeft: sz(24),
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(28),
-              fontWeight: 900,
-              color: "#FAF8F5",
-              letterSpacing: "-0.02em",
-              lineHeight: 1,
-            }}
-          >
-            30%
-          </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(10),
-              fontWeight: 700,
-              color: "#FAF8F5",
-              opacity: 0.8,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              marginTop: 4,
-            }}
-          >
-            off every bootcamp
-          </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(11),
-              color: "#FAF8F5",
-              opacity: 0.65,
-              fontStyle: "italic",
-              marginTop: 2,
-            }}
-          >
-            for premium members
-          </div>
+        <div style={{
+          flexShrink: 0,
+          padding: `${sz(16)}px ${sz(24)}px`,
+          borderRadius: sz(16),
+          background: C.primary,
+          textAlign: 'center',
+          marginLeft: sz(24),
+        }}>
+          <div style={{ ...mono, fontSize: sz(28), fontWeight: 900, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>30%</div>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: '#FAF8F5', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>off every bootcamp</div>
+          <div style={{ ...sans, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, marginTop: 2 }}>for premium members</div>
         </div>
       </div>
 
       {/* 3 day cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: sz(16),
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(16) }}>
         {BOOTCAMP_DAYS.map((d) => (
-          <div
-            key={d.day}
-            style={{
-              borderRadius: sz(16),
-              overflow: "hidden",
-              border: `1px solid ${C.border}`,
-              background: C.surface,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <div key={d.day} style={{
+            borderRadius: sz(16),
+            overflow: 'hidden',
+            border: `1px solid ${C.border}`,
+            background: C.surface,
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
             {/* Day header */}
-            <div
-              style={{
-                background: d.color,
-                padding: `${sz(18)}px ${sz(22)}px`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: "rgba(250,248,245,0.7)",
-                  marginBottom: sz(4),
-                }}
-              >
+            <div style={{ background: d.color, padding: `${sz(18)}px ${sz(22)}px` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
                 {d.day}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(26),
-                  fontWeight: 800,
-                  color: "#FAF8F5",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>
                 {d.title}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(14),
-                  color: "rgba(250,248,245,0.8)",
-                  fontStyle: "italic",
-                  marginTop: sz(4),
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', marginTop: sz(4) }}>
                 {d.subtitle}
               </div>
             </div>
 
             {/* Body */}
-            <div
-              style={{
-                padding: `${sz(18)}px ${sz(22)}px`,
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                gap: sz(14),
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: C.primary,
-                }}
-              >
+            <div style={{ padding: `${sz(18)}px ${sz(22)}px`, flex: 1, display: 'flex', flexDirection: 'column', gap: sz(14) }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.primary }}>
                 {d.pain}
               </div>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: sz(8) }}
-              >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: sz(8) }}>
                 {d.sessions.map((s, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      gap: sz(10),
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <span
-                      style={{
-                        ...mono,
-                        fontSize: sz(11),
-                        color: d.color,
-                        flexShrink: 0,
-                        paddingTop: 1,
-                      }}
-                    >
-                      →
-                    </span>
-                    <span
-                      style={{
-                        ...serif,
-                        fontSize: sz(13),
-                        color: C.text,
-                        lineHeight: 1.45,
-                      }}
-                    >
-                      {s}
-                    </span>
+                  <div key={i} style={{ display: 'flex', gap: sz(10), alignItems: 'flex-start' }}>
+                    <span style={{ ...mono, fontSize: sz(11), color: d.color, flexShrink: 0, paddingTop: 1 }}>→</span>
+                    <span style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45 }}>{s}</span>
                   </div>
                 ))}
               </div>
-              <div
-                style={{
-                  marginTop: "auto",
-                  paddingTop: sz(14),
-                  borderTop: `1px solid ${C.border}`,
-                }}
-              >
-                <span
-                  style={{
-                    ...mono,
-                    fontSize: sz(10),
-                    fontWeight: 700,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: d.color,
-                  }}
-                >
+              <div style={{ marginTop: 'auto', paddingTop: sz(14), borderTop: `1px solid ${C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: d.color }}>
                   ✦ {d.outcome}
                 </span>
               </div>
@@ -7242,51 +3390,11 @@ function BootcampPreview({
       </div>
 
       {/* Bottom note */}
-      <div
-        style={{
-          marginTop: sz(20),
-          padding: `${sz(16)}px ${sz(24)}px`,
-          borderRadius: sz(12),
-          background: `${C.primary}10`,
-          border: `1px solid ${C.primary}30`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(15),
-            color: C.text,
-            fontStyle: "italic",
-          }}
-        >
-          Drop{" "}
-          <strong
-            style={{
-              fontStyle: "normal",
-              ...mono,
-              fontSize: sz(13),
-              color: C.primary,
-              letterSpacing: "0.1em",
-            }}
-          >
-            BOOTCAMP
-          </strong>{" "}
-          in the chat to get notified when doors open.
+      <div style={{ marginTop: sz(20), padding: `${sz(16)}px ${sz(24)}px`, borderRadius: sz(12), background: `${C.primary}10`, border: `1px solid ${C.primary}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ ...sans, fontSize: sz(15), color: C.text }}>
+          Drop <strong style={{ fontStyle: 'normal', ...mono, fontSize: sz(13), color: C.primary, letterSpacing: '0.1em' }}>BOOTCAMP</strong> in the chat to get notified when doors open.
         </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            color: C.muted,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            flexShrink: 0,
-            marginLeft: sz(24),
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0, marginLeft: sz(24) }}>
           Premium members · 30% off · always
         </div>
       </div>
@@ -7295,75 +3403,29 @@ function BootcampPreview({
 }
 
 // ── SkoolJoinCard ~ segment 08 audience view: premium membership CTA ────────
-const SKOOL_MONTHLY_URL = "https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05";
-const SKOOL_ANNUAL_URL = "https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06";
+const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
+const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
 
-function QRBlock({
-  url,
-  label,
-  sublabel,
-  size,
-  C,
-  mono,
-  serif,
-}: {
-  url: string;
-  label: string;
-  sublabel: string;
-  size: number;
-  C: Palette;
-  mono: object;
-  serif: object;
+function QRBlock({ url, label, sublabel, size, C, mono, sans, serif }: {
+  url: string; label: string; sublabel: string; size: number;
+  C: Palette; mono: object; sans: object; serif: object;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: size * 0.08,
-        flexShrink: 0,
-      }}
-    >
-      <div
-        style={{
-          ...mono,
-          fontSize: size * 0.07,
-          fontWeight: 700,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          color: C.muted,
-        }}
-      >
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size * 0.08, flexShrink: 0 }}>
+      <div style={{ ...mono, fontSize: size * 0.07, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
         {label}
       </div>
-      <div
-        style={{
-          background: "#FFFFFF",
-          padding: size * 0.075,
-          borderRadius: size * 0.1,
-          border: `1px solid ${C.border}`,
-          boxShadow: `0 4px 24px ${C.text}08`,
-        }}
-      >
+      <div style={{ background: '#FFFFFF', padding: size * 0.075, borderRadius: size * 0.1, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.text}08` }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=2A2520&bgcolor=ffffff&margin=0`}
           alt={label}
           width={size}
           height={size}
-          style={{ display: "block" }}
+          style={{ display: 'block' }}
         />
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: size * 0.07,
-          color: C.primary,
-          fontStyle: "italic",
-          fontWeight: 600,
-        }}
-      >
+      <div style={{ ...sans, fontSize: size * 0.07, color: C.primary, fontWeight: 600 }}>
         {sublabel}
       </div>
     </div>
@@ -7372,105 +3434,55 @@ function QRBlock({
 
 const BONUS_NUGGETS = [
   {
-    icon: "✉️",
-    title: "The 15-min email trick",
-    desc: "Paste your last 5 sent emails into Claude. Ask it to write your next 10 in your exact voice. Done.",
+    icon: '✉️',
+    title: 'The 15-min email trick',
+    desc: 'Paste your last 5 sent emails into Claude. Ask it to write your next 10 in your exact voice. Done.',
   },
   {
-    icon: "🃏",
-    title: "Build your first skill card",
-    desc: "Pick one task you repeat every week. Describe it to Claude step by step. Ask it to turn it into a reusable skill prompt.",
+    icon: '🃏',
+    title: 'Build your first skill card',
+    desc: 'Pick one task you repeat every week. Describe it to Claude step by step. Ask it to turn it into a reusable skill prompt.',
   },
   {
-    icon: "🧠",
-    title: "The brain dump → action plan",
+    icon: '🧠',
+    title: 'The brain dump → action plan',
     desc: 'Paste your messy notes, voice memo transcript, or scattered ideas. Ask Claude: "Turn this into a structured action plan with priorities."',
   },
   {
-    icon: "🪪",
-    title: "Write your system prompt",
-    desc: "Tell Claude who you are, what you do, and how you communicate. Ask it to write a system prompt you paste at the start of every session.",
+    icon: '🪪',
+    title: 'Write your system prompt',
+    desc: 'Tell Claude who you are, what you do, and how you communicate. Ask it to write a system prompt you paste at the start of every session.',
   },
   {
-    icon: "📅",
-    title: "The Friday review ritual",
+    icon: '📅',
+    title: 'The Friday review ritual',
     desc: 'Every Friday: give Claude your wins, blocks, and open loops. Ask: "What patterns do you see? What should I prioritize Monday?"',
   },
 ];
 
-function BonusSlide({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: object;
-  sans: object;
-  serif: object;
-  scale?: number;
+function BonusSlide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
   return (
     <div style={{ marginTop: sz(40) }}>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: sz(14),
-          marginBottom: sz(24),
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(10),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            padding: `${sz(4)}px ${sz(12)}px`,
-            borderRadius: 100,
-            border: `1px solid ${C.primary}`,
-            background: C.primary + "15",
-          }}
-        >
+      <div style={{ display: 'flex', alignItems: 'center', gap: sz(14), marginBottom: sz(24) }}>
+        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, padding: `${sz(4)}px ${sz(12)}px`, borderRadius: 100, border: `1px solid ${C.primary}`, background: C.primary + '15' }}>
           🎁 Bonus
         </div>
         <div style={{ flex: 1, height: 1, background: C.border }} />
       </div>
 
-      <div
-        style={{
-          ...serif,
-          fontStyle: "italic",
-          fontSize: sz(26),
-          fontWeight: 400,
-          color: C.text,
-          lineHeight: 1.2,
-          marginBottom: sz(6),
-        }}
-      >
+      <div style={{ ...sans, fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
         Five things to do this week.
       </div>
-      <div
-        style={{
-          ...sans,
-          fontSize: sz(13),
-          color: C.muted,
-          marginBottom: sz(24),
-          lineHeight: 1.5,
-        }}
-      >
+      <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(24), lineHeight: 1.5 }}>
         No setup needed. No paid tools. Just Claude and 15 minutes.
       </div>
 
       {/* Nugget grid */}
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: sz(14) }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(14) }}>
         {BONUS_NUGGETS.map((n, i) => (
           <div
             key={i}
@@ -7479,264 +3491,69 @@ function BonusSlide({
               borderRadius: 14,
               background: C.surface,
               border: `1px solid ${C.border}`,
-              gridColumn: i === 4 ? "span 2" : undefined,
+              gridColumn: i === 4 ? 'span 2' : undefined,
             }}
           >
-            <div style={{ fontSize: sz(22), marginBottom: sz(8) }}>
-              {n.icon}
-            </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(13),
-                fontWeight: 700,
-                color: C.text,
-                marginBottom: sz(6),
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {n.title}
-            </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(12),
-                color: C.muted,
-                lineHeight: 1.55,
-              }}
-            >
-              {n.desc}
-            </div>
+            <div style={{ fontSize: sz(22), marginBottom: sz(8) }}>{n.icon}</div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{n.title}</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.55 }}>{n.desc}</div>
           </div>
         ))}
       </div>
 
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(11),
-          color: C.primary,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          marginTop: sz(20),
-          textAlign: "center",
-        }}
-      >
+      <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: sz(20), textAlign: 'center' }}>
         ✦ These are in your workbook ~ take them home tonight
       </div>
     </div>
   );
 }
 
-function SkoolJoinCard({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: object;
-  sans: object;
-  serif: object;
-  scale?: number;
+function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
   const qrSize = sz(140);
   return (
-    <div
-      style={{
-        marginTop: sz(40),
-        padding: `${sz(32)}px ${sz(36)}px`,
-        borderRadius: 18,
-        background: C.surface,
-        border: `1px solid ${C.border}`,
-        display: "flex",
-        alignItems: "center",
-        gap: sz(40),
-      }}
-    >
+    <div style={{ marginTop: sz(40), padding: `${sz(32)}px ${sz(36)}px`, borderRadius: 18, background: C.surface, border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: sz(40) }}>
+
       {/* QR codes side by side */}
-      <div style={{ display: "flex", gap: sz(24), flexShrink: 0 }}>
-        <QRBlock
-          url={SKOOL_MONTHLY_URL}
-          label="Monthly · €49/mo"
-          sublabel="€49/mo"
-          size={qrSize}
-          C={C}
-          mono={mono}
-          serif={serif}
-        />
-        <QRBlock
-          url={SKOOL_ANNUAL_URL}
-          label="Annual · €399/yr"
-          sublabel="Save 32%"
-          size={qrSize}
-          C={C}
-          mono={mono}
-          serif={serif}
-        />
+      <div style={{ display: 'flex', gap: sz(24), flexShrink: 0 }}>
+        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
+        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} sans={sans} serif={serif} />
       </div>
 
       {/* Divider */}
-      <div
-        style={{
-          width: 1,
-          alignSelf: "stretch",
-          background: C.border,
-          flexShrink: 0,
-        }}
-      />
+      <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
 
       {/* Right: details */}
       <div style={{ flex: 1 }}>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: sz(6),
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6) }}>
           Premium membership
         </div>
-        <div
-          style={{
-            ...sans,
-            fontSize: sz(28),
-            fontWeight: 700,
-            color: C.text,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            marginBottom: sz(6),
-          }}
-        >
+        <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(6) }}>
           Talent Mucho
         </div>
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(15),
-            color: C.muted,
-            fontStyle: "italic",
-            marginBottom: sz(20),
-          }}
-        >
+        <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: sz(20) }}>
           Live workshops · Vault access · Inner circle · Vibe coding sessions
         </div>
 
         {/* Pricing row */}
-        <div
-          style={{
-            display: "flex",
-            gap: sz(14),
-            alignItems: "center",
-            marginBottom: sz(20),
-          }}
-        >
-          <div
-            style={{
-              padding: `${sz(10)}px ${sz(18)}px`,
-              borderRadius: 100,
-              border: `2px solid ${C.border}`,
-              background: C.bg,
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(10),
-                fontWeight: 700,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: C.muted,
-                marginBottom: 2,
-              }}
-            >
-              Monthly
-            </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(20),
-                fontWeight: 800,
-                color: C.text,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              €49{" "}
-              <span
-                style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}
-              >
-                /mo
-              </span>
-            </div>
+        <div style={{ display: 'flex', gap: sz(14), alignItems: 'center', marginBottom: sz(20) }}>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.border}`, background: C.bg }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: 2 }}>Monthly</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€49 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/mo</span></div>
           </div>
           <div style={{ ...mono, fontSize: sz(12), color: C.muted }}>or</div>
-          <div
-            style={{
-              padding: `${sz(10)}px ${sz(18)}px`,
-              borderRadius: 100,
-              border: `2px solid ${C.primary}`,
-              background: C.primary + "15",
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(10),
-                fontWeight: 700,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                color: C.primary,
-                marginBottom: 2,
-              }}
-            >
-              Annual · save 32%
-            </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(20),
-                fontWeight: 800,
-                color: C.text,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              €399{" "}
-              <span
-                style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}
-              >
-                /yr
-              </span>
-            </div>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.primary + '15' }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.primary, marginBottom: 2 }}>Annual · save 32%</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€399 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/yr</span></div>
           </div>
         </div>
 
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            color: C.primary,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            marginBottom: sz(6),
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: sz(6) }}>
           ✦ Price goes to €97/mo soon ~ lock in €49 tonight
         </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            color: C.muted,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-          }}
-        >
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
           Not happy? Message us directly ~ we'll refund you.
         </div>
       </div>
@@ -7745,13 +3562,7 @@ function SkoolJoinCard({
 }
 
 // ── ThreeDoorsOut ~ segment 07 audience view: the choice ────────────────────
-function ThreeDoorsOut({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -7759,282 +3570,105 @@ function ThreeDoorsOut({
   scale?: number;
 }) {
   const [activeDoor, setActiveDoor] = useState(1); // VIP open by default
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
 
   return (
-    <div style={{ maxWidth: 1280, margin: "56px auto 0" }}>
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          color: C.primary,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
+    <div style={{ maxWidth: 1280, margin: '56px auto 0' }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Three doors out
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 32,
-          lineHeight: 1.5,
-        }}
-      >
-        Three ways to use what you learned tonight. Mapped to how we work at
-        Talent Mucho ~{" "}
-        <span style={{ color: C.primary, fontWeight: 600 }}>
-          Educate · Educate Deeper · Build &amp; Operate.
-        </span>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5 }}>
+        Three ways to use what you learned tonight. Mapped to how we work at Talent Mucho ~ <span style={{ color: C.primary, fontWeight: 600 }}>Educate · Educate Deeper · Build &amp; Operate.</span>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 16,
-          alignItems: "stretch",
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, alignItems: 'stretch' }}>
         {THREE_DOORS.map((door, i) => {
           const isActive = activeDoor === i;
-          const accentBg = door.highlight
-            ? C.primary
-            : isActive
-              ? C.text
-              : C.surface;
-          const textColor = door.highlight || isActive ? onDark : C.text;
+          const accentBg = door.highlight ? C.primary : (isActive ? C.text : C.surface);
+          const textColor = (door.highlight || isActive) ? onDark : C.text;
           return (
             <div
               key={door.label}
               onClick={() => setActiveDoor(i)}
               style={{
-                display: "flex",
-                flexDirection: "column",
-                padding: "26px 26px 22px",
+                display: 'flex', flexDirection: 'column',
+                padding: '26px 26px 22px',
                 borderRadius: 18,
-                background: door.highlight
-                  ? C.text
-                  : isActive
-                    ? C.surface2
-                    : C.surface,
-                border: `2px solid ${door.highlight ? C.primary : isActive ? C.primary : C.border}`,
-                cursor: "pointer",
-                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                background: door.highlight ? C.text : (isActive ? C.surface2 : C.surface),
+                border: `2px solid ${door.highlight ? C.primary : (isActive ? C.primary : C.border)}`,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 boxShadow: door.highlight
                   ? `0 24px 48px -12px ${C.primary}55`
-                  : isActive
-                    ? `0 12px 28px -10px ${C.text}25`
-                    : "none",
-                transform: door.highlight ? "translateY(-4px)" : "none",
-                position: "relative",
-                overflow: "hidden",
+                  : isActive ? `0 12px 28px -10px ${C.text}25` : 'none',
+                transform: door.highlight ? 'translateY(-4px)' : 'none',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
               {door.highlight && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 14,
-                    right: 16,
-                    ...mono,
-                    fontSize: sz(9),
-                    fontWeight: 800,
-                    color: C.text,
-                    background: C.primary,
-                    padding: "4px 10px",
-                    borderRadius: 100,
-                    letterSpacing: "0.18em",
-                  }}
-                >
-                  RECOMMENDED
-                </div>
+                <div style={{
+                  position: 'absolute', top: 14, right: 16,
+                  ...mono, fontSize: sz(9), fontWeight: 800,
+                  color: C.text, background: C.primary,
+                  padding: '4px 10px', borderRadius: 100,
+                  letterSpacing: '0.18em',
+                }}>RECOMMENDED</div>
               )}
 
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(10),
-                  fontWeight: 700,
-                  color: door.highlight ? C.primary : C.muted,
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: door.highlight ? C.primary : C.muted, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
                 {door.label}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(34),
-                  fontWeight: 700,
-                  color: door.highlight ? onDark : C.text,
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.05,
-                  marginBottom: 4,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: door.highlight ? onDark : C.text, letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: 4 }}>
                 {door.name}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  color: C.primary,
-                  marginBottom: 14,
-                  lineHeight: 1.3,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(18), color: C.primary, marginBottom: 14, lineHeight: 1.3 }}>
                 ~ {door.italic}
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(16),
-                  fontWeight: 600,
-                  color: door.highlight ? onDark : C.text,
-                  marginBottom: 14,
-                  lineHeight: 1.4,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: door.highlight ? onDark : C.text, marginBottom: 14, lineHeight: 1.4 }}>
                 {door.pitch}
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(14),
-                  color: door.highlight ? "rgba(250,248,245,0.7)" : C.muted,
-                  marginBottom: 16,
-                  lineHeight: 1.45,
-                  paddingBottom: 12,
-                  borderBottom: `1px solid ${door.highlight ? "rgba(250,248,245,0.18)" : C.border}`,
-                }}
-              >
-                <span
-                  style={{
-                    ...mono,
-                    fontSize: sz(9),
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.16em",
-                    textTransform: "uppercase",
-                    marginRight: 6,
-                  }}
-                >
-                  Best for ~
-                </span>
+              <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.7)' : C.muted, marginBottom: 16, lineHeight: 1.45, paddingBottom: 12, borderBottom: `1px solid ${door.highlight ? 'rgba(250,248,245,0.18)' : C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginRight: 6 }}>Best for ~</span>
                 {door.bestFor}
               </div>
 
               {/* What you get list */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 7,
-                  marginBottom: 18,
-                  flex: 1,
-                }}
-              >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 18, flex: 1 }}>
                 {door.whatYouGet.map((item, ii) => (
-                  <div
-                    key={ii}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 10,
-                      ...serif,
-                      fontSize: sz(14),
-                      color: door.highlight ? "rgba(250,248,245,0.88)" : C.text,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    <span
-                      style={{
-                        ...mono,
-                        fontSize: sz(12),
-                        color: C.primary,
-                        flexShrink: 0,
-                        paddingTop: 2,
-                      }}
-                    >
-                      ~
-                    </span>
+                  <div key={ii} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.88)' : C.text, lineHeight: 1.4 }}>
+                    <span style={{ ...mono, fontSize: sz(12), color: C.primary, flexShrink: 0, paddingTop: 2 }}>~</span>
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
 
               {/* Next step + CTA */}
-              <div style={{ marginTop: "auto" }}>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(9),
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.16em",
-                    textTransform: "uppercase",
-                    marginBottom: 6,
-                  }}
-                >
+              <div style={{ marginTop: 'auto' }}>
+                <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                   Next step ~
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(13),
-                    color: door.highlight ? "rgba(250,248,245,0.78)" : C.muted,
-                    lineHeight: 1.5,
-                    marginBottom: 14,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(15), color: door.highlight ? 'rgba(250,248,245,0.78)' : C.muted, lineHeight: 1.5, marginBottom: 14 }}>
                   {door.nextStep}
                 </div>
                 <a
                   href={door.ctaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
                   style={{
-                    display: "block",
+                    display: 'block',
                     padding: `${sz(14)}px ${sz(20)}px`,
                     borderRadius: 100,
-                    textAlign: "center",
-                    textDecoration: "none",
-                    ...mono,
-                    fontSize: sz(12),
-                    fontWeight: 800,
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    background: door.highlight
-                      ? C.primary
-                      : accentBg === C.text
-                        ? C.primary
-                        : C.text,
-                    color: door.highlight
-                      ? onDark
-                      : accentBg === C.text
-                        ? C.text
-                        : onDark,
-                    border: "none",
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    ...mono, fontSize: sz(12), fontWeight: 800,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
+                    color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
+                    border: 'none',
                     marginBottom: door.secondaryCta ? sz(10) : 0,
                   }}
                 >
@@ -8045,19 +3679,16 @@ function ThreeDoorsOut({
                     href={door.secondaryCtaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={e => e.stopPropagation()}
                     style={{
-                      display: "block",
+                      display: 'block',
                       padding: `${sz(12)}px ${sz(20)}px`,
                       borderRadius: 100,
-                      textAlign: "center",
-                      textDecoration: "none",
-                      ...mono,
-                      fontSize: sz(11),
-                      fontWeight: 700,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      background: "transparent",
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      ...mono, fontSize: sz(11), fontWeight: 700,
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      background: 'transparent',
                       color: C.primary,
                       border: `1.5px solid ${C.primary}`,
                     }}
@@ -8075,16 +3706,8 @@ function ThreeDoorsOut({
 }
 
 // ── WelcomeInteractive ~ segment 00 audience view: countdown + agenda + cities
-const EVENT_START_LOCAL = "2026-05-01T18:00:00-04:00"; // May 1st 6 PM EST (EDT) = May 2nd 12 AM Madrid
-function WelcomeInteractive({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-  segments,
-  timerSecs,
-}: {
+const EVENT_START_LOCAL = '2026-05-01T18:00:00-04:00'; // May 1st 6 PM EST (EDT) = May 2nd 12 AM Madrid
+function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSecs }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
@@ -8096,10 +3719,10 @@ function WelcomeInteractive({
   const [now, setNow] = useState(Date.now());
   const [cityIdx, setCityIdx] = useState(0);
   const [revealedPromises, setRevealedPromises] = useState(0);
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
-  const MENTI_URL = "menti.talentmucho.com/join";
-  const MENTI_CODE = "VDIEGH";
+  const MENTI_URL = 'menti.talentmucho.com/join';
+  const MENTI_CODE = 'VDIEGH';
 
   // Tick every second for the countdown
   useEffect(() => {
@@ -8109,10 +3732,7 @@ function WelcomeInteractive({
 
   // Cycle through cities every 2.5s
   useEffect(() => {
-    const t = setInterval(
-      () => setCityIdx((i) => (i + 1) % WELCOME_CITIES.length),
-      2500,
-    );
+    const t = setInterval(() => setCityIdx(i => (i + 1) % WELCOME_CITIES.length), 2500);
     return () => clearInterval(t);
   }, []);
 
@@ -8134,8 +3754,8 @@ function WelcomeInteractive({
   const isLive = msToEvent <= 0;
 
   // Pre-event countdown
-  const days = Math.max(0, Math.floor(msToEvent / 86400000));
-  const hours = Math.max(0, Math.floor((msToEvent % 86400000) / 3600000));
+  const days    = Math.max(0, Math.floor(msToEvent / 86400000));
+  const hours   = Math.max(0, Math.floor((msToEvent % 86400000) / 3600000));
   const minutes = Math.max(0, Math.floor((msToEvent % 3600000) / 60000));
   const seconds = Math.max(0, Math.floor((msToEvent % 60000) / 1000));
 
@@ -8144,178 +3764,74 @@ function WelcomeInteractive({
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   };
 
   return (
-    <div style={{ maxWidth: 1280, margin: "24px auto 0" }}>
+    <div style={{ maxWidth: 1280, margin: '24px auto 0' }}>
       {/* ── Countdown / Live clock ── */}
-      <div
-        style={{
-          background: C.text,
-          color: onDark,
-          borderRadius: 24,
-          padding: "40px 36px",
-          marginBottom: 36,
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: `0 28px 56px -16px ${C.text}40`,
-        }}
-      >
+      <div style={{
+        background: C.text,
+        color: onDark,
+        borderRadius: 24,
+        padding: '40px 36px',
+        marginBottom: 36,
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: `0 28px 56px -16px ${C.text}40`,
+      }}>
         {/* Glow background */}
-        <div
-          style={{
-            position: "absolute",
-            top: "-50%",
-            left: "-20%",
-            width: "60%",
-            height: "180%",
-            background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`,
-            pointerEvents: "none",
-          }}
-        />
+        <div style={{
+          position: 'absolute', top: '-50%', left: '-20%',
+          width: '60%', height: '180%',
+          background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`,
+          pointerEvents: 'none',
+        }} />
 
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 24,
-            flexWrap: "wrap",
-          }}
-        >
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
           <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(12),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: C.primary,
-                marginBottom: 12,
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
+            <div style={{ ...mono, fontSize: sz(12), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
               {isLive ? (
                 <>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: "#ff5e5e",
-                      animation: "pulse 1.4s ease-in-out infinite",
-                      boxShadow: "0 0 16px #ff5e5e",
-                    }}
-                  />
+                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite', boxShadow: '0 0 16px #ff5e5e' }} />
                   Live now
                 </>
               ) : (
                 <>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 22,
-                      height: 1,
-                      background: C.primary,
-                    }}
-                  />
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                   We go live in
                 </>
               )}
             </div>
             {isLive ? (
               <>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(72),
-                    fontWeight: 800,
-                    color: onDark,
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
-                    marginBottom: 8,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: onDark, letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>
                   {fmtLiveTime(timerSecs)}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(18),
-                    color: "rgba(250,248,245,0.65)",
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)' }}>
                   Workshop time remaining
                 </div>
               </>
             ) : (
               <>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: sz(14),
-                    flexWrap: "wrap",
-                  }}
-                >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: sz(14), flexWrap: 'wrap' }}>
                   {[
-                    { val: days, label: "days" },
-                    { val: hours, label: "hours" },
-                    { val: minutes, label: "min" },
-                    { val: seconds, label: "sec" },
+                    { val: days, label: 'days' },
+                    { val: hours, label: 'hours' },
+                    { val: minutes, label: 'min' },
+                    { val: seconds, label: 'sec' },
                   ].map((u, i) => (
-                    <div
-                      key={u.label}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        minWidth: sz(72),
-                      }}
-                    >
-                      <div
-                        style={{
-                          ...sans,
-                          fontSize: sz(72),
-                          fontWeight: 800,
-                          color: i === 3 ? C.primary : onDark,
-                          letterSpacing: "-0.03em",
-                          lineHeight: 1,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {String(u.val).padStart(2, "0")}
+                    <div key={u.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: sz(72) }}>
+                      <div style={{ ...sans, fontSize: sz(72), fontWeight: 800, color: i === 3 ? C.primary : onDark, letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+                        {String(u.val).padStart(2, '0')}
                       </div>
-                      <div
-                        style={{
-                          ...mono,
-                          fontSize: sz(11),
-                          fontWeight: 700,
-                          color: "rgba(250,248,245,0.5)",
-                          letterSpacing: "0.18em",
-                          textTransform: "uppercase",
-                          marginTop: 6,
-                        }}
-                      >
+                      <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: 'rgba(250,248,245,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 6 }}>
                         {u.label}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(18),
-                    color: "rgba(250,248,245,0.65)",
-                    marginTop: 16,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(18), color: 'rgba(250,248,245,0.65)', marginTop: 16 }}>
                   May 1st · 6 PM EST · grab a drink, get comfy
                 </div>
               </>
@@ -8323,55 +3839,26 @@ function WelcomeInteractive({
           </div>
 
           {/* Live cities feed */}
-          <div
-            style={{
-              minWidth: 280,
-              padding: "18px 22px",
-              borderRadius: 14,
-              background: "rgba(250,248,245,0.06)",
-              border: `1px solid rgba(250,248,245,0.12)`,
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(10),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: C.primary,
-                marginBottom: 10,
-              }}
-            >
+          <div style={{
+            minWidth: 280,
+            padding: '18px 22px',
+            borderRadius: 14,
+            background: 'rgba(250,248,245,0.06)',
+            border: `1px solid rgba(250,248,245,0.12)`,
+            position: 'relative',
+          }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
               Drop your city in chat
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(13),
-                color: "rgba(250,248,245,0.6)",
-                marginBottom: 12,
-              }}
-            >
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.6)', marginBottom: 12 }}>
               We&apos;re from everywhere tonight ~
             </div>
-            <div
-              style={{
-                minHeight: sz(28),
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
+            <div style={{ minHeight: sz(28), display: 'flex', alignItems: 'center' }}>
               <div
                 key={cityIdx}
                 style={{
-                  ...sans,
-                  fontSize: sz(18),
-                  fontWeight: 600,
-                  color: onDark,
-                  letterSpacing: "-0.01em",
-                  animation: "fadeInUp 0.4s ease",
+                  ...sans, fontSize: sz(18), fontWeight: 600, color: onDark, letterSpacing: '-0.01em',
+                  animation: 'fadeInUp 0.4s ease',
                 }}
               >
                 {WELCOME_CITIES[cityIdx]}
@@ -8381,255 +3868,187 @@ function WelcomeInteractive({
         </div>
       </div>
 
+      {/* ── Mentimeter join card ── */}
+      <div style={{
+        marginBottom: 26,
+        padding: '32px 36px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: sz(52),
+      }}>
+        {/* Left: QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+            Scan to join
+          </div>
+          <div style={{
+            background: '#FFFFFF',
+            padding: sz(12),
+            borderRadius: sz(16),
+            border: `1px solid ${C.border}`,
+            boxShadow: `0 4px 24px ${C.text}08`,
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
+              alt="QR code to join Mentimeter"
+              width={sz(160)}
+              height={sz(160)}
+              style={{ display: 'block' }}
+            />
+          </div>
+          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
+            {MENTI_URL}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+        {/* Right: code + URL + button */}
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
+            Enter code at
+          </div>
+          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(14), letterSpacing: '-0.01em' }}>
+            {MENTI_URL}
+          </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: sz(10), padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: `${C.primary}15`, border: `1px dashed ${C.primary}60`, marginBottom: sz(20) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.muted }}>
+              Code
+            </span>
+            <span style={{ ...mono, fontSize: sz(22), fontWeight: 800, color: C.primary, letterSpacing: '0.18em' }}>
+              {MENTI_CODE}
+            </span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: sz(8),
+            padding: `${sz(13)}px ${sz(32)}px`,
+            borderRadius: 100,
+            background: '#7C6B5A',
+            color: '#FAF8F5',
+            ...sans,
+            fontSize: sz(15),
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            cursor: 'default',
+          }}>
+            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
+            Start Session
+          </div>
+        </div>
+      </div>
+
       {/* ── Two-column: Promise checklist + Agenda ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 26 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26 }}>
+
         {/* Pain points from real community members */}
         {(() => {
           const realPains = communityData.members
-            .filter(
-              (m: { painPoint: string }) =>
-                m.painPoint && m.painPoint.length > 10 && m.painPoint !== ".",
-            )
+            .filter((m: { painPoint: string }) => m.painPoint && m.painPoint.length > 10 && m.painPoint !== '.')
             .slice(0, 6);
           return (
-            <div
-              style={{
-                padding: "28px 30px",
-                borderRadius: 18,
-                background: C.surface,
-                border: `1px solid ${C.border}`,
-              }}
-            >
-              <div
-                style={{
-                  ...mono,
-                  fontSize: sz(13),
-                  fontWeight: 700,
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: C.primary,
-                  marginBottom: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                }}
-              >
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 22,
-                    height: 1,
-                    background: C.primary,
-                  }}
-                />
+            <div style={{
+              padding: '28px 30px',
+              borderRadius: 18,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+            }}>
+              <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What you told us
               </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  color: C.muted,
-                  marginBottom: 22,
-                  lineHeight: 1.5,
-                }}
-              >
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 22, lineHeight: 1.5, fontWeight: 400 }}>
                 Real answers from your onboarding ~ this is why we&apos;re here.
               </div>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                {realPains.map(
-                  (
-                    m: {
-                      firstName: string;
-                      painPoint: string;
-                      painCategory: string;
-                    },
-                    i: number,
-                  ) => {
-                    const visible = i < revealedPromises + 3;
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 14,
-                          padding: "14px 16px",
-                          borderRadius: 12,
-                          background: `${C.primary}08`,
-                          border: `1px solid ${C.border}`,
-                          opacity: visible ? 1 : 0.3,
-                          transform: visible
-                            ? "translateY(0)"
-                            : "translateY(6px)",
-                          transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: sz(28),
-                            height: sz(28),
-                            flexShrink: 0,
-                            borderRadius: "50%",
-                            background: C.primary,
-                            color: C.text === "#2A2520" ? onDark : C.bg,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            ...mono,
-                            fontSize: sz(11),
-                            fontWeight: 800,
-                          }}
-                        >
-                          {m.firstName.charAt(0)}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {realPains.map((m: { firstName: string; painPoint: string; painCategory: string }, i: number) => {
+                  const visible = i < revealedPromises + 3;
+                  return (
+                    <div key={i} style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 14,
+                      padding: '14px 16px',
+                      borderRadius: 12,
+                      background: `${C.primary}08`,
+                      border: `1px solid ${C.border}`,
+                      opacity: visible ? 1 : 0.3,
+                      transform: visible ? 'translateY(0)' : 'translateY(6px)',
+                      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}>
+                      <div style={{
+                        width: sz(28), height: sz(28), flexShrink: 0,
+                        borderRadius: '50%',
+                        background: C.primary,
+                        color: C.text === '#2A2520' ? onDark : C.bg,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        ...mono, fontSize: sz(11), fontWeight: 800,
+                      }}>
+                        {m.firstName.charAt(0)}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...sans, fontSize: sz(15), color: C.text, lineHeight: 1.45, fontWeight: 400 }}>
+                          &ldquo;{m.painPoint}&rdquo;
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: sz(16),
-                              color: C.text,
-                              lineHeight: 1.45,
-                            }}
-                          >
-                            &ldquo;{m.painPoint}&rdquo;
-                          </div>
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: sz(10),
-                              color: C.muted,
-                              letterSpacing: "0.1em",
-                              textTransform: "uppercase",
-                              marginTop: 4,
-                            }}
-                          >
-                            {m.firstName} ~ {m.painCategory}
-                          </div>
+                        <div style={{ ...mono, fontSize: sz(10), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>
+                          {m.firstName} ~ {m.painCategory}
                         </div>
                       </div>
-                    );
-                  },
-                )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
         })()}
 
         {/* Agenda */}
-        <div
-          style={{
-            padding: "28px 30px",
-            borderRadius: 18,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(13),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 8,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Tonight&apos;s agenda
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(18),
-              color: C.muted,
-              marginBottom: 22,
-              lineHeight: 1.5,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 22, lineHeight: 1.5 }}>
             Two hours. Nine beats. No filler.
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {segments.map((s) => (
-              <div
-                key={s.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "auto 1fr auto",
-                  gap: 12,
-                  alignItems: "center",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: s.id === 0 ? `${C.primary}15` : "transparent",
-                  border: `1px solid ${s.id === 0 ? `${C.primary}40` : "transparent"}`,
-                }}
-              >
-                <div
-                  style={{
-                    width: sz(28),
-                    height: sz(28),
-                    flexShrink: 0,
-                    borderRadius: "50%",
-                    background: s.id === 0 ? C.primary : `${C.muted}15`,
-                    color:
-                      s.id === 0
-                        ? C.text === "#2A2520"
-                          ? onDark
-                          : C.bg
-                        : C.muted,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 800,
-                  }}
-                >
-                  {s.num}
+              <div key={s.id} style={{
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr auto',
+                gap: 12,
+                alignItems: 'center',
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: s.id === 0 ? `${C.primary}15` : 'transparent',
+                border: `1px solid ${s.id === 0 ? `${C.primary}40` : 'transparent'}`,
+              }}>
+                <div style={{
+                  width: sz(28), height: sz(28), flexShrink: 0,
+                  borderRadius: '50%',
+                  background: s.id === 0 ? C.primary : `${C.muted}15`,
+                  color: s.id === 0 ? (C.text === '#2A2520' ? onDark : C.bg) : C.muted,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                }}>{s.num}</div>
+                <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>
+                  {s.title}{s.titleItalic && <> <span style={{ ...sans, fontWeight: 500, color: C.text }}>{s.titleItalic}</span></>}
                 </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(15),
-                    fontWeight: 600,
-                    color: C.text,
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {s.title}
-                  {s.titleItalic && (
-                    <>
-                      {" "}
-                      <em
-                        style={{ ...serif, fontWeight: 400, color: C.primary }}
-                      >
-                        {s.titleItalic}
-                      </em>
-                    </>
-                  )}
-                </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 600,
-                    color: C.muted,
-                    letterSpacing: "0.06em",
-                    whiteSpace: "nowrap",
-                  }}
-                >
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 600, color: C.muted, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                   {s.duration}
                 </div>
               </div>
@@ -8638,265 +4057,84 @@ function WelcomeInteractive({
         </div>
       </div>
 
-      {/* ── Mentimeter join card ── */}
-      <div
-        style={{
-          marginTop: 26,
-          padding: "32px 36px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: sz(52),
-        }}
-      >
-        {/* Left: QR code */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: sz(14),
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.muted,
-            }}
-          >
-            Scan to join
+      {/* ── Skool QR + "Tonight's workshop is built for you" ── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'auto 1fr', gap: sz(36),
+        alignItems: 'center',
+        padding: '32px 36px',
+        borderRadius: 22,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+        marginTop: 26,
+      }}>
+        {/* QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+            Join free
           </div>
-          <div
-            style={{
-              background: "#FFFFFF",
-              padding: sz(12),
-              borderRadius: sz(16),
-              border: `1px solid ${C.border}`,
-              boxShadow: `0 4px 24px ${C.text}08`,
-            }}
-          >
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 28px -10px ${C.primary}40` }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
-              alt="QR code to join Mentimeter"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(180)}x${sz(180)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
               width={sz(160)}
               height={sz(160)}
-              style={{ display: "block" }}
+              alt="Scan to join the Skool community"
+              style={{ display: 'block' }}
             />
           </div>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              color: C.muted,
-              letterSpacing: "0.04em",
-            }}
-          >
-            {MENTI_URL}
+          <div style={{ ...sans, fontSize: sz(11), fontWeight: 600, color: C.text, letterSpacing: '0.02em' }}>
+            Future Proof with AI
           </div>
         </div>
 
-        {/* Divider */}
-        <div
-          style={{
-            width: 1,
-            alignSelf: "stretch",
-            background: C.border,
-            flexShrink: 0,
-          }}
-        />
-
-        {/* Right: code + URL + button */}
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.muted,
-              marginBottom: sz(6),
-            }}
-          >
-            Enter code at
+        {/* Right: built for you message */}
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
+            Why we&apos;re here
           </div>
-          <div
-            style={{
-              ...sans,
-              fontSize: sz(20),
-              fontWeight: 600,
-              color: C.text,
-              marginBottom: sz(24),
-              letterSpacing: "-0.01em",
-            }}
-          >
-            {MENTI_URL}
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
+            Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(18),
-              color: C.muted,
-              marginBottom: 16,
-              lineHeight: 1.5,
-            }}
-          >
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: sz(8),
-              padding: `${sz(13)}px ${sz(32)}px`,
-              borderRadius: 100,
-              background: "#7C6B5A",
-              color: "#FAF8F5",
-              ...sans,
-              fontSize: sz(15),
-              fontWeight: 600,
-              letterSpacing: "-0.01em",
-              cursor: "default",
-            }}
-          >
-            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
-            Start Session
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
+            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
           </div>
         </div>
       </div>
 
       {/* ── Housekeeping ── */}
-      <div
-        style={{
-          marginTop: 26,
-          padding: "28px 30px",
-          borderRadius: 18,
-          background: C.surface,
-          border: `1px solid ${C.border}`,
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.primary,
-            marginBottom: sz(20),
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+      <div style={{
+        marginTop: 26,
+        padding: '28px 30px',
+        borderRadius: 18,
+        background: C.surface,
+        border: `1px solid ${C.border}`,
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(20), display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           Before we start
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: sz(14),
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(14) }}>
           {[
-            {
-              icon: "🎙",
-              label: "Mute yourself",
-              desc: "Stay muted unless we call on you ~ reduces background noise for everyone.",
-            },
-            {
-              icon: "💬",
-              label: "Use the chat",
-              desc: "Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.",
-            },
-            {
-              icon: "📹",
-              label: "Camera on if you can",
-              desc: "We love seeing faces ~ helps us read the room and connect with you.",
-            },
-            {
-              icon: "⏺",
-              label: "We're recording",
-              desc: "Replay link goes to everyone who registered ~ even if you can't stay.",
-            },
-            {
-              icon: "📝",
-              label: "Take notes",
-              desc: "Open a doc or grab a notebook ~ you'll want to capture your ideas as we go.",
-            },
-            {
-              icon: "🚽",
-              label: "Bathroom break",
-              desc: "We'll pause halfway through ~ hold tight until then if you can.",
-            },
-            {
-              icon: "🏁",
-              label: "Stay till the end",
-              desc: "We save the most actionable stuff for last ~ worth it, we promise.",
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              style={{
-                display: "flex",
-                gap: sz(14),
-                padding: `${sz(16)}px ${sz(18)}px`,
-                borderRadius: sz(12),
-                background: `${C.primary}06`,
-                border: `1px solid ${C.border}`,
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: sz(22),
-                  lineHeight: 1,
-                  flexShrink: 0,
-                  marginTop: 2,
-                }}
-              >
-                {item.icon}
-              </div>
+            { icon: '🎙', label: 'Mute yourself', desc: 'Stay muted unless we call on you ~ reduces background noise for everyone.' },
+            { icon: '💬', label: 'Use the chat', desc: 'Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.' },
+            { icon: '📹', label: 'Camera on if you can', desc: 'We love seeing faces ~ helps us read the room and connect with you.' },
+            { icon: '📝', label: 'Take notes', desc: 'Open a doc or grab a notebook ~ you\'ll want to capture your ideas as we go.' },
+            { icon: '🚽', label: 'Bathroom break', desc: 'We\'ll pause halfway through ~ hold tight until then if you can.' },
+            { icon: '🏁', label: 'Stay till the end', desc: 'We save the most actionable stuff for last ~ worth it, we promise.' },
+          ].map(item => (
+            <div key={item.label} style={{
+              display: 'flex',
+              gap: sz(14),
+              padding: `${sz(16)}px ${sz(18)}px`,
+              borderRadius: sz(12),
+              background: `${C.primary}06`,
+              border: `1px solid ${C.border}`,
+              alignItems: 'flex-start',
+            }}>
+              <div style={{ fontSize: sz(22), lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{item.icon}</div>
               <div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(14),
-                    fontWeight: 700,
-                    color: C.text,
-                    marginBottom: sz(4),
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {item.label}
-                </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(13),
-                    color: C.muted,
-                    lineHeight: 1.5,
-                    fontStyle: "italic",
-                  }}
-                >
-                  {item.desc}
-                </div>
+                <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: C.text, marginBottom: sz(4), letterSpacing: '-0.01em' }}>{item.label}</div>
+                <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{item.desc}</div>
               </div>
             </div>
           ))}
@@ -8918,46 +4156,31 @@ function WelcomeInteractive({
 }
 
 // ── LocationCloud ~ real-time word cloud of audience locations (segment 00) ──
-function LocationCloud({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: React.CSSProperties;
-  sans: React.CSSProperties;
-  serif: React.CSSProperties;
-  scale?: number;
+function LocationCloud({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
+  serif: React.CSSProperties; scale?: number;
 }) {
   const sz = (px: number) => Math.round(px * scale);
   const [locations, setLocations] = useState<Record<string, number>>({});
   const [fresh, setFresh] = useState<Set<string>>(new Set());
 
-  const mergeLocation = useCallback(
-    (text: string, existing: Record<string, number>) => {
-      const loc = text
-        .trim()
-        .replace(/[^\p{L}\p{N}\s,.-]/gu, "")
-        .replace(/\s+/g, " ");
-      if (!loc || loc.length < 2) return { updated: existing, added: "" };
-      const key = loc.charAt(0).toUpperCase() + loc.slice(1);
-      const updated = { ...existing, [key]: (existing[key] || 0) + 1 };
-      return { updated, added: existing[key] ? "" : key };
-    },
-    [],
-  );
+  const mergeLocation = useCallback((text: string, existing: Record<string, number>) => {
+    const loc = text.trim().replace(/[^\p{L}\p{N}\s,.-]/gu, '').replace(/\s+/g, ' ');
+    if (!loc || loc.length < 2) return { updated: existing, added: '' };
+    const key = loc.charAt(0).toUpperCase() + loc.slice(1);
+    const updated = { ...existing, [key]: (existing[key] || 0) + 1 };
+    return { updated, added: existing[key] ? '' : key };
+  }, []);
 
   const channelId = useRef(`loc-cloud-00-${Date.now()}`);
   useEffect(() => {
     let cancelled = false;
     const init = async () => {
-      const { supabase } = await import("@/lib/supabase-browser");
+      const { supabase } = await import('@/lib/supabase-browser');
       const { data: rows } = await supabase
-        .from("workbook_responses")
-        .select("response_text")
-        .eq("segment_num", "00");
+        .from('workbook_responses')
+        .select('response_text')
+        .eq('segment_num', '00');
       if (!cancelled && rows) {
         let freq: Record<string, number> = {};
         for (const r of rows) {
@@ -8970,128 +4193,62 @@ function LocationCloud({
       const ch = supabase
         .channel(channelId.current)
         .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "workbook_responses",
-            filter: "segment_num=eq.00",
-          },
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: 'segment_num=eq.00' },
           (payload: { new: { response_text: string } }) => {
             if (cancelled) return;
-            setLocations((prev) => {
-              const { updated, added } = mergeLocation(
-                payload.new.response_text,
-                prev,
-              );
+            setLocations(prev => {
+              const { updated, added } = mergeLocation(payload.new.response_text, prev);
               if (added) {
                 setFresh(new Set([added]));
                 setTimeout(() => setFresh(new Set()), 2000);
               }
               return updated;
             });
-          },
+          }
         )
         .subscribe();
-      return () => {
-        cancelled = true;
-        supabase.removeChannel(ch);
-      };
+      return () => { cancelled = true; supabase.removeChannel(ch); };
     };
     let cleanup: (() => void) | undefined;
-    init().then((fn) => {
-      if (cancelled) fn?.();
-      else cleanup = fn;
-    });
-    return () => {
-      cancelled = true;
-      cleanup?.();
-    };
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
+    return () => { cancelled = true; cleanup?.(); };
   }, [mergeLocation]);
 
-  const sorted = Object.entries(locations)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 60);
+  const sorted = Object.entries(locations).sort((a, b) => b[1] - a[1]).slice(0, 60);
   const maxFreq = sorted[0]?.[1] || 1;
   const brandColors = [C.primary, C.text, C.muted, C.primaryHover ?? C.primary];
 
   if (sorted.length === 0) return null;
 
   return (
-    <div
-      style={{
-        maxWidth: 1280,
-        margin: "26px auto 0",
-        padding: "28px 30px",
-        borderRadius: 18,
-        background: C.surface,
-        border: `1px solid ${C.border}`,
-      }}
-    >
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          color: C.primary,
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
+    <div style={{
+      maxWidth: 1280, margin: '26px auto 0',
+      padding: '28px 30px', borderRadius: 18,
+      background: C.surface, border: `1px solid ${C.border}`,
+    }}>
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Where you&apos;re joining from
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(15),
-          color: C.muted,
-          marginBottom: 18,
-          lineHeight: 1.5,
-        }}
-      >
-        {sorted.reduce((s, [, n]) => s + n, 0)} response
-        {sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? "s" : ""} from{" "}
-        {sorted.length} location{sorted.length !== 1 ? "s" : ""} ~ updating live
+      <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+        {sorted.reduce((s, [, n]) => s + n, 0)} response{sorted.reduce((s, [, n]) => s + n, 0) !== 1 ? 's' : ''} from {sorted.length} location{sorted.length !== 1 ? 's' : ''} ~ updating live
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px 16px",
-          alignItems: "baseline",
-          minHeight: sz(60),
-        }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', alignItems: 'baseline', minHeight: sz(60) }}>
         {sorted.map(([loc, freq], i) => {
           const ratio = freq / maxFreq;
           const size = sz(15 + Math.round(ratio * 30));
           const isNew = fresh.has(loc);
           return (
-            <span
-              key={loc}
-              style={{
-                ...sans,
-                fontSize: size,
-                fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
-                color: brandColors[i % brandColors.length],
-                opacity: 0.45 + ratio * 0.55,
-                transition: "all 0.5s ease",
-                animation: isNew ? "locFadeIn 0.6s ease" : undefined,
-                lineHeight: 1.4,
-              }}
-            >
+            <span key={loc} style={{
+              ...sans, fontSize: size,
+              fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
+              color: brandColors[i % brandColors.length],
+              opacity: 0.45 + ratio * 0.55,
+              transition: 'all 0.5s ease',
+              animation: isNew ? 'locFadeIn 0.6s ease' : undefined,
+              lineHeight: 1.4,
+            }}>
               {loc}
             </span>
           );
@@ -9110,299 +4267,151 @@ function LocationCloud({
 // ── OriginIntro ~ segment 01 audience view: meet Abie + Meri ────────────────
 const HOSTS = [
   {
-    name: "Abie",
-    accent: "Maxey",
-    role: "The engineer who came back",
-    avatar: "A",
-    flag: "🇵🇭 → 🇪🇸",
-    location: "Philippines → Madrid",
+    name: 'Abie',
+    accent: 'Maxey',
+    role: "The Tech Chameleon who's all over the place",
+    avatar: 'A',
+    flag: '🇵🇭 → 🌍 → 🇪🇸',
+    location: 'Davao → Madrid',
     story: [
       "Throughout my tech career I was placed in several roles ~ analyst, architect, engineer, manager. <em>Always adapting.</em>",
       "Same as a digital nomad ~ country to country, no roots. <em>A chameleon in every sense.</em>",
       "Then I found my love in AI ~ and finally found a base in Spain. <em>My build era.</em>",
     ],
     links: [
-      { handle: "abiemaxey.com", url: "https://abiemaxey.com" },
-      { handle: "happyvoyager.com", url: "https://happyvoyager.com" },
+      { handle: 'abiemaxey.com', url: 'https://abiemaxey.com' },
+      { handle: 'happyvoyager.com', url: 'https://happyvoyager.com' },
     ],
   },
   {
-    name: "Meri",
-    accent: "Gee",
-    role: "The marketer who burned out",
-    avatar: "M",
-    flag: "🇵🇭 → 🌍 → 🇪🇸",
-    location: "Balkans now ~ Spain soon (DNV pending)",
+    name: 'Meri',
+    accent: 'Gee',
+    role: 'The marketer who burned out',
+    avatar: 'M',
+    flag: '🇵🇭 → 🌍 → 🇪🇸',
+    location: 'Balkans now ~ Madrid soon',
     story: [
       "Marketing + business, not tech. Built my agency from scratch.",
       "Burned out managing people, personalities, deadlines. <em>It was exhausting.</em>",
       "ChatGPT made me curious. <em>Claude changed everything.</em> Less staff. More output. Better results.",
     ],
     links: [
-      {
-        handle: "advancedvirtualstaff.com",
-        url: "https://advancedvirtualstaff.com",
-      },
+      { handle: 'advancedvirtualstaff.com', url: 'https://advancedvirtualstaff.com' },
     ],
   },
 ];
 
-function OriginIntro({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
   C: Palette;
   mono: React.CSSProperties;
   sans: React.CSSProperties;
   serif: React.CSSProperties;
   scale?: number;
 }) {
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
 
   return (
-    <div
-      style={{ maxWidth: 1280, margin: "24px auto 0", position: "relative" }}
-    >
+    <div style={{ maxWidth: 1280, margin: '24px auto 0', position: 'relative' }}>
       {/* Decorative sticker */}
-      <div
-        style={{
-          position: "absolute",
-          top: -20,
-          right: 0,
-          transform: "rotate(8deg)",
-          zIndex: 1,
-          pointerEvents: "none",
-          animation: "floatSticker 4s ease-in-out infinite",
-        }}
-      >
+      <div style={{
+        position: 'absolute',
+        top: -20, right: 0,
+        transform: 'rotate(8deg)',
+        zIndex: 1,
+        pointerEvents: 'none',
+        animation: 'floatSticker 4s ease-in-out infinite',
+      }}>
         <img
           src="/assets/stickers/ok.png"
           alt=""
-          style={{
-            width: sz(96),
-            height: "auto",
-            filter: `drop-shadow(0 8px 16px ${C.text}25)`,
-          }}
+          style={{ width: sz(96), height: 'auto', filter: `drop-shadow(0 8px 16px ${C.text}25)` }}
         />
       </div>
 
-      <div
-        style={{
-          ...mono,
-          fontSize: sz(13),
-          fontWeight: 700,
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          color: C.primary,
-          marginBottom: 8,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: 22,
-            height: 1,
-            background: C.primary,
-          }}
-        />
+      <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
         Meet your hosts
       </div>
-      <div
-        style={{
-          ...serif,
-          fontSize: sz(20),
-          color: C.muted,
-          marginBottom: 32,
-          lineHeight: 1.5,
-          maxWidth: 700,
-        }}
-      >
-        Two very different stories. One business.{" "}
-        <span style={{ color: C.primary, fontWeight: 600 }}>
-          Operators, not coaches.
-        </span>
+      <div style={{ ...sans, fontSize: sz(20), color: C.muted, marginBottom: 32, lineHeight: 1.5, maxWidth: 700 }}>
+        Two very different stories. One business. <span style={{ color: C.primary, fontWeight: 600 }}>Operators, not coaches.</span>
       </div>
 
       {/* Two host cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: 22,
-        }}
-      >
-        {HOSTS.map((host) => (
-          <div
-            key={host.name}
-            style={{
-              position: "relative",
-              padding: "32px 32px 28px",
-              borderRadius: 22,
-              background: C.surface,
-              border: `1px solid ${C.border}`,
-              overflow: "hidden",
-            }}
-          >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22 }}>
+        {HOSTS.map(host => (
+          <div key={host.name} style={{
+            position: 'relative',
+            padding: '32px 32px 28px',
+            borderRadius: 22,
+            background: C.surface,
+            border: `1px solid ${C.border}`,
+            overflow: 'hidden',
+          }}>
             {/* Subtle accent */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: 4,
-                background: C.primary,
-              }}
-            />
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: '100%', height: 4,
+              background: C.primary,
+            }} />
 
             {/* Header row */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 18,
-                marginBottom: 20,
-              }}
-            >
-              <div
-                style={{
-                  width: sz(72),
-                  height: sz(72),
-                  flexShrink: 0,
-                  borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryHover} 100%)`,
-                  color: C.text === "#2A2520" ? onDark : C.bg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  ...sans,
-                  fontSize: sz(34),
-                  fontWeight: 800,
-                  boxShadow: `0 8px 20px -6px ${C.primary}55`,
-                }}
-              >
-                {host.avatar}
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20 }}>
+              <div style={{
+                width: sz(72), height: sz(72), flexShrink: 0,
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryHover} 100%)`,
+                color: C.text === '#2A2520' ? onDark : C.bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                ...sans, fontSize: sz(34), fontWeight: 800,
+                boxShadow: `0 8px 20px -6px ${C.primary}55`,
+              }}>{host.avatar}</div>
               <div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(34),
-                    fontWeight: 700,
-                    color: C.text,
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.05,
-                  }}
-                >
-                  {host.name}{" "}
-                  <em style={{ ...serif, fontWeight: 400, color: C.primary }}>
-                    {host.accent}
-                  </em>
+                <div style={{ ...sans, fontSize: sz(34), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+                  {host.name}{' '}
+                  <em style={{ ...serif, fontWeight: 400, color: C.primary }}>{host.accent}</em>
                 </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.16em",
-                    textTransform: "uppercase",
-                    marginTop: 4,
-                  }}
-                >
+                <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>
                   {host.role}
                 </div>
               </div>
             </div>
 
             {/* Location chip */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "5px 12px",
-                borderRadius: 100,
-                background: `${C.muted}15`,
-                marginBottom: 16,
-              }}
-            >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 100, background: `${C.muted}15`, marginBottom: 16 }}>
               <span style={{ fontSize: sz(13) }}>{host.flag}</span>
-              <span
-                style={{
-                  ...mono,
-                  fontSize: sz(11),
-                  color: C.text,
-                  letterSpacing: "0.06em",
-                }}
-              >
-                {host.location}
-              </span>
+              <span style={{ ...mono, fontSize: sz(11), color: C.text, letterSpacing: '0.06em' }}>{host.location}</span>
             </div>
 
             {/* Story lines */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 18,
-              }}
-            >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
               {host.story.map((line, i) => (
                 <div
                   key={i}
-                  style={{
-                    ...serif,
-                    fontSize: sz(17),
-                    lineHeight: 1.55,
-                    color: C.text,
-                  }}
-                  dangerouslySetInnerHTML={{
-                    __html: line.replace(
-                      /<em>/g,
-                      `<em style="color:${C.primary}">`,
-                    ),
-                  }}
+                  style={{ ...sans, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
+                  dangerouslySetInnerHTML={{ __html: line.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }}
                 />
               ))}
             </div>
 
             {/* Handles */}
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "8px 18px",
-                paddingTop: 14,
-                width: "100%",
-                borderTop: `1px solid ${C.border}`,
-              }}
-            >
-              {host.links.map((link) => (
+            <div style={{
+              display: 'flex', flexWrap: 'wrap', gap: '8px 18px',
+              paddingTop: 14, width: '100%',
+              borderTop: `1px solid ${C.border}`,
+            }}>
+              {host.links.map(link => (
                 <a
                   key={link.url}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    textDecoration: "none",
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    ...mono, fontSize: sz(11), fontWeight: 700,
+                    color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase',
+                    textDecoration: 'none',
                   }}
                 >
                   ↳ {link.handle}
@@ -9415,114 +4424,49 @@ function OriginIntro({
 
       {/* ── Together: Talent Mucho ~ combined forces + mission ── */}
       <div style={{ marginTop: 36 }}>
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(13),
-            fontWeight: 700,
-            color: C.primary,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            marginBottom: 22,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 22,
-              height: 1,
-              background: C.primary,
-            }}
-          />
+        <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
           Together: Talent Mucho
         </div>
 
         {/* Equation visual */}
-        <div
-          style={{
-            padding: "26px 28px",
-            borderRadius: 18,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            marginBottom: 18,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 10,
-            flexWrap: "wrap",
-          }}
-        >
+        <div style={{
+          padding: '26px 28px', borderRadius: 18,
+          background: C.surface, border: `1px solid ${C.border}`,
+          marginBottom: 18,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap',
+        }}>
           {[
-            { label: "Tech", sub: "Abie", tone: "soft" as const },
-            { op: "+" },
-            { label: "Business", sub: "Meri", tone: "soft" as const },
-            { op: "+" },
-            { label: "AI", sub: "Claude", tone: "soft" as const },
-            { op: "=" },
-            {
-              label: "Superpowers",
-              sub: "Talent Mucho",
-              tone: "highlight" as const,
-            },
+            { label: 'Tech', sub: 'Abie', tone: 'soft' as const },
+            { op: '+' },
+            { label: 'Business', sub: 'Meri', tone: 'soft' as const },
+            { op: '+' },
+            { label: 'AI', sub: 'Claude', tone: 'soft' as const },
+            { op: '=' },
+            { label: 'Superpowers', sub: 'Talent Mucho', tone: 'highlight' as const },
           ].map((part, i) => {
-            if ("op" in part) {
+            if ('op' in part) {
               return (
-                <div
-                  key={`op-${i}`}
-                  style={{
-                    ...sans,
-                    fontSize: sz(28),
-                    fontWeight: 300,
-                    color: C.muted,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {part.op}
-                </div>
+                <div key={`op-${i}`} style={{
+                  ...sans, fontSize: sz(28), fontWeight: 300, color: C.muted, letterSpacing: '-0.02em',
+                }}>{part.op}</div>
               );
             }
-            const isHighlight = part.tone === "highlight";
+            const isHighlight = part.tone === 'highlight';
             return (
-              <div
-                key={part.label}
-                style={{
-                  flex: 1,
-                  minWidth: 130,
-                  padding: "18px 18px",
-                  borderRadius: 14,
-                  background: isHighlight ? C.primary : C.bg,
-                  border: `1px solid ${isHighlight ? C.primary : C.border}`,
-                  color: isHighlight ? "#FAF8F5" : C.text,
-                  textAlign: "center",
-                  boxShadow: isHighlight
-                    ? `0 8px 24px -10px ${C.primary}80`
-                    : "none",
-                }}
-              >
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(18),
-                    fontWeight: 700,
-                    letterSpacing: "-0.01em",
-                    marginBottom: 4,
-                  }}
-                >
+              <div key={part.label} style={{
+                flex: 1, minWidth: 130,
+                padding: '18px 18px', borderRadius: 14,
+                background: isHighlight ? C.primary : C.bg,
+                border: `1px solid ${isHighlight ? C.primary : C.border}`,
+                color: isHighlight ? '#FAF8F5' : C.text,
+                textAlign: 'center',
+                boxShadow: isHighlight ? `0 8px 24px -10px ${C.primary}80` : 'none',
+              }}>
+                <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 4 }}>
                   {part.label}
                 </div>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: sz(10),
-                    fontWeight: 600,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    opacity: isHighlight ? 0.85 : 0.55,
-                  }}
-                >
+                <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: isHighlight ? 0.85 : 0.55 }}>
                   {part.sub}
                 </div>
               </div>
@@ -9542,7 +4486,7 @@ function OriginIntro({
             <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
               How we met
             </div>
-            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
+            <div style={{ ...sans, fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
               Meri found Abie on YouTube. They decided to meet in Barcelona ~ strangers from the internet.
               Abie&apos;s thread went viral. People thought she was getting trafficked. <em style={{ color: C.primary }}>1 million views.</em>
             </div>
@@ -9553,166 +4497,58 @@ function OriginIntro({
         </div>
 
         {/* Narrative card */}
-        <div
-          style={{
-            padding: "28px 30px",
-            borderRadius: 18,
-            background: C.text,
-            color: "#FAF8F5",
-            marginBottom: 18,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              color: C.primary,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 14,
-            }}
-          >
+        <div style={{
+          padding: '28px 30px', borderRadius: 18,
+          background: C.text, color: '#FAF8F5',
+          marginBottom: 18,
+        }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 14 }}>
             Why we&apos;re here
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div
-              style={{
-                ...serif,
-                fontStyle: "italic",
-                fontSize: sz(20),
-                color: "#FAF8F5",
-                lineHeight: 1.45,
-              }}
-            >
-              AI isn&apos;t new. The hype isn&apos;t new.{" "}
-              <em style={{ color: C.primary }}>
-                But most of you are still on the sidelines.
-              </em>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ ...sans, fontSize: sz(20), color: '#FAF8F5', lineHeight: 1.45 }}>
+              AI isn&apos;t new. The hype isn&apos;t new. <em style={{ color: C.primary }}>But most of you are still on the sidelines.</em>
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(15),
-                color: "rgba(250,248,245,0.85)",
-                lineHeight: 1.55,
-              }}
-            >
-              The ones cashing in right now? Developers. Tech operators. They
-              can plug-and-play ~{" "}
-              <em style={{ color: C.primary, fontStyle: "italic" }}>
-                and they also face the biggest replacement risk.
-              </em>
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
+              The ones cashing in right now? Developers. Tech operators. They can plug-and-play ~ <em style={{ color: C.primary }}>and they also face the biggest replacement risk.</em>
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(15),
-                color: "rgba(250,248,245,0.85)",
-                lineHeight: 1.55,
-              }}
-            >
-              We sit at the intersection.{" "}
-              <em style={{ color: C.primary, fontStyle: "italic" }}>
-                Tech + business + AI.
-              </em>{" "}
-              That&apos;s why we built Talent Mucho.
+            <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.85)', lineHeight: 1.55 }}>
+              We sit at the intersection. <em style={{ color: C.primary }}>Tech + business + AI.</em> That&apos;s why we built Talent Mucho.
             </div>
-            <div
-              style={{
-                ...sans,
-                fontSize: sz(16),
-                fontWeight: 600,
-                color: "#FAF8F5",
-                lineHeight: 1.5,
-                marginTop: 4,
-              }}
-            >
-              Our mission: get you{" "}
-              <em style={{ color: C.primary, fontStyle: "italic" }}>
-                the same superpowers
-              </em>{" "}
-              ~ without needing to be a developer.
+            <div style={{ ...sans, fontSize: sz(16), fontWeight: 600, color: '#FAF8F5', lineHeight: 1.5, marginTop: 4 }}>
+              Our mission: get you <em style={{ color: C.primary }}>the same superpowers</em> ~ without needing to be a developer.
             </div>
           </div>
         </div>
 
         {/* Three pillars */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
           {[
-            {
-              label: "Educate",
-              desc: "Workshops, hands-on training, team adoption",
-              tonight: true,
-            },
-            {
-              label: "Build",
-              desc: "Websites, automations, AI systems your business runs on",
-            },
-            {
-              label: "Operate",
-              desc: "AI-trained VAs and engineers placed inside your business",
-            },
-          ].map((p) => {
-            const isTonight = "tonight" in p && p.tonight;
+            { label: 'Educate', desc: 'Workshops, hands-on training, team adoption', tonight: true },
+            { label: 'Build', desc: 'Websites, automations, AI systems your business runs on' },
+            { label: 'Operate', desc: 'AI-trained VAs and engineers placed inside your business' },
+          ].map(p => {
+            const isTonight = 'tonight' in p && p.tonight;
             return (
-              <div
-                key={p.label}
-                style={{
-                  padding: "20px 20px",
-                  borderRadius: 14,
-                  background: isTonight ? `${C.primary}10` : C.surface,
-                  border: `1px solid ${isTonight ? `${C.primary}40` : C.border}`,
-                  position: "relative",
-                }}
-              >
+              <div key={p.label} style={{
+                padding: '20px 20px', borderRadius: 14,
+                background: isTonight ? `${C.primary}10` : C.surface,
+                border: `1px solid ${isTonight ? `${C.primary}40` : C.border}`,
+                position: 'relative',
+              }}>
                 {isTonight && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -10,
-                      right: 14,
-                      ...mono,
-                      fontSize: sz(9),
-                      fontWeight: 700,
-                      letterSpacing: "0.15em",
-                      textTransform: "uppercase",
-                      background: C.primary,
-                      color: "#FAF8F5",
-                      padding: "3px 10px",
-                      borderRadius: 6,
-                    }}
-                  >
+                  <div style={{
+                    position: 'absolute', top: -10, right: 14,
+                    ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
+                    background: C.primary, color: '#FAF8F5', padding: '3px 10px', borderRadius: 6,
+                  }}>
                     Tonight
                   </div>
                 )}
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: sz(18),
-                    fontWeight: 700,
-                    color: C.text,
-                    letterSpacing: "-0.01em",
-                    marginBottom: 6,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, letterSpacing: '-0.01em', marginBottom: 6 }}>
                   {p.label}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontStyle: "italic",
-                    fontSize: sz(14),
-                    color: C.muted,
-                    lineHeight: 1.5,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(14), color: C.muted, lineHeight: 1.5 }}>
                   {p.desc}
                 </div>
               </div>
@@ -9733,20 +4569,10 @@ function OriginIntro({
 
 // ── CommunityPulse ~ animated data viz for audience engagement ────────────────
 
-function CommunityPulse({
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
-  C: Palette;
-  mono: React.CSSProperties;
-  sans: React.CSSProperties;
-  serif: React.CSSProperties;
-  scale?: number;
+function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: React.CSSProperties; sans: React.CSSProperties; serif: React.CSSProperties; scale?: number;
 }) {
-  const onDark = "#FAF8F5";
+  const onDark = '#FAF8F5';
   const sz = (px: number) => Math.round(px * scale);
   const [revealed, setRevealed] = useState(0);
   const [animCount, setAnimCount] = useState(0);
@@ -9781,11 +4607,7 @@ function CommunityPulse({
   useEffect(() => {
     setRevealed(0); setAnimCount(0);
     let i = 0;
-    const tick = () => {
-      i += 1;
-      setRevealed(i);
-      if (i < 2) setTimeout(tick, 600);
-    };
+    const tick = () => { i += 1; setRevealed(i); if (i < 3) setTimeout(tick, 600); };
     setTimeout(tick, 400);
     let cur = 0; const target = stats.total; const step = Math.ceil(target / 60);
     const counter = setInterval(() => { cur = Math.min(cur + step, target); setAnimCount(cur); if (cur >= target) clearInterval(counter); }, 30);
@@ -9793,242 +4615,101 @@ function CommunityPulse({
   }, [stats.total]);
 
   return (
-    <div style={{ maxWidth: 1280, margin: "36px auto 0" }}>
-      {/* ── Hero stat: total members ── */}
-      <div
-        style={{
-          background: C.text,
-          color: onDark,
-          borderRadius: sz(24),
-          padding: `${sz(40)}px ${sz(36)}px`,
-          marginBottom: sz(28),
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: `0 28px 56px -16px ${C.text}40`,
-          opacity: revealed >= 1 ? 1 : 0,
-          transform: revealed >= 1 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        {/* Grid overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            backgroundImage:
-              "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)",
-          }}
-        />
+    <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
 
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      {/* ── Hero stat: total members ── */}
+      <div style={{
+        background: C.text, color: onDark, borderRadius: sz(24), padding: `${sz(40)}px ${sz(36)}px`,
+        marginBottom: sz(28), position: 'relative', overflow: 'hidden',
+        boxShadow: `0 28px 56px -16px ${C.text}40`,
+        opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        {/* Grid overlay */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+        }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase" as const,
-                color: C.primary,
-                marginBottom: sz(12),
-              }}
-            >
-              Your community ~ right now
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
+              Our Skool community ~ right now
             </div>
-            <div
-              style={{
-                ...serif,
-                fontSize: sz(80),
-                fontWeight: 300,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-                color: onDark,
-              }}
-            >
-              {animCount}
+            <div style={{ ...serif, fontSize: sz(80), fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1, color: onDark }}>
+              236
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(12),
-                letterSpacing: "0.14em",
-                textTransform: "uppercase" as const,
-                color: "rgba(250,248,245,0.5)",
-                marginTop: sz(8),
-              }}
-            >
-              members across all platforms
+            <div style={{ ...mono, fontSize: sz(12), letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'rgba(250,248,245,0.5)', marginTop: sz(8) }}>
+              members and growing
             </div>
           </div>
 
-          {/* Mini donut */}
-          <svg
-            width={sz(140)}
-            height={sz(140)}
-            style={{ transform: "rotate(-90deg)" }}
-          >
-            {(() => {
-              const r = sz(52);
-              const sw = sz(16);
-              const cx = sz(70);
-              const cy = sz(70);
-              const circ = 2 * Math.PI * r;
-              const segs = [
-                { val: stats.ghlOnly, color: C.primary },
-                { val: stats.both, color: onDark },
-                { val: stats.skoolOnly, color: `${C.primary}60` },
-              ];
-              let cum = 0;
-              return segs.map((s, i) => {
-                const pct = s.val / stats.total;
-                const offset = circ * (1 - pct);
-                const rot = cum * 360;
-                cum += pct;
-                return (
-                  <circle
-                    key={i}
-                    cx={cx}
-                    cy={cy}
-                    r={r}
-                    fill="none"
-                    stroke={s.color}
-                    strokeWidth={sw}
-                    strokeDasharray={`${circ}`}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    style={{
-                      transform: `rotate(${rot}deg)`,
-                      transformOrigin: "50% 50%",
-                      transition: "all 1s cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
-                  />
-                );
-              });
-            })()}
-          </svg>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(28) }}>
+            {/* Mini donut */}
+            <svg width={sz(140)} height={sz(140)} style={{ transform: 'rotate(-90deg)' }}>
+              {(() => {
+                const r = sz(52); const sw = sz(16); const cx = sz(70); const cy = sz(70);
+                const circ = 2 * Math.PI * r;
+                const segs = [
+                  { val: stats.ghlOnly, color: C.primary },
+                  { val: stats.both, color: onDark },
+                  { val: stats.skoolOnly, color: `${C.primary}60` },
+                ];
+                let cum = 0;
+                return segs.map((s, i) => {
+                  const pct = s.val / stats.total;
+                  const offset = circ * (1 - pct);
+                  const rot = cum * 360;
+                  cum += pct;
+                  return (
+                    <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
+                      strokeDasharray={`${circ}`} strokeDashoffset={offset} strokeLinecap="round"
+                      style={{ transform: `rotate(${rot}deg)`, transformOrigin: '50% 50%', transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                    />
+                  );
+                });
+              })()}
+            </svg>
+
+            {/* QR to join Skool free */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>
+                Join free
+              </div>
+              <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), boxShadow: `0 8px 20px -8px ${C.text}40` }}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(140)}x${sz(140)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(120)}
+                  height={sz(120)}
+                  alt="Scan to join the Skool community"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...sans, fontSize: sz(10), color: 'rgba(250,248,245,0.55)', letterSpacing: '0.04em' }}>
+                Future Proof with AI
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Platform breakdown pills */}
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            gap: sz(12),
-            marginTop: sz(24),
-          }}
-        >
-          {[
-            { label: "GHL funnel", val: stats.ghlOnly, color: C.primary },
-            { label: "Both platforms", val: stats.both, color: onDark },
-            {
-              label: "Skool community",
-              val: stats.skoolOnly,
-              color: `${C.primary}90`,
-            },
-          ].map((p) => (
-            <div
-              key={p.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: sz(8),
-                padding: `${sz(8)}px ${sz(14)}px`,
-                borderRadius: 100,
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  width: sz(8),
-                  height: sz(8),
-                  borderRadius: "50%",
-                  background: p.color,
-                }}
-              />
-              <span
-                style={{
-                  ...mono,
-                  fontSize: sz(11),
-                  color: "rgba(250,248,245,0.7)",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase" as const,
-                }}
-              >
-                {p.label}
-              </span>
-              <span
-                style={{
-                  ...serif,
-                  fontSize: sz(18),
-                  fontWeight: 300,
-                  color: onDark,
-                }}
-              >
-                {p.val}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* ── Pain points ~ animated bars ── */}
-      <div
-        style={{
-          background: C.surface,
-          borderRadius: sz(20),
-          padding: `${sz(28)}px ${sz(30)}px`,
-          border: `1px solid ${C.border}`,
-          marginBottom: sz(28),
-          opacity: revealed >= 2 ? 1 : 0,
-          transform: revealed >= 2 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase" as const,
-            color: C.primary,
-            marginBottom: sz(6),
-            display: "flex",
-            alignItems: "center",
-            gap: sz(10),
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: sz(22),
-              height: 1,
-              background: C.primary,
-            }}
-          />
+      <div style={{
+        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+        border: `1px solid ${C.border}`, marginBottom: sz(28),
+        opacity: revealed >= 2 ? 1 : 0, transform: revealed >= 2 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+          <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
           What keeps them up at night
         </div>
-        <div
-          style={{
-            ...serif,
-            fontSize: sz(18),
-            color: C.muted,
-            marginBottom: sz(22),
-          }}
-        >
+        <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: sz(22) }}>
           Self-reported pain points from Skool onboarding
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: sz(10) }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: sz(10) }}>
           {painEntries.map(([key, count], i) => {
             const pct = (count / painMax) * 100;
             const isActive = activePain === i;
@@ -10036,71 +4717,25 @@ function CommunityPulse({
               <div
                 key={key}
                 onClick={() => setActivePain(isActive ? null : i)}
-                style={{ cursor: "pointer", transition: "all 0.2s" }}
+                style={{ cursor: 'pointer', transition: 'all 0.2s' }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    marginBottom: sz(4),
-                  }}
-                >
-                  <span
-                    style={{
-                      ...sans,
-                      fontSize: sz(15),
-                      fontWeight: 600,
-                      color: isActive ? C.primary : C.text,
-                    }}
-                  >
-                    {key}
-                  </span>
-                  <span
-                    style={{
-                      ...mono,
-                      fontSize: sz(12),
-                      color: C.muted,
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    {count}{" "}
-                    <span style={{ opacity: 0.5 }}>
-                      ({((count / painTotal) * 100).toFixed(0)}%)
-                    </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: sz(4) }}>
+                  <span style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: isActive ? C.primary : C.text }}>{key}</span>
+                  <span style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.08em' }}>
+                    {count} <span style={{ opacity: 0.5 }}>({((count / painTotal) * 100).toFixed(0)}%)</span>
                   </span>
                 </div>
-                <div
-                  style={{
-                    height: sz(8),
-                    borderRadius: sz(4),
-                    background: `${C.surface2}`,
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: "100%",
-                      borderRadius: sz(4),
-                      background: painColors[i] || C.primary,
-                      width: revealed >= 2 ? `${pct}%` : "0%",
-                      transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.1}s`,
-                    }}
-                  />
+                <div style={{ height: sz(8), borderRadius: sz(4), background: `${C.surface2}`, overflow: 'hidden', position: 'relative' }}>
+                  <div style={{
+                    height: '100%', borderRadius: sz(4),
+                    background: painColors[i] || C.primary,
+                    width: revealed >= 2 ? `${pct}%` : '0%',
+                    transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.1}s`,
+                  }} />
                 </div>
                 {isActive && (
-                  <div
-                    style={{
-                      ...serif,
-                      fontSize: sz(13),
-                      color: C.muted,
-                      marginTop: sz(6),
-                      paddingLeft: sz(4),
-                    }}
-                  >
-                    {count} members need help with {key.toLowerCase()} ~ prime
-                    mentoring opportunity
+                  <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginTop: sz(6), paddingLeft: sz(4) }}>
+                    {count} members need help with {key.toLowerCase()} ~ prime mentoring opportunity
                   </div>
                 )}
               </div>
@@ -10110,110 +4745,40 @@ function CommunityPulse({
       </div>
 
       {/* ── AI experience distribution ── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: sz(20),
-          opacity: revealed >= 3 ? 1 : 0,
-          transform: revealed >= 3 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(20),
+        opacity: revealed >= 3 ? 1 : 0, transform: revealed >= 3 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
         {/* AI level breakdown */}
-        <div
-          style={{
-            background: C.surface,
-            borderRadius: sz(20),
-            padding: `${sz(28)}px ${sz(30)}px`,
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(11),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase" as const,
-              color: C.primary,
-              marginBottom: sz(6),
-              display: "flex",
-              alignItems: "center",
-              gap: sz(10),
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: sz(22),
-                height: 1,
-                background: C.primary,
-              }}
-            />
+        <div style={{
+          background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+            <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
             AI experience levels
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(16),
-              color: C.muted,
-              marginBottom: sz(20),
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, marginBottom: sz(20) }}>
             Where they are on their AI journey
           </div>
 
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: sz(12) }}
-          >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: sz(12) }}>
             {aiEntries.map(([level, count], i) => {
               const pct = aiTotal > 0 ? (count / aiTotal) * 100 : 0;
               return (
-                <div
-                  key={level}
-                  style={{ display: "flex", alignItems: "center", gap: sz(12) }}
-                >
-                  <div
-                    style={{
-                      width: sz(100),
-                      ...sans,
-                      fontSize: sz(13),
-                      fontWeight: 500,
-                      color: C.text,
-                      flexShrink: 0,
-                    }}
-                  >
+                <div key={level} style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+                  <div style={{ width: sz(100), ...sans, fontSize: sz(13), fontWeight: 500, color: C.text, flexShrink: 0 }}>
                     {level}
                   </div>
-                  <div
-                    style={{
-                      flex: 1,
-                      height: sz(6),
-                      borderRadius: sz(3),
-                      background: C.surface2,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        borderRadius: sz(3),
-                        background: C.primary,
-                        width: revealed >= 3 ? `${pct}%` : "0%",
-                        transition: `width 1s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.12}s`,
-                      }}
-                    />
+                  <div style={{ flex: 1, height: sz(6), borderRadius: sz(3), background: C.surface2, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', borderRadius: sz(3), background: C.primary,
+                      width: revealed >= 3 ? `${pct}%` : '0%',
+                      transition: `width 1s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.12}s`,
+                    }} />
                   </div>
-                  <div
-                    style={{
-                      ...mono,
-                      fontSize: sz(12),
-                      color: C.muted,
-                      width: sz(40),
-                      textAlign: "right" as const,
-                    }}
-                  >
+                  <div style={{ ...mono, fontSize: sz(12), color: C.muted, width: sz(40), textAlign: 'right' as const }}>
                     {count}
                   </div>
                 </div>
@@ -10223,144 +4788,49 @@ function CommunityPulse({
         </div>
 
         {/* Key insight card */}
-        <div
-          style={{
-            background: C.text,
-            color: onDark,
-            borderRadius: sz(20),
-            padding: `${sz(28)}px ${sz(30)}px`,
-            position: "relative",
-            overflow: "hidden",
-            boxShadow: `0 16px 32px -10px ${C.text}30`,
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-              backgroundImage:
-                "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)",
-            }}
-          />
-          <div style={{ position: "relative" }}>
-            <div
-              style={{
-                ...mono,
-                fontSize: sz(11),
-                fontWeight: 700,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase" as const,
-                color: C.primary,
-                marginBottom: sz(18),
-                display: "flex",
-                alignItems: "center",
-                gap: sz(10),
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: sz(22),
-                  height: 1,
-                  background: C.primary,
-                }}
-              />
+        <div style={{
+          background: C.text, color: onDark, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+          position: 'relative', overflow: 'hidden',
+          boxShadow: `0 16px 32px -10px ${C.text}30`,
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 48px)',
+          }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+              <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
               The opportunity
             </div>
 
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: sz(20) }}
-            >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: sz(20) }}>
               <div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(42),
-                    fontWeight: 300,
-                    color: C.primary,
-                    lineHeight: 1,
-                  }}
-                >
-                  {(
-                    (stats.ghlOnly / (stats.ghlOnly + stats.both)) *
-                    100
-                  ).toFixed(0)}
-                  %
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
+                  {((stats.ghlOnly / (stats.ghlOnly + stats.both)) * 100).toFixed(0)}%
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(16),
-                    color: "rgba(250,248,245,0.7)",
-                    marginTop: sz(6),
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   of your GHL leads haven&apos;t joined Skool yet
                 </div>
               </div>
 
-              <div
-                style={{
-                  width: "100%",
-                  height: 1,
-                  background: "rgba(255,255,255,0.08)",
-                }}
-              />
+              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
 
               <div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(42),
-                    fontWeight: 300,
-                    color: C.primary,
-                    lineHeight: 1,
-                  }}
-                >
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {painEntries[0]?.[0]}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(16),
-                    color: "rgba(250,248,245,0.7)",
-                    marginTop: sz(6),
-                  }}
-                >
-                  is the #1 pain point ~ {painEntries[0]?.[1]} members need help
-                  here
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
+                  is the #1 pain point ~ {painEntries[0]?.[1]} members need help here
                 </div>
               </div>
 
-              <div
-                style={{
-                  width: "100%",
-                  height: 1,
-                  background: "rgba(255,255,255,0.08)",
-                }}
-              />
+              <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.08)' }} />
 
               <div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(42),
-                    fontWeight: 300,
-                    color: C.primary,
-                    lineHeight: 1,
-                  }}
-                >
+                <div style={{ ...serif, fontSize: sz(42), fontWeight: 300, color: C.primary, lineHeight: 1 }}>
                   {aiEntries[0]?.[0]}
                 </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: sz(16),
-                    color: "rgba(250,248,245,0.7)",
-                    marginTop: sz(6),
-                  }}
-                >
+                <div style={{ ...sans, fontSize: sz(16), color: 'rgba(250,248,245,0.7)', marginTop: sz(6) }}>
                   is the most common AI level ~ {aiEntries[0]?.[1]} members
                 </div>
               </div>
@@ -10370,149 +4840,40 @@ function CommunityPulse({
       </div>
 
       {/* Mentor track recommendation ~ data-driven */}
-      <div
-        style={{
-          background: C.surface,
-          borderRadius: sz(20),
-          padding: `${sz(28)}px ${sz(30)}px`,
-          border: `1px solid ${C.border}`,
-          opacity: revealed >= 1 ? 1 : 0,
-          transform: revealed >= 1 ? "translateY(0)" : "translateY(20px)",
-          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        <div
-          style={{
-            ...mono,
-            fontSize: sz(11),
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase" as const,
-            color: C.primary,
-            marginBottom: sz(18),
-            display: "flex",
-            alignItems: "center",
-            gap: sz(10),
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: sz(22),
-              height: 1,
-              background: C.primary,
-            }}
-          />
+      <div style={{
+        background: C.surface, borderRadius: sz(20), padding: `${sz(28)}px ${sz(30)}px`,
+        border: `1px solid ${C.border}`,
+        opacity: revealed >= 1 ? 1 : 0, transform: revealed >= 1 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+      }}>
+        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(18), display: 'flex', alignItems: 'center', gap: sz(10) }}>
+          <span style={{ display: 'inline-block', width: sz(22), height: 1, background: C.primary }} />
           Tonight&apos;s workshop is built for you
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: sz(14),
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: sz(14) }}>
           {[
-            {
-              track: "The Curious Beginner",
-              letter: "A",
-              pct: "~30%",
-              desc: 'No biz yet, never used AI. We\'ll teach "What is Claude?" with zero jargon.',
-              color: `${C.primary}20`,
-            },
-            {
-              track: "The Hustler",
-              letter: "B",
-              pct: "~38%",
-              desc: "Side biz, beginner AI. Email templates, content batching, DM scripts.",
-              color: `${C.primary}30`,
-            },
-            {
-              track: "The Operator",
-              letter: "C",
-              pct: "~18%",
-              desc: "Uses Claude regularly. SOPs, report gen, data analysis.",
-              color: `${C.primary}40`,
-            },
-            {
-              track: "The Builder",
-              letter: "D",
-              pct: "~9%",
-              desc: "Technical users. Claude API, agents, MCP, automations.",
-              color: `${C.primary}50`,
-            },
-          ].map((t) => (
-            <div
-              key={t.letter}
-              style={{
-                padding: `${sz(20)}px ${sz(18)}px`,
-                borderRadius: sz(14),
-                background: t.color,
-                border: `1px solid ${C.border}`,
-                transition: "transform 0.2s",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: sz(8),
-                  marginBottom: sz(10),
-                }}
-              >
-                <span
-                  style={{
-                    width: sz(24),
-                    height: sz(24),
-                    borderRadius: sz(6),
-                    background: C.primary,
-                    color: onDark,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    ...mono,
-                    fontSize: sz(11),
-                    fontWeight: 800,
-                  }}
-                >
-                  {t.letter}
-                </span>
-                <span
-                  style={{
-                    ...mono,
-                    fontSize: sz(10),
-                    fontWeight: 700,
-                    color: C.muted,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase" as const,
-                  }}
-                >
-                  {t.pct}
-                </span>
+            { track: 'The Curious Beginner', letter: 'A', pct: '~30%', desc: 'No biz yet, never used AI. We\'ll teach "What is Claude?" with zero jargon.', color: `${C.primary}20` },
+            { track: 'The Hustler', letter: 'B', pct: '~38%', desc: 'Side biz, beginner AI. Email templates, content batching, DM scripts.', color: `${C.primary}30` },
+            { track: 'The Operator', letter: 'C', pct: '~18%', desc: 'Uses Claude regularly. SOPs, report gen, data analysis.', color: `${C.primary}40` },
+            { track: 'The Builder', letter: 'D', pct: '~9%', desc: 'Technical users. Claude API, agents, MCP, automations.', color: `${C.primary}50` },
+          ].map(t => (
+            <div key={t.letter} style={{
+              padding: `${sz(20)}px ${sz(18)}px`, borderRadius: sz(14),
+              background: t.color, border: `1px solid ${C.border}`,
+              transition: 'transform 0.2s',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: sz(8), marginBottom: sz(10) }}>
+                <span style={{
+                  width: sz(24), height: sz(24), borderRadius: sz(6),
+                  background: C.primary, color: onDark,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  ...mono, fontSize: sz(11), fontWeight: 800,
+                }}>{t.letter}</span>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{t.pct}</span>
               </div>
-              <div
-                style={{
-                  ...sans,
-                  fontSize: sz(15),
-                  fontWeight: 700,
-                  color: C.text,
-                  marginBottom: sz(6),
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {t.track}
-              </div>
-              <div
-                style={{
-                  ...serif,
-                  fontSize: sz(13),
-                  color: C.muted,
-                  lineHeight: 1.5,
-                }}
-              >
-                {t.desc}
-              </div>
+              <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{t.track}</div>
+              <div style={{ ...sans, fontSize: sz(15), color: C.muted, lineHeight: 1.5 }}>{t.desc}</div>
             </div>
           ))}
         </div>
@@ -10522,14 +4883,7 @@ function CommunityPulse({
 }
 
 // ── Live Responses ~ real-time word cloud + poll chart via Supabase Realtime ──
-function LiveResponses({
-  segmentNum,
-  C,
-  mono,
-  sans,
-  serif,
-  scale = 1,
-}: {
+function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
   segmentNum: string;
   C: Palette;
   mono: React.CSSProperties;
@@ -10547,23 +4901,20 @@ function LiveResponses({
   const [pollVotes, setPollVotes] = useState<Record<string, number>>({});
 
   // Extract words from a response text and merge into frequency map
-  const mergeWords = useCallback(
-    (text: string, existing: Record<string, number>) => {
-      const updated = { ...existing };
-      const added: string[] = [];
-      const words = text
-        .toLowerCase()
-        .replace(/[^a-z0-9À-ɏ\s]/g, "")
-        .split(/\s+/)
-        .filter((w) => w.length > 2);
-      for (const w of words) {
-        if (!updated[w]) added.push(w);
-        updated[w] = (updated[w] || 0) + 1;
-      }
-      return { updated, added };
-    },
-    [],
-  );
+  const mergeWords = useCallback((text: string, existing: Record<string, number>) => {
+    const updated = { ...existing };
+    const added: string[] = [];
+    const words = text
+      .toLowerCase()
+      .replace(/[^a-z0-9À-ɏ\s]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2);
+    for (const w of words) {
+      if (!updated[w]) added.push(w);
+      updated[w] = (updated[w] || 0) + 1;
+    }
+    return { updated, added };
+  }, []);
 
   const wbChId = useRef(`wb-${segmentNum}-${Date.now()}`);
   const pollChId = useRef(`poll-${segmentNum}-${Date.now()}`);
@@ -10571,12 +4922,12 @@ function LiveResponses({
     let cancelled = false;
 
     const init = async () => {
-      const { supabase } = await import("@/lib/supabase-browser");
+      const { supabase } = await import('@/lib/supabase-browser');
 
       const { data: wbRows } = await supabase
-        .from("workbook_responses")
-        .select("response_text")
-        .eq("segment_num", segmentNum);
+        .from('workbook_responses')
+        .select('response_text')
+        .eq('segment_num', segmentNum);
 
       if (!cancelled && wbRows) {
         let freq: Record<string, number> = {};
@@ -10588,9 +4939,9 @@ function LiveResponses({
       }
 
       const { data: pollRows } = await supabase
-        .from("poll_responses")
-        .select("choice_label")
-        .eq("segment_num", segmentNum);
+        .from('poll_responses')
+        .select('choice_label')
+        .eq('segment_num', segmentNum);
 
       if (!cancelled && pollRows) {
         const votes: Record<string, number> = {};
@@ -10605,48 +4956,34 @@ function LiveResponses({
       const wbChannel = supabase
         .channel(wbChId.current)
         .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "workbook_responses",
-            filter: `segment_num=eq.${segmentNum}`,
-          },
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'workbook_responses', filter: `segment_num=eq.${segmentNum}` },
           (payload: { new: { response_text: string } }) => {
             if (cancelled) return;
-            setWordFreq((prev) => {
-              const { updated, added } = mergeWords(
-                payload.new.response_text,
-                prev,
-              );
+            setWordFreq(prev => {
+              const { updated, added } = mergeWords(payload.new.response_text, prev);
               if (added.length) {
                 setNewWords(new Set(added));
                 setTimeout(() => setNewWords(new Set()), 2000);
               }
               return updated;
             });
-          },
+          }
         )
         .subscribe();
 
       const pollChannel = supabase
         .channel(pollChId.current)
         .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "poll_responses",
-            filter: `segment_num=eq.${segmentNum}`,
-          },
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'poll_responses', filter: `segment_num=eq.${segmentNum}` },
           (payload: { new: { choice_label: string } }) => {
             if (cancelled) return;
-            setPollVotes((prev) => ({
+            setPollVotes(prev => ({
               ...prev,
-              [payload.new.choice_label]:
-                (prev[payload.new.choice_label] || 0) + 1,
+              [payload.new.choice_label]: (prev[payload.new.choice_label] || 0) + 1,
             }));
-          },
+          }
         )
         .subscribe();
 
@@ -10658,14 +4995,8 @@ function LiveResponses({
     };
 
     let cleanup: (() => void) | undefined;
-    init().then((fn) => {
-      if (cancelled) fn?.();
-      else cleanup = fn;
-    });
-    return () => {
-      cancelled = true;
-      cleanup?.();
-    };
+    init().then(fn => { if (cancelled) fn?.(); else cleanup = fn; });
+    return () => { cancelled = true; cleanup?.(); };
   }, [segmentNum, mergeWords]);
 
   // Derive sorted words for the cloud
@@ -10686,69 +5017,23 @@ function LiveResponses({
   if (!hasWords && !hasPoll) return null;
 
   return (
-    <div
-      style={{
-        maxWidth: 1280,
-        margin: "36px auto 0",
-        display: "flex",
-        flexDirection: "column",
-        gap: 24,
-      }}
-    >
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Word cloud */}
       {hasWords && (
-        <div
-          style={{
-            padding: "28px 30px",
-            borderRadius: 18,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(13),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 8,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live word cloud
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(15),
-              color: C.muted,
-              marginBottom: 18,
-              lineHeight: 1.5,
-            }}
-          >
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
             Words from your workbook responses ~ updating in real time
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "6px 14px",
-              alignItems: "baseline",
-              minHeight: sz(60),
-            }}
-          >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 14px', alignItems: 'baseline', minHeight: sz(60) }}>
             {sortedWords.map(([word, freq], i) => {
               const ratio = freq / maxFreq;
               const size = sz(14 + Math.round(ratio * 28));
@@ -10763,8 +5048,8 @@ function LiveResponses({
                     fontWeight: ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 400,
                     color: brandColors[colorIdx],
                     opacity: 0.4 + ratio * 0.6,
-                    transition: "all 0.5s ease",
-                    animation: isNew ? "lrFadeIn 0.6s ease" : undefined,
+                    transition: 'all 0.5s ease',
+                    animation: isNew ? 'lrFadeIn 0.6s ease' : undefined,
                     lineHeight: 1.3,
                   }}
                 >
@@ -10778,102 +5063,43 @@ function LiveResponses({
 
       {/* Poll bar chart ~ hidden for now */}
       {false && hasPoll && (
-        <div
-          style={{
-            padding: "28px 30px",
-            borderRadius: 18,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          <div
-            style={{
-              ...mono,
-              fontSize: sz(13),
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 8,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 22,
-                height: 1,
-                background: C.primary,
-              }}
-            />
+        <div style={{
+          padding: '28px 30px',
+          borderRadius: 18,
+          background: C.surface,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{ ...mono, fontSize: sz(13), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
             Live poll results
           </div>
-          <div
-            style={{
-              ...serif,
-              fontSize: sz(15),
-              color: C.muted,
-              marginBottom: 18,
-              lineHeight: 1.5,
-            }}
-          >
-            {totalVotes} vote{totalVotes !== 1 ? "s" : ""} so far
+          <div style={{ ...sans, fontSize: sz(15), color: C.muted, marginBottom: 18, lineHeight: 1.5 }}>
+            {totalVotes} vote{totalVotes !== 1 ? 's' : ''} so far
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {sortedPoll.map(([option, votes]) => {
               const pct = Math.round((votes / totalVotes) * 100);
               const barWidth = Math.max(2, (votes / maxVotes) * 100);
               return (
                 <div key={option}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "baseline",
-                      marginBottom: 4,
-                    }}
-                  >
-                    <span
-                      style={{
-                        ...sans,
-                        fontSize: sz(14),
-                        fontWeight: 600,
-                        color: C.text,
-                      }}
-                    >
-                      {option}
-                    </span>
-                    <span
-                      style={{
-                        ...mono,
-                        fontSize: sz(12),
-                        color: C.muted,
-                        letterSpacing: "0.06em",
-                      }}
-                    >
-                      {pct}% ({votes})
-                    </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                    <span style={{ ...sans, fontSize: sz(14), fontWeight: 600, color: C.text }}>{option}</span>
+                    <span style={{ ...mono, fontSize: sz(12), color: C.muted, letterSpacing: '0.06em' }}>{pct}% ({votes})</span>
                   </div>
-                  <div
-                    style={{
-                      height: sz(22),
+                  <div style={{
+                    height: sz(22),
+                    borderRadius: sz(6),
+                    background: `${C.primary}15`,
+                    overflow: 'hidden',
+                    position: 'relative',
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${barWidth}%`,
                       borderRadius: sz(6),
-                      background: `${C.primary}15`,
-                      overflow: "hidden",
-                      position: "relative",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${barWidth}%`,
-                        borderRadius: sz(6),
-                        background: C.primary,
-                        transition: "width 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
-                      }}
-                    />
+                      background: C.primary,
+                      transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }} />
                   </div>
                 </div>
               );
@@ -10893,38 +5119,15 @@ function LiveResponses({
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({
-  seg,
-  segIdx,
-  totalSegs,
-  wbBlock,
-  pollBlock,
-  timerSecs,
-  fontSize,
-  segments,
-  C,
-  mono,
-  serif,
-  sans,
-  spkColor,
-  theme,
-  editMode,
-  onSaveEdit,
-  showLiveQA,
-}: {
-  seg: Segment;
-  segIdx: number;
-  beat: number;
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit, showLiveQA }: {
+  seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
   pollBlock: { text?: string } | undefined;
   timerSecs: number;
   fontSize: number; // top-bar slider value (14~30, default 19)
   segments: Segment[]; // full agenda, used by segment 00 welcome
-  C: Palette;
-  mono: React.CSSProperties;
-  serif: React.CSSProperties;
-  sans: React.CSSProperties;
+  C: Palette; mono: React.CSSProperties; serif: React.CSSProperties; sans: React.CSSProperties;
   spkColor: (spk: string) => string;
   theme: ThemeKey;
   editMode: boolean;
@@ -10934,10 +5137,9 @@ function AudienceView({
   // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
   const audScale = fontSize / 19;
   const sz = (px: number) => Math.round(px * audScale);
-  const fmtEvent = (s: number) =>
-    `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-  const pollLines = pollBlock?.text?.replace(/^POLL ~ /, "").split("\n") ?? [];
-  const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, "") ?? "";
+  const fmtEvent = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, '0')}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const pollLines = pollBlock?.text?.replace(/^POLL ~ /, '').split('\n') ?? [];
+  const wbText = wbBlock?.text?.replace(/^WORKBOOK ~ /, '') ?? '';
 
   // Compare-panel reveal stages for interactive Claude flow:
   // 0 = Claude's questions only · 1 = + Claude's 3 draft variations
@@ -10959,10 +5161,7 @@ function AudienceView({
 
   // Stagger the reveal of simulation steps when a Claude is selected
   useEffect(() => {
-    if (activeClaude === null) {
-      setRevealedSteps(0);
-      return;
-    }
+    if (activeClaude === null) { setRevealedSteps(0); return; }
     const product = CLAUDE_PRODUCTS[activeClaude];
     setRevealedSteps(0);
     let i = 0;
@@ -10977,296 +5176,81 @@ function AudienceView({
   }, [activeClaude]);
 
   // Premium contrast text on dark elements (uses light beige regardless of theme bg)
-  const onDark = "#FAF8F5";
-  const brand = "TALENT MUCHO";
-  const brandSub = "CLAUDE FOR BUSINESS";
-  const footerLink = "talentmucho.com";
+  const onDark = '#FAF8F5';
+  const brand = 'TALENT MUCHO';
+  const brandSub = 'CLAUDE FOR BUSINESS';
+  const footerLink = 'talentmucho.com';
 
-  // Themed em rendering for body copy
-  const emRender = (html: string) =>
-    html.replace(
-      /<em>/g,
-      `<em style="color:${C.primary};font-family:${serif.fontFamily as string}">`,
-    );
-  const emOnDark = (html: string) =>
-    html.replace(
-      /<em>/g,
-      `<em style="color:${C.primary};font-family:${serif.fontFamily as string}">`,
-    );
+  // Strip em tags ~ no italics in slides
+  const emRender = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
+  const emOnDark = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
 
   return (
-    <div
-      style={{
-        flex: 1,
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        background: C.bg,
-        color: C.text,
-        ...sans,
-        position: "relative",
-      }}
-    >
+    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
       {/* Subtle texture overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          opacity: 0.5,
-          background: `radial-gradient(ellipse at top, ${C.primary}15 0%, transparent 60%), radial-gradient(ellipse at bottom right, ${C.peach} 0%, transparent 50%)`,
-        }}
-      />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.5, background: `radial-gradient(ellipse at top, ${C.primary}15 0%, transparent 60%), radial-gradient(ellipse at bottom right, ${C.peach} 0%, transparent 50%)` }} />
 
       {/* ── HERO TOP STRIP ── */}
-      <div
-        style={{
-          background: C.text,
-          color: onDark,
-          padding: "18px 48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              background: C.primary,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              ...mono,
-              fontSize: 11,
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            {theme === "tm" ? "tm" : "am"}
+      <div style={{ background: C.text, color: onDark, padding: '18px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 800, color: C.text }}>
+            {theme === 'tm' ? 'tm' : 'am'}
           </div>
           <div>
-            <div
-              style={{
-                ...mono,
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: C.primary,
-              }}
-            >
-              {brand}
-            </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: 9,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "rgba(250,248,245,0.45)",
-                marginTop: 2,
-              }}
-            >
-              {brandSub}
-            </div>
+            <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary }}>{brand}</div>
+            <div style={{ ...mono, fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.45)', marginTop: 2 }}>{brandSub}</div>
           </div>
         </div>
-        <div
-          style={{
-            ...mono,
-            fontSize: 11,
-            color: "rgba(250,248,245,0.7)",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: "#ff5e5e",
-              animation: "pulse 1.4s ease-in-out infinite",
-              boxShadow: "0 0 12px #ff5e5e",
-            }}
-          />
-          LIVE <span style={{ opacity: 0.4 }}>~</span>{" "}
-          <span style={{ fontWeight: 600, color: onDark }}>
-            {fmtEvent(timerSecs)}
-          </span>{" "}
-          LEFT
+        <div style={{ ...mono, fontSize: 11, color: 'rgba(250,248,245,0.7)', letterSpacing: '0.14em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ff5e5e', animation: 'pulse 1.4s ease-in-out infinite', boxShadow: '0 0 12px #ff5e5e' }} />
+          LIVE <span style={{ opacity: 0.4 }}>~</span> <span style={{ fontWeight: 600, color: onDark }}>{fmtEvent(timerSecs)}</span> LEFT
         </div>
       </div>
 
       {/* ── HERO TITLE BAND ── */}
-      <div
-        style={{
-          padding: "32px 48px 24px",
-          position: "relative",
-          zIndex: 2,
-          borderBottom: `1px solid ${C.border}`,
-        }}
-      >
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <div
-            style={{
-              ...mono,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: C.primary,
-              marginBottom: 10,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: "inline-block",
-                width: 24,
-                height: 1,
-                background: C.primary,
-              }}
-            />
-            Segment {seg.num}{" "}
-            <span style={{ opacity: 0.4 }}>
-              of {String(totalSegs).padStart(2, "0")}
-            </span>
+      <div style={{ padding: '32px 48px 24px', position: 'relative', zIndex: 2, borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ ...mono, fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ display: 'inline-block', width: 24, height: 1, background: C.primary }} />
+            Segment {seg.num} <span style={{ opacity: 0.4 }}>of {String(totalSegs).padStart(2, '0')}</span>
           </div>
-          <h1
-            style={{
-              fontSize: "clamp(22px, 2.8vw, 38px)",
-              fontWeight: 700,
-              letterSpacing: "-0.025em",
-              lineHeight: 1,
-              color: C.text,
-              margin: 0,
-              ...sans,
-            }}
-          >
-            <span style={{ textTransform: "uppercase" }}>
-              <Editable
-                key={`av-t-${segIdx}`}
-                value={seg.title}
-                editMode={editMode}
-                onSave={(v) => onSaveEdit(`${segIdx}.title`, v)}
-              />
+          <h1 style={{ fontSize: 'clamp(22px, 2.8vw, 38px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1, color: C.text, margin: 0, ...sans }}>
+            <span style={{ textTransform: 'uppercase' }}>
+              <Editable key={`av-t-${segIdx}`} value={seg.title} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.title`, v)} />
             </span>
-            {(seg.titleItalic || editMode) && (
-              <>
-                {" "}
-                <em
-                  style={{
-                    ...serif,
-                    fontWeight: 400,
-                    color: C.primary,
-                    textTransform: "none",
-                    letterSpacing: 0,
-                  }}
-                >
-                  <Editable
-                    key={`av-ti-${segIdx}`}
-                    value={seg.titleItalic}
-                    editMode={editMode}
-                    onSave={(v) => onSaveEdit(`${segIdx}.titleItalic`, v)}
-                  />
-                </em>
-              </>
-            )}
+            {(seg.titleItalic || editMode) && <>{' '}<em style={{ ...serif, fontWeight: 400, color: C.primary, textTransform: 'none', letterSpacing: 0 }}>
+              <Editable key={`av-ti-${segIdx}`} value={seg.titleItalic} editMode={editMode} onSave={v => onSaveEdit(`${segIdx}.titleItalic`, v)} />
+            </em></>}
           </h1>
 
           {/* Progress bars only ~ speaker badges removed for a cleaner audience view */}
-          <div
-            style={{
-              display: "flex",
-              gap: 6,
-              alignItems: "center",
-              marginTop: 28,
-              justifyContent: "flex-end",
-            }}
-          >
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 28, justifyContent: 'flex-end' }}>
             {Array.from({ length: totalSegs }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: 4,
-                  width: i === segIdx ? 32 : 14,
-                  borderRadius: 4,
-                  background:
-                    i < segIdx
-                      ? C.primary
-                      : i === segIdx
-                        ? C.primary
-                        : `${C.muted}40`,
-                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                }}
-              />
+              <div key={i} style={{
+                height: 4,
+                width: i === segIdx ? 32 : 14,
+                borderRadius: 4,
+                background: i < segIdx ? C.primary : i === segIdx ? C.primary : `${C.muted}40`,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              }} />
             ))}
           </div>
         </div>
       </div>
 
       {/* ── BODY ── */}
-      <div
-        style={{
-          flex: 1,
-          padding: "40px 48px 80px",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
+      <div style={{ flex: 1, padding: '40px 48px 80px', position: 'relative', zIndex: 2 }}>
         {/* Standard body grid hidden when:
             - segment uses compare panel (side-by-side comparison takes the real estate)
             - segment is the welcome (countdown + agenda take over)
             - segment is origins (host intro cards take over) */}
-        <div
-          style={{
-            display:
-              seg.panel === "compare" || seg.num === "00" || seg.num === "01"
-                ? "none"
-                : "grid",
-            gridTemplateColumns: "1.5fr 1fr",
-            gap: 36,
-            maxWidth: 1280,
-            margin: "0 auto",
-          }}
-        >
+        <div style={{ display: (seg.panel === 'compare' || seg.num === '00' || seg.num === '01') ? 'none' : 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 36, maxWidth: 1280, margin: '0 auto' }}>
+
           {/* ── LEFT: What we're covering ── */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  ...mono,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: C.primary,
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  marginBottom: 22,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                }}
-              >
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: 22,
-                    height: 1,
-                    background: C.primary,
-                  }}
-                />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div style={{ position: 'relative' }}>
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 What we&apos;re covering
               </div>
               <Editable
@@ -11274,99 +5258,36 @@ function AudienceView({
                 tagName="div"
                 value={emRender(seg.audWhatTitle)}
                 editMode={editMode}
-                onSave={(v) =>
-                  onSaveEdit(
-                    `${segIdx}.audWhatTitle`,
-                    v.replace(/<em [^>]*>/g, "<em>"),
-                  )
-                }
-                style={{
-                  ...sans,
-                  fontSize: 42,
-                  fontWeight: 700,
-                  color: C.text,
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.1,
-                  marginBottom: 22,
-                }}
+                onSave={v => onSaveEdit(`${segIdx}.audWhatTitle`, v.replace(/<em [^>]*>/g, '<em>'))}
+                style={{ ...sans, fontSize: 42, fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 22 }}
               />
               <Editable
                 key={`awb-${segIdx}`}
                 tagName="div"
                 value={emRender(seg.audWhatBody)}
                 editMode={editMode}
-                onSave={(v) =>
-                  onSaveEdit(
-                    `${segIdx}.audWhatBody`,
-                    v.replace(/<em [^>]*>/g, "<em>"),
-                  )
-                }
-                style={{
-                  ...serif,
-                  fontSize: 26,
-                  lineHeight: 1.6,
-                  color: C.text,
-                  opacity: 0.9,
-                }}
+                onSave={v => onSaveEdit(`${segIdx}.audWhatBody`, v.replace(/<em [^>]*>/g, '<em>'))}
+                style={{ ...sans, fontSize: 22, lineHeight: 1.6, color: C.text, opacity: 0.9, fontWeight: 400 }}
               />
             </div>
           </div>
 
           {/* ── RIGHT: Takeaway + active prompt ── */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {/* Takeaway pull-quote ~ hidden on products segments where the model-comparison card replaces it */}
-            {seg.panel !== "products" && (
-              <div
-                style={{
-                  background: C.text,
-                  color: onDark,
-                  borderRadius: 20,
-                  padding: "34px 30px",
-                  boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Decorative quote mark */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -22,
-                    right: 18,
-                    ...serif,
-                    fontSize: 140,
-                    lineHeight: 1,
-                    color: C.primary,
-                    opacity: 0.25,
-                    userSelect: "none",
-                  }}
-                >
-                  "
-                </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    marginBottom: 18,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    position: "relative",
-                  }}
-                >
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 22,
-                      height: 1,
-                      background: C.primary,
-                    }}
-                  />
+            {/* Takeaway pull-quote ~ hidden on products segments where the model-comparison card replaces it */}
+            {seg.panel !== 'products' && (
+              <div style={{
+                background: C.text, color: onDark,
+                borderRadius: 20, padding: '34px 30px',
+                boxShadow: `0 24px 48px -12px ${C.text}30, 0 0 0 1px ${C.primary}25`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                {/* Decorative quote mark */}
+                <div style={{ position: 'absolute', top: -22, right: 18, ...serif, fontSize: 140, lineHeight: 1, color: C.primary, opacity: 0.25, userSelect: 'none' }}>"</div>
+
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
+                  <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                   Take this with you
                 </div>
                 <Editable
@@ -11374,164 +5295,53 @@ function AudienceView({
                   tagName="div"
                   value={emOnDark(seg.audTakeaway)}
                   editMode={editMode}
-                  onSave={(v) =>
-                    onSaveEdit(
-                      `${segIdx}.audTakeaway`,
-                      v.replace(/<em [^>]*>/g, "<em>"),
-                    )
-                  }
-                  style={{
-                    ...serif,
-                    fontSize: 30,
-                    lineHeight: 1.45,
-                    color: onDark,
-                    position: "relative",
-                  }}
+                  onSave={v => onSaveEdit(`${segIdx}.audTakeaway`, v.replace(/<em [^>]*>/g, '<em>'))}
+                  style={{ ...sans, fontSize: 24, lineHeight: 1.45, color: onDark, position: 'relative', fontWeight: 400 }}
                 />
               </div>
             )}
 
             {/* Model translation card ~ shows on products segments only */}
-            {seg.panel === "products" && (
-              <div
-                style={{
-                  background: C.surface,
-                  borderRadius: 20,
-                  padding: "26px 28px",
-                  border: `1px solid ${C.border}`,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: 4,
-                    height: "100%",
-                    background: C.primary,
-                  }}
-                />
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    marginBottom: 16,
-                  }}
-                >
+            {seg.panel === 'products' && (
+              <div style={{
+                background: C.surface, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.border}`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 16 }}>
                   The 3 models
                 </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
-                >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
-                    {
-                      claude: "Opus",
-                      desc: "the genius",
-                      gpt: "o1 / GPT-4",
-                      when: "Complex thinking, strategy",
-                    },
-                    {
-                      claude: "Sonnet",
-                      desc: "the workhorse",
-                      gpt: "GPT-4o",
-                      when: "Daily driver · use 90% of the time",
-                      highlight: true,
-                    },
-                    {
-                      claude: "Haiku",
-                      desc: "the fast one",
-                      gpt: "GPT-4o mini",
-                      when: "Quick lookups, short answers",
-                    },
-                  ].map((row) => (
-                    <div
-                      key={row.claude}
-                      style={{
-                        padding: "12px 14px",
-                        borderRadius: 10,
-                        background: row.highlight
-                          ? `${C.primary}18`
-                          : `${C.muted}10`,
-                        border: row.highlight
-                          ? `1px solid ${C.primary}`
-                          : `1px solid ${C.border}`,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "baseline",
-                          justifyContent: "space-between",
-                          gap: 10,
-                          marginBottom: 4,
-                        }}
-                      >
-                        <div
-                          style={{
-                            ...sans,
-                            fontSize: 17,
-                            fontWeight: 700,
-                            color: C.text,
-                            letterSpacing: "-0.01em",
-                          }}
-                        >
+                    { claude: 'Opus', desc: 'the genius', gpt: 'o1 / GPT-4', when: 'Complex thinking, strategy' },
+                    { claude: 'Sonnet', desc: 'the workhorse', gpt: 'GPT-4o', when: 'Daily driver · use 90% of the time', highlight: true },
+                    { claude: 'Haiku', desc: 'the fast one', gpt: 'GPT-4o mini', when: 'Quick lookups, short answers' },
+                  ].map(row => (
+                    <div key={row.claude} style={{
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: row.highlight ? `${C.primary}18` : `${C.muted}10`,
+                      border: row.highlight ? `1px solid ${C.primary}` : `1px solid ${C.border}`,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
+                        <div style={{ ...sans, fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: '-0.01em' }}>
                           {row.claude}
-                          <span
-                            style={{
-                              ...serif,
-                              fontSize: 14,
-                              color: C.muted,
-                              fontWeight: 400,
-                              marginLeft: 8,
-                            }}
-                          >
+                          <span style={{ ...sans, fontSize: 15, color: C.muted, fontWeight: 400, marginLeft: 8 }}>
                             ~ {row.desc}
                           </span>
                         </div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 11,
-                            color: C.primary,
-                            letterSpacing: "0.1em",
-                            textTransform: "uppercase",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                           ≈ {row.gpt}
                         </div>
                       </div>
-                      <div
-                        style={{
-                          ...mono,
-                          fontSize: 11,
-                          color: C.muted,
-                          letterSpacing: "0.04em",
-                        }}
-                      >
+                      <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.04em' }}>
                         {row.when}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div
-                  style={{
-                    marginTop: 14,
-                    ...mono,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    textAlign: "center",
-                  }}
-                >
+                <div style={{ marginTop: 14, ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'center' }}>
                   TL;DR ~ just use Sonnet
                 </div>
               </div>
@@ -11539,148 +5349,47 @@ function AudienceView({
 
             {/* Workbook prompt */}
             {wbBlock && (
-              <div
-                style={{
-                  background: C.surface,
-                  borderRadius: 20,
-                  padding: "26px 28px",
-                  border: `1px solid ${C.border}`,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: 4,
-                    height: "100%",
-                    background: C.primary,
-                  }}
-                />
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    marginBottom: 14,
-                  }}
-                >
+              <div style={{
+                background: C.surface, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.border}`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Workbook moment
                 </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: 24,
-                    fontWeight: 600,
-                    color: C.text,
-                    marginBottom: 12,
-                    letterSpacing: "-0.01em",
-                    lineHeight: 1.3,
-                  }}
-                  dangerouslySetInnerHTML={{
-                    __html: wbText.split('"')[1]
-                      ? `&ldquo;${wbText.split('"')[1]}&rdquo;`
-                      : wbText,
-                  }}
-                />
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: 17,
-                    color: C.muted,
-                    lineHeight: 1.55,
-                  }}
-                >
-                  Write your answer down ~ paper or notes app. We&apos;ll come
-                  back to these.
+                <div style={{ ...sans, fontSize: 24, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+                  dangerouslySetInnerHTML={{ __html: wbText.split('"')[1] ? `&ldquo;${wbText.split('"')[1]}&rdquo;` : wbText }} />
+                <div style={{ ...serif, fontSize: 17, color: C.muted, lineHeight: 1.55 }}>
+                  Write your answer down ~ paper or notes app. We&apos;ll come back to these.
                 </div>
               </div>
             )}
 
             {/* Poll prompt */}
             {pollBlock && (
-              <div
-                style={{
-                  background: C.surface2,
-                  borderRadius: 20,
-                  padding: "26px 28px",
-                  border: `1px solid ${C.primary}40`,
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: 4,
-                    height: "100%",
-                    background: C.primary,
-                  }}
-                />
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    marginBottom: 14,
-                  }}
-                >
+              <div style={{
+                background: C.surface2, borderRadius: 20, padding: '26px 28px',
+                border: `1px solid ${C.primary}40`,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 4, height: '100%', background: C.primary }} />
+                <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14 }}>
                   ~ Audience moment
                 </div>
-                <div
-                  style={{
-                    ...sans,
-                    fontSize: 22,
-                    fontWeight: 600,
-                    color: C.text,
-                    marginBottom: 14,
-                    letterSpacing: "-0.01em",
-                    lineHeight: 1.3,
-                  }}
-                >
+                <div style={{ ...sans, fontSize: 22, fontWeight: 600, color: C.text, marginBottom: 14, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                   {pollLines[0]}
                 </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 7 }}
-                >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {pollLines.slice(1).map((l, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        padding: "12px 16px",
-                        background: C.surface,
-                        borderRadius: 10,
-                        ...mono,
-                        fontSize: 16,
-                        color: C.text,
-                        border: `1px solid ${C.border}`,
-                      }}
-                    >
-                      {l}
-                    </div>
+                    <div key={i} style={{
+                      padding: '12px 16px', background: C.surface, borderRadius: 10,
+                      ...mono, fontSize: 16, color: C.text,
+                      border: `1px solid ${C.border}`,
+                    }}>{l}</div>
                   ))}
                 </div>
-                <div
-                  style={{
-                    marginTop: 16,
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                  }}
-                >
+                <div style={{ marginTop: 16, ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                   ↳ Drop your answer in the Zoom chat
                 </div>
               </div>
@@ -11689,740 +5398,286 @@ function AudienceView({
         </div>
 
         {/* ── AI Landscape ~ what is AI + major models (segment 02, before compare panel) ── */}
-        {seg.num === "02" && (
-          <AILandscape
-            C={C}
-            mono={mono}
-            sans={sans}
-            serif={serif}
-            scale={audScale}
-          />
+        {seg.num === '02' && (
+          <AILandscape C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── ChatGPT vs Claude side-by-side ~ shows when segment uses the compare panel ── */}
-        {seg.panel === "compare" &&
-          seg.panelData &&
-          COMPARE_PRESETS[seg.panelData] &&
-          (() => {
-            const p = COMPARE_PRESETS[seg.panelData];
-            const samePrompt = p.leftPrompt === p.rightPrompt;
-            const cols = [
-              {
-                side: "left" as const,
-                tag: p.leftTag,
-                title: p.leftTitle,
-                why: p.leftWhy,
-                prompt: p.leftPrompt,
-                answer: p.leftAnswer,
-                annLbl: p.leftAnnLbl,
-                annTxt: p.leftAnnTxt,
-              },
-              {
-                side: "right" as const,
-                tag: p.rightTag,
-                title: p.rightTitle,
-                why: p.rightWhy,
-                prompt: p.rightPrompt,
-                answer: p.rightAnswer,
-                annLbl: p.rightAnnLbl,
-                annTxt: p.rightAnnTxt,
-              },
-            ];
-            return (
-              <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-                <div
-                  style={{
-                    ...mono,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: C.primary,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    marginBottom: 14,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <span
-                    style={{
-                      display: "inline-block",
-                      width: 22,
-                      height: 1,
-                      background: C.primary,
-                    }}
-                  />
-                  {samePrompt
-                    ? "Same prompt, two responses"
-                    : "Same prompt, two ways"}
-                </div>
-                <div
-                  style={{
-                    ...serif,
-                    fontSize: 18,
-                    color: C.muted,
-                    marginBottom: 24,
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {p.scenario}
-                </div>
+        {seg.panel === 'compare' && seg.panelData && COMPARE_PRESETS[seg.panelData] && (() => {
+          const p = COMPARE_PRESETS[seg.panelData];
+          const samePrompt = p.leftPrompt === p.rightPrompt;
+          const cols = [
+            { side: 'left' as const, tag: p.leftTag, title: p.leftTitle, why: p.leftWhy, prompt: p.leftPrompt, answer: p.leftAnswer, annLbl: p.leftAnnLbl, annTxt: p.leftAnnTxt },
+            { side: 'right' as const, tag: p.rightTag, title: p.rightTitle, why: p.rightWhy, prompt: p.rightPrompt, answer: p.rightAnswer, annLbl: p.rightAnnLbl, annTxt: p.rightAnnTxt },
+          ];
+          return (
+            <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+              <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+                {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
+              </div>
+              <div style={{ ...serif, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+                {p.scenario}
+              </div>
 
-                {/* Shared prompt at top (only when both sides use the same prompt) */}
-                {samePrompt && (
-                  <div
-                    style={{
-                      padding: "20px 26px",
-                      background: C.surface,
-                      border: `1px solid ${C.border}`,
-                      borderRadius: 14,
-                      marginBottom: 22,
-                      textAlign: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: C.primary,
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        marginBottom: 10,
-                      }}
-                    >
-                      The prompt (sent to both)
-                    </div>
-                    <div
-                      style={{
-                        ...mono,
-                        fontSize: 22,
-                        lineHeight: 1.4,
-                        color: C.text,
-                        fontWeight: 500,
-                      }}
-                    >
-                      &ldquo;{p.leftPrompt}&rdquo;
-                    </div>
+              {/* Shared prompt at top (only when both sides use the same prompt) */}
+              {samePrompt && (
+                <div style={{
+                  padding: '20px 26px',
+                  background: C.surface,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 14,
+                  marginBottom: 22,
+                  textAlign: 'center',
+                }}>
+                  <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: C.primary, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 10 }}>
+                    The prompt (sent to both)
                   </div>
-                )}
+                  <div style={{ ...mono, fontSize: 22, lineHeight: 1.4, color: C.text, fontWeight: 500 }}>
+                    &ldquo;{p.leftPrompt}&rdquo;
+                  </div>
+                </div>
+              )}
 
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: 22,
-                    alignItems: "stretch",
-                  }}
-                >
-                  {cols.map((col) => {
-                    const isBad = col.side === "left";
-                    const tagBg = isBad
-                      ? "rgba(176,58,46,0.12)"
-                      : "rgba(74,124,89,0.14)";
-                    const tagFg = isBad ? "#b03a2e" : "#1e8449";
-                    const tagBorder = isBad
-                      ? "rgba(176,58,46,0.3)"
-                      : "rgba(74,124,89,0.3)";
-                    return (
-                      <div
-                        key={col.side}
-                        style={{
-                          background: C.surface,
-                          borderRadius: 18,
-                          border: `1px solid ${C.border}`,
-                          overflow: "hidden",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        {/* Header */}
-                        <div
-                          style={{
-                            padding: "20px 22px 18px",
-                            borderBottom: `1px solid ${C.border}`,
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              padding: "5px 12px",
-                              borderRadius: 100,
-                              ...mono,
-                              fontSize: 11,
-                              fontWeight: 700,
-                              letterSpacing: "0.12em",
-                              textTransform: "uppercase",
-                              background: tagBg,
-                              color: tagFg,
-                              border: `1px solid ${tagBorder}`,
-                              marginBottom: 12,
-                            }}
-                          >
-                            {col.tag}
-                          </div>
-                          <div
-                            style={{
-                              ...sans,
-                              fontSize: 24,
-                              fontWeight: 700,
-                              color: C.text,
-                              letterSpacing: "-0.01em",
-                              lineHeight: 1.2,
-                              marginBottom: 8,
-                            }}
-                            dangerouslySetInnerHTML={{
-                              __html: col.title.replace(
-                                /<em>/g,
-                                `<em style="font-family:${serif.fontFamily as string};font-weight:400;color:${C.primary}">`,
-                              ),
-                            }}
-                          />
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: 16,
-                              color: C.muted,
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {col.why}
-                          </div>
-                        </div>
-                        {/* Prompt (only show per-column when prompts differ) */}
-                        {!samePrompt && (
-                          <div
-                            style={{
-                              padding: "14px 22px",
-                              background: C.surface2,
-                              borderBottom: `1px solid ${C.border}`,
-                            }}
-                          >
-                            <div
-                              style={{
-                                ...mono,
-                                fontSize: 10,
-                                fontWeight: 700,
-                                color: C.primary,
-                                letterSpacing: "0.16em",
-                                textTransform: "uppercase",
-                                marginBottom: 6,
-                              }}
-                            >
-                              The prompt
-                            </div>
-                            <div
-                              style={{
-                                ...mono,
-                                fontSize: 14,
-                                lineHeight: 1.55,
-                                color: C.text,
-                                whiteSpace: "pre-wrap",
-                              }}
-                            >
-                              {col.prompt}
-                            </div>
-                          </div>
-                        )}
-                        {/* Response (Claude's first response = the questions; ChatGPT's = the template) */}
-                        <div
-                          style={{
-                            padding: "16px 22px 14px",
-                            borderBottom: `1px solid ${C.border}`,
-                            flex: 1,
-                          }}
-                        >
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: 10,
-                              fontWeight: 700,
-                              color: C.primary,
-                              letterSpacing: "0.16em",
-                              textTransform: "uppercase",
-                              marginBottom: 8,
-                            }}
-                          >
-                            {col.side === "right" && p.rightDrafts
-                              ? "Step 1 · Claude asks back"
-                              : "The response"}
-                          </div>
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: 16,
-                              lineHeight: 1.6,
-                              color: C.text,
-                              whiteSpace: "pre-wrap",
-                            }}
-                          >
-                            {col.answer}
-                          </div>
-                        </div>
-
-                        {/* Step 2 ~ Claude offers multiple draft versions (Claude column only, when stage >= 1) */}
-                        {col.side === "right" &&
-                          p.rightDrafts &&
-                          compareStage >= 1 && (
-                            <div
-                              style={{
-                                padding: "18px 22px 16px",
-                                borderBottom: `1px solid ${C.border}`,
-                                background: `${C.primary}10`,
-                              }}
-                            >
-                              <div
-                                style={{
-                                  ...mono,
-                                  fontSize: 10,
-                                  fontWeight: 700,
-                                  color: C.primary,
-                                  letterSpacing: "0.16em",
-                                  textTransform: "uppercase",
-                                  marginBottom: 10,
-                                }}
-                              >
-                                Step 2 · Claude offers a selection
-                              </div>
-                              {p.rightBridge && (
-                                <div
-                                  style={{
-                                    ...serif,
-                                    fontSize: 16,
-                                    lineHeight: 1.55,
-                                    color: C.text,
-                                    marginBottom: 14,
-                                  }}
-                                >
-                                  {p.rightBridge}
-                                </div>
-                              )}
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 10,
-                                }}
-                              >
-                                {p.rightDrafts.map((draft, i) => {
-                                  const isSelected = selectedDraft === i;
-                                  return (
-                                    <div
-                                      key={i}
-                                      onClick={() =>
-                                        setSelectedDraft(isSelected ? null : i)
-                                      }
-                                      style={{
-                                        padding: "14px 16px",
-                                        borderRadius: 12,
-                                        border: `2px solid ${isSelected ? C.primary : C.border}`,
-                                        background: isSelected
-                                          ? C.text
-                                          : C.surface,
-                                        color: isSelected ? onDark : C.text,
-                                        cursor: "pointer",
-                                        transition: "all 0.2s",
-                                        boxShadow: isSelected
-                                          ? `0 8px 24px -6px ${C.primary}55`
-                                          : "none",
-                                        transform: isSelected
-                                          ? "translateY(-1px)"
-                                          : "none",
-                                      }}
-                                    >
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          justifyContent: "space-between",
-                                          marginBottom: isSelected ? 10 : 0,
-                                        }}
-                                      >
-                                        <div
-                                          style={{
-                                            ...mono,
-                                            fontSize: 11,
-                                            fontWeight: 700,
-                                            color: isSelected
-                                              ? C.primary
-                                              : C.text,
-                                            letterSpacing: "0.12em",
-                                            textTransform: "uppercase",
-                                          }}
-                                        >
-                                          {draft.label}
-                                        </div>
-                                        <div
-                                          style={{
-                                            ...mono,
-                                            fontSize: 9,
-                                            fontWeight: 700,
-                                            color: isSelected
-                                              ? C.primary
-                                              : C.muted,
-                                            letterSpacing: "0.14em",
-                                            textTransform: "uppercase",
-                                          }}
-                                        >
-                                          {isSelected
-                                            ? "✓ Selected"
-                                            : "Click to select"}
-                                        </div>
-                                      </div>
-                                      {isSelected && (
-                                        <div
-                                          style={{
-                                            ...serif,
-                                            fontSize: 15,
-                                            lineHeight: 1.65,
-                                            color: onDark,
-                                            whiteSpace: "pre-wrap",
-                                            marginTop: 4,
-                                          }}
-                                        >
-                                          {draft.body}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              {selectedDraft === null && (
-                                <div
-                                  style={{
-                                    ...mono,
-                                    fontSize: 11,
-                                    color: C.muted,
-                                    letterSpacing: "0.1em",
-                                    textTransform: "uppercase",
-                                    marginTop: 12,
-                                    textAlign: "center",
-                                    opacity: 0.7,
-                                  }}
-                                >
-                                  ↑ click any version to read it
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                        {/* Annotation ~ what this teaches */}
-                        <div style={{ padding: "14px 22px 18px" }}>
-                          <div
-                            style={{
-                              ...mono,
-                              fontSize: 10,
-                              fontWeight: 700,
-                              color: C.primary,
-                              letterSpacing: "0.16em",
-                              textTransform: "uppercase",
-                              marginBottom: 6,
-                            }}
-                          >
-                            {col.annLbl}
-                          </div>
-                          <div
-                            style={{
-                              ...serif,
-                              fontSize: 17,
-                              color: C.text,
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {col.annTxt}
-                          </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 22, alignItems: 'stretch' }}>
+                {cols.map(col => {
+                  const isBad = col.side === 'left';
+                  const tagBg = isBad ? 'rgba(176,58,46,0.12)' : 'rgba(74,124,89,0.14)';
+                  const tagFg = isBad ? '#b03a2e' : '#1e8449';
+                  const tagBorder = isBad ? 'rgba(176,58,46,0.3)' : 'rgba(74,124,89,0.3)';
+                  return (
+                    <div key={col.side} style={{
+                      background: C.surface,
+                      borderRadius: 18,
+                      border: `1px solid ${C.border}`,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      {/* Header */}
+                      <div style={{ padding: '20px 22px 18px', borderBottom: `1px solid ${C.border}` }}>
+                        <div style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          padding: '5px 12px', borderRadius: 100,
+                          ...mono, fontSize: 11, fontWeight: 700,
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          background: tagBg, color: tagFg,
+                          border: `1px solid ${tagBorder}`,
+                          marginBottom: 12,
+                        }}>{col.tag}</div>
+                        <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
+                          dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-weight:400;color:${C.primary}">`) }} />
+                        <div style={{ ...serif, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                          {col.why}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                      {/* Prompt (only show per-column when prompts differ) */}
+                      {!samePrompt && (
+                        <div style={{ padding: '14px 22px', background: C.surface2, borderBottom: `1px solid ${C.border}` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                            The prompt
+                          </div>
+                          <div style={{ ...mono, fontSize: 14, lineHeight: 1.55, color: C.text, whiteSpace: 'pre-wrap' }}>
+                            {col.prompt}
+                          </div>
+                        </div>
+                      )}
+                      {/* Response (Claude's first response = the questions; ChatGPT's = the template) */}
+                      <div style={{ padding: '16px 22px 14px', borderBottom: `1px solid ${C.border}`, flex: 1 }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
+                        </div>
+                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                          {col.answer}
+                        </div>
+                      </div>
 
-                {/* Reveal controls (only when Claude has draft variations defined) */}
-                {p.rightDrafts && (
-                  <div
-                    style={{
-                      marginTop: 22,
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: 10,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {compareStage === 0 && (
-                      <button
-                        onClick={() => setCompareStage(1)}
-                        style={{
-                          padding: "12px 28px",
-                          borderRadius: 100,
-                          ...mono,
-                          fontSize: 13,
-                          fontWeight: 700,
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          cursor: "pointer",
-                          background: C.primary,
-                          color: C.text === "#2A2520" ? "#FAF8F5" : C.bg,
-                          border: "none",
-                          boxShadow: `0 6px 16px -4px ${C.primary}60`,
-                        }}
-                      >
-                        ▸ Show Claude&apos;s 3 versions
-                      </button>
-                    )}
-                    {compareStage === 1 && (
-                      <button
-                        onClick={() => {
-                          setCompareStage(0);
-                          setSelectedDraft(null);
-                        }}
-                        style={{
-                          padding: "12px 28px",
-                          borderRadius: 100,
-                          ...mono,
-                          fontSize: 13,
-                          fontWeight: 700,
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          cursor: "pointer",
-                          background: "transparent",
-                          color: C.muted,
-                          border: `1px solid ${C.border}`,
-                        }}
-                      >
-                        ↺ Reset
-                      </button>
-                    )}
-                  </div>
-                )}
-                {/* Landing line */}
-                <div
-                  style={{
-                    marginTop: 26,
-                    padding: "22px 28px",
-                    background: C.text,
-                    color: "#FAF8F5",
-                    borderRadius: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      ...serif,
-                      fontSize: 24,
-                      color: "#FAF8F5",
-                      lineHeight: 1.45,
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html: p.landing.replace(
-                        /<em>/g,
-                        `<em style="color:${C.primary};">`,
-                      ),
-                    }}
-                  />
-                </div>
+                      {/* Step 2 ~ Claude offers multiple draft versions (Claude column only, when stage >= 1) */}
+                      {col.side === 'right' && p.rightDrafts && compareStage >= 1 && (
+                        <div style={{ padding: '18px 22px 16px', borderBottom: `1px solid ${C.border}`, background: `${C.primary}10` }}>
+                          <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 10 }}>
+                            Step 2 · Claude offers a selection
+                          </div>
+                          {p.rightBridge && (
+                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
+                              {p.rightBridge}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            {p.rightDrafts.map((draft, i) => {
+                              const isSelected = selectedDraft === i;
+                              return (
+                                <div
+                                  key={i}
+                                  onClick={() => setSelectedDraft(isSelected ? null : i)}
+                                  style={{
+                                    padding: '14px 16px',
+                                    borderRadius: 12,
+                                    border: `2px solid ${isSelected ? C.primary : C.border}`,
+                                    background: isSelected ? C.text : C.surface,
+                                    color: isSelected ? onDark : C.text,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: isSelected ? `0 8px 24px -6px ${C.primary}55` : 'none',
+                                    transform: isSelected ? 'translateY(-1px)' : 'none',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isSelected ? 10 : 0 }}>
+                                    <div style={{ ...mono, fontSize: 11, fontWeight: 700, color: isSelected ? C.primary : C.text, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                      {draft.label}
+                                    </div>
+                                    <div style={{ ...mono, fontSize: 9, fontWeight: 700, color: isSelected ? C.primary : C.muted, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                                      {isSelected ? '✓ Selected' : 'Click to select'}
+                                    </div>
+                                  </div>
+                                  {isSelected && (
+                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                      {draft.body}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {selectedDraft === null && (
+                            <div style={{ ...mono, fontSize: 11, color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 12, textAlign: 'center', opacity: 0.7 }}>
+                              ↑ click any version to read it
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Annotation ~ what this teaches */}
+                      <div style={{ padding: '14px 22px 18px' }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
+                          {col.annLbl}
+                        </div>
+                        <div style={{ ...serif, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                          {col.annTxt}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })()}
+
+              {/* Reveal controls (only when Claude has draft variations defined) */}
+              {p.rightDrafts && (
+                <div style={{ marginTop: 22, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {compareStage === 0 && (
+                    <button
+                      onClick={() => setCompareStage(1)}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: C.primary, color: C.text === '#2A2520' ? '#FAF8F5' : C.bg,
+                        border: 'none',
+                        boxShadow: `0 6px 16px -4px ${C.primary}60`,
+                      }}
+                    >
+                      ▸ Show Claude&apos;s 3 versions
+                    </button>
+                  )}
+                  {compareStage === 1 && (
+                    <button
+                      onClick={() => { setCompareStage(0); setSelectedDraft(null); }}
+                      style={{
+                        padding: '12px 28px', borderRadius: 100,
+                        ...mono, fontSize: 13, fontWeight: 700,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        background: 'transparent', color: C.muted,
+                        border: `1px solid ${C.border}`,
+                      }}
+                    >
+                      ↺ Reset
+                    </button>
+                  )}
+                </div>
+              )}
+              {/* Landing line */}
+              <div style={{
+                marginTop: 26,
+                padding: '22px 28px',
+                background: C.text,
+                color: '#FAF8F5',
+                borderRadius: 14,
+                textAlign: 'center',
+              }}>
+                <div style={{ ...serif, fontSize: 24, color: '#FAF8F5', lineHeight: 1.45 }}
+                  dangerouslySetInnerHTML={{ __html: p.landing.replace(/<em>/g, `<em style="color:${C.primary};">`) }} />
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
-        {seg.num === "04" && (
-          <SpinWheel
-            items={LIVE_DEMOS}
-            C={C}
-            mono={mono}
-            sans={sans}
-            serif={serif}
-          />
+        {seg.num === '04' && (
+          <SpinWheel items={LIVE_DEMOS} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
         {/* ── Welcome interactive ~ countdown + agenda + cities + location cloud (segment 00) ── */}
-        {seg.num === "00" && (
+        {seg.num === '00' && (
           <>
-            <WelcomeInteractive
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-              segments={segments}
-              timerSecs={timerSecs}
-            />
-            <LocationCloud
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <CommunityPulse
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
+            <WelcomeInteractive C={C} mono={mono} sans={sans} serif={serif} scale={audScale} segments={segments} timerSecs={timerSecs} />
+            <LocationCloud C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <CommunityPulse C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 
         {/* ── Origin intros ~ meet Abie + Meri (segment 01) ── */}
-        {seg.num === "01" && (
-          <OriginIntro
-            C={C}
-            mono={mono}
-            sans={sans}
-            serif={serif}
-            scale={audScale}
-          />
+        {seg.num === '01' && (
+          <OriginIntro C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── AI Employee layers + Ops Manager day ~ segment 05 (AI employees) ── */}
-        {seg.num === "05" && (
+        {seg.num === '05' && (
           <>
-            <AIEmployeeLayers
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <OpsManagerDay
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
+            <AIEmployeeLayers C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <OpsManagerDay C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 
         {/* ── Live build process ~ segment 06 (hands-on) ── */}
-        {seg.num === "06" && (
-          <LiveBuildGuide
-            C={C}
-            mono={mono}
-            sans={sans}
-            serif={serif}
-            scale={audScale}
-          />
+        {seg.num === '06' && (
+          <LiveBuildGuide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── Q&A live feed ~ segment 07 ── */}
-        {seg.num === "07" && showLiveQA && (
-          <LiveQAFeed
-            C={C}
-            mono={mono}
-            sans={sans}
-            serif={serif}
-            scale={audScale}
-          />
+        {seg.num === '07' && showLiveQA && (
+          <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
         {/* ── Next step ~ Value Stack + Bootcamp + Three Doors ~ segment 08 ── */}
-        {seg.num === "08" && (
+        {seg.num === '08' && (
           <>
-            <ValueStack
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <ThreeDoorsOut
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <BootcampPreview
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <SkoolJoinCard
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-            <BonusSlide
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 
         {/* ── Live responses from audience workbook ~ word cloud + poll chart ── */}
-        {seg.num !== "01" &&
-          seg.beats.some((b) =>
-            b.blocks.some((bl) => bl.type === "workbook" || bl.type === "poll"),
-          ) && (
-            <LiveResponses
-              segmentNum={seg.num}
-              C={C}
-              mono={mono}
-              sans={sans}
-              serif={serif}
-              scale={audScale}
-            />
-          )}
+        {seg.num !== '01' && seg.beats.some(b => b.blocks.some(bl => bl.type === 'workbook' || bl.type === 'poll')) && (
+          <LiveResponses segmentNum={seg.num} C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+        )}
 
         {/* ── 4 Claudes grid ~ interactive simulation when segment uses the products panel ── */}
-        {seg.panel === "products" && (
-          <div style={{ maxWidth: 1280, margin: "48px auto 0" }}>
-            <div
-              style={{
-                ...mono,
-                fontSize: 12,
-                fontWeight: 700,
-                color: C.primary,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                marginBottom: 8,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 22,
-                  height: 1,
-                  background: C.primary,
-                }}
-              />
+        {seg.panel === 'products' && (
+          <div style={{ maxWidth: 1280, margin: '48px auto 0' }}>
+            <div style={{ ...mono, fontSize: 12, fontWeight: 700, color: C.primary, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
               Same brain ~ four doors
             </div>
-            <div
-              style={{
-                ...mono,
-                fontSize: 12,
-                color: C.muted,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                marginBottom: 22,
-                opacity: 0.7,
-              }}
-            >
-              {activeClaude === null
-                ? "↓ click any door to see it in action"
-                : "↓ click another to switch · click again to close"}
+            <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 22, opacity: 0.7 }}>
+              {activeClaude === null ? '↓ click any door to see it in action' : '↓ click another to switch · click again to close'}
             </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 18,
-              }}
-            >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18 }}>
               {CLAUDE_PRODUCTS.map((p, i) => {
                 const isActive = activeClaude === i;
                 return (
@@ -12430,204 +5685,79 @@ function AudienceView({
                     key={p.icon}
                     onClick={() => setActiveClaude(isActive ? null : i)}
                     style={{
-                      padding: "24px 26px",
+                      padding: '24px 26px',
                       borderRadius: 16,
                       border: `2px solid ${isActive ? C.primary : C.border}`,
                       background: isActive ? C.text : C.surface,
                       color: isActive ? onDark : C.text,
-                      cursor: "pointer",
-                      transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                      transform: isActive ? "translateY(-2px)" : "none",
-                      boxShadow: isActive
-                        ? `0 16px 32px -10px ${C.primary}55`
-                        : "none",
-                      display: "flex",
-                      flexDirection: "column",
+                      cursor: 'pointer',
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: isActive ? 'translateY(-2px)' : 'none',
+                      boxShadow: isActive ? `0 16px 32px -10px ${C.primary}55` : 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
                       gap: 16,
                     }}
                   >
                     {/* Header row */}
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 18,
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 52,
-                          height: 52,
-                          flexShrink: 0,
-                          borderRadius: 12,
-                          background: isActive ? C.primary : `${C.primary}20`,
-                          color: isActive
-                            ? C.text === "#2A2520"
-                              ? "#FAF8F5"
-                              : C.bg
-                            : C.primary,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          ...mono,
-                          fontSize: 18,
-                          fontWeight: 800,
-                        }}
-                      >
-                        {p.icon}
-                      </div>
+                    <div style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+                      <div style={{
+                        width: 52, height: 52, flexShrink: 0,
+                        borderRadius: 12,
+                        background: isActive ? C.primary : `${C.primary}20`,
+                        color: isActive ? (C.text === '#2A2520' ? '#FAF8F5' : C.bg) : C.primary,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        ...mono, fontSize: 18, fontWeight: 800,
+                      }}>{p.icon}</div>
                       <div style={{ flex: 1 }}>
-                        <div
-                          style={{
-                            ...sans,
-                            fontSize: 22,
-                            fontWeight: 700,
-                            color: isActive ? onDark : C.text,
-                            letterSpacing: "-0.01em",
-                            marginBottom: 4,
-                          }}
-                        >
+                        <div style={{ ...sans, fontSize: 22, fontWeight: 700, color: isActive ? onDark : C.text, letterSpacing: '-0.01em', marginBottom: 4 }}>
                           {p.name}
                         </div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 11,
-                            color: C.primary,
-                            letterSpacing: "0.14em",
-                            textTransform: "uppercase",
-                            marginBottom: 10,
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: 11, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>
                           {p.tag}
                         </div>
-                        <div
-                          style={{
-                            ...serif,
-                            fontSize: 18,
-                            lineHeight: 1.5,
-                            color: isActive ? onDark : C.text,
-                            marginBottom: 8,
-                          }}
-                        >
+                        <div style={{ ...serif, fontSize: 18, lineHeight: 1.5, color: isActive ? onDark : C.text, marginBottom: 8 }}>
                           {p.desc}
                         </div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 11,
-                            color: isActive
-                              ? "rgba(250,248,245,0.55)"
-                              : C.muted,
-                            letterSpacing: "0.08em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Best for ~{" "}
-                          <span
-                            style={{
-                              color: isActive ? onDark : C.text,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {p.best}
-                          </span>
+                        <div style={{ ...mono, fontSize: 11, color: isActive ? 'rgba(250,248,245,0.55)' : C.muted, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                          Best for ~ <span style={{ color: isActive ? onDark : C.text, fontWeight: 700 }}>{p.best}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Simulation log (only when active) */}
                     {isActive && (
-                      <div
-                        style={{
-                          marginTop: 4,
-                          padding: "14px 16px",
-                          background: "rgba(250,248,245,0.06)",
-                          borderRadius: 10,
-                          border: "1px solid rgba(250,248,245,0.1)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 10,
-                            fontWeight: 700,
-                            color: C.primary,
-                            letterSpacing: "0.14em",
-                            textTransform: "uppercase",
-                            marginBottom: 8,
-                          }}
-                        >
+                      <div style={{
+                        marginTop: 4,
+                        padding: '14px 16px',
+                        background: 'rgba(250,248,245,0.06)',
+                        borderRadius: 10,
+                        border: '1px solid rgba(250,248,245,0.1)',
+                      }}>
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
                           You ~
                         </div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 14,
-                            lineHeight: 1.5,
-                            color: onDark,
-                            marginBottom: 14,
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: 14, lineHeight: 1.5, color: onDark, marginBottom: 14 }}>
                           &ldquo;{p.simulation.prompt}&rdquo;
                         </div>
-                        <div
-                          style={{
-                            ...mono,
-                            fontSize: 10,
-                            fontWeight: 700,
-                            color: C.primary,
-                            letterSpacing: "0.14em",
-                            textTransform: "uppercase",
-                            marginBottom: 8,
-                          }}
-                        >
+                        <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>
                           Claude ~
                         </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 6,
-                          }}
-                        >
-                          {p.simulation.steps
-                            .slice(0, revealedSteps)
-                            .map((step, si) => (
-                              <div
-                                key={si}
-                                style={{
-                                  ...mono,
-                                  fontSize: 13,
-                                  lineHeight: 1.5,
-                                  color: step.startsWith("✓")
-                                    ? C.primary
-                                    : "rgba(250,248,245,0.85)",
-                                  fontWeight: step.startsWith("✓") ? 700 : 400,
-                                  opacity: 0,
-                                  animation: "fadeInUp 0.4s ease forwards",
-                                }}
-                              >
-                                {step}
-                              </div>
-                            ))}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {p.simulation.steps.slice(0, revealedSteps).map((step, si) => (
+                            <div key={si} style={{
+                              ...mono, fontSize: 13, lineHeight: 1.5,
+                              color: step.startsWith('✓') ? C.primary : 'rgba(250,248,245,0.85)',
+                              fontWeight: step.startsWith('✓') ? 700 : 400,
+                              opacity: 0,
+                              animation: 'fadeInUp 0.4s ease forwards',
+                            }}>
+                              {step}
+                            </div>
+                          ))}
                           {revealedSteps < p.simulation.steps.length && (
-                            <div
-                              style={{
-                                ...mono,
-                                fontSize: 13,
-                                color: C.primary,
-                                opacity: 0.7,
-                              }}
-                            >
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  animation: "blink 0.8s step-end infinite",
-                                }}
-                              >
-                                ▋
-                              </span>
+                            <div style={{ ...mono, fontSize: 13, color: C.primary, opacity: 0.7 }}>
+                              <span style={{ display: 'inline-block', animation: 'blink 0.8s step-end infinite' }}>▋</span>
                             </div>
                           )}
                         </div>
@@ -12649,38 +5779,10 @@ function AudienceView({
       </div>
 
       {/* ── FOOTER ── */}
-      <div
-        style={{
-          background: C.text,
-          color: "rgba(250,248,245,0.55)",
-          padding: "14px 48px",
-          flexShrink: 0,
-          ...mono,
-          fontSize: 10,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
+      <div style={{ background: C.text, color: 'rgba(250,248,245,0.55)', padding: '14px 48px', flexShrink: 0, ...mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+        <div>Workshop hosted by <span style={{ color: onDark }}>Abie Maxey</span> + <span style={{ color: onDark }}>Meri Gee</span></div>
         <div>
-          Workshop hosted by <span style={{ color: onDark }}>Abie Maxey</span> +{" "}
-          <span style={{ color: onDark }}>Meri Gee</span>
-        </div>
-        <div>
-          <a
-            href={`https://${footerLink}`}
-            style={{
-              color: C.primary,
-              textDecoration: "none",
-              fontWeight: 700,
-            }}
-          >
-            {footerLink}
-          </a>
+          <a href={`https://${footerLink}`} style={{ color: C.primary, textDecoration: 'none', fontWeight: 700 }}>{footerLink}</a>
         </div>
       </div>
 
