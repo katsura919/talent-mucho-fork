@@ -3115,6 +3115,147 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
   );
 }
 
+// ── BootcampPreview ~ segment 08: 3-day intensive teaser ────────────────────
+const BOOTCAMP_DAYS = [
+  {
+    day: 'Day 01',
+    title: 'Create',
+    subtitle: 'Your AI content machine',
+    color: '#C4A882',
+    pain: 'Your #1 pain: content takes too long',
+    sessions: [
+      'Build your Claude content brain ~ voice, ICP, brand in one Project',
+      'Generate a week of content in 20 minutes ~ captions, scripts, carousels',
+      'Write emails that sound like you ~ outreach, newsletters, follow-ups',
+      'Live build: your own content workflow, ready to use Monday',
+    ],
+    outcome: 'Leave with a running content system.',
+  },
+  {
+    day: 'Day 02',
+    title: 'Operate',
+    subtitle: 'Your AI back office',
+    color: '#7D6B5A',
+    pain: 'Your #2 pain: admin eating your day',
+    sessions: [
+      'Automate your inbox ~ triage, draft, respond without touching it',
+      'Build AI SOPs ~ Claude runs your recurring tasks so you don\'t have to',
+      'Research & analysis in minutes ~ reports, competitor intel, summaries',
+      'Live build: one repeating task fully off your plate by end of day',
+    ],
+    outcome: 'Leave with hours back every week.',
+  },
+  {
+    day: 'Day 03',
+    title: 'Build',
+    subtitle: 'Your first AI tool',
+    color: '#5A6B5A',
+    pain: 'Your #3 pain: tech feels out of reach',
+    sessions: [
+      'Vibe coding session ~ build a real thing with Claude, no experience needed',
+      'Your AI dashboard ~ a custom home base for your business',
+      'Connect your tools ~ Claude + your CRM, calendar, docs',
+      'Live build: ship something to your audience by end of day',
+    ],
+    outcome: 'Leave having built something real.',
+  },
+];
+
+function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  return (
+    <div style={{ marginTop: sz(48) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: sz(28) }}>
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6), display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
+            Coming soon ~ members only
+          </div>
+          <div style={{ ...sans, fontSize: sz(32), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            The 3-Day AI Intensive Bootcamp
+          </div>
+          <div style={{ ...serif, fontSize: sz(16), color: C.muted, fontStyle: 'italic', marginTop: sz(6) }}>
+            Built around what you told us hurts most. Small groups. Hands-on. You ship something every day.
+          </div>
+        </div>
+        {/* Member badge */}
+        <div style={{
+          flexShrink: 0,
+          padding: `${sz(16)}px ${sz(24)}px`,
+          borderRadius: sz(16),
+          background: C.primary,
+          textAlign: 'center',
+          marginLeft: sz(24),
+        }}>
+          <div style={{ ...mono, fontSize: sz(28), fontWeight: 900, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>30%</div>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: '#FAF8F5', opacity: 0.8, letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 4 }}>off every bootcamp</div>
+          <div style={{ ...serif, fontSize: sz(11), color: '#FAF8F5', opacity: 0.65, fontStyle: 'italic', marginTop: 2 }}>for premium members</div>
+        </div>
+      </div>
+
+      {/* 3 day cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: sz(16) }}>
+        {BOOTCAMP_DAYS.map((d) => (
+          <div key={d.day} style={{
+            borderRadius: sz(16),
+            overflow: 'hidden',
+            border: `1px solid ${C.border}`,
+            background: C.surface,
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {/* Day header */}
+            <div style={{ background: d.color, padding: `${sz(18)}px ${sz(22)}px` }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(250,248,245,0.7)', marginBottom: sz(4) }}>
+                {d.day}
+              </div>
+              <div style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: '#FAF8F5', letterSpacing: '-0.02em', lineHeight: 1 }}>
+                {d.title}
+              </div>
+              <div style={{ ...serif, fontSize: sz(14), color: 'rgba(250,248,245,0.8)', fontStyle: 'italic', marginTop: sz(4) }}>
+                {d.subtitle}
+              </div>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: `${sz(18)}px ${sz(22)}px`, flex: 1, display: 'flex', flexDirection: 'column', gap: sz(14) }}>
+              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.primary }}>
+                {d.pain}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: sz(8) }}>
+                {d.sessions.map((s, i) => (
+                  <div key={i} style={{ display: 'flex', gap: sz(10), alignItems: 'flex-start' }}>
+                    <span style={{ ...mono, fontSize: sz(11), color: d.color, flexShrink: 0, paddingTop: 1 }}>→</span>
+                    <span style={{ ...serif, fontSize: sz(13), color: C.text, lineHeight: 1.45 }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 'auto', paddingTop: sz(14), borderTop: `1px solid ${C.border}` }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: d.color }}>
+                  ✦ {d.outcome}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom note */}
+      <div style={{ marginTop: sz(20), padding: `${sz(16)}px ${sz(24)}px`, borderRadius: sz(12), background: `${C.primary}10`, border: `1px solid ${C.primary}30`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ ...serif, fontSize: sz(15), color: C.text, fontStyle: 'italic' }}>
+          Drop <strong style={{ fontStyle: 'normal', ...mono, fontSize: sz(13), color: C.primary, letterSpacing: '0.1em' }}>BOOTCAMP</strong> in the chat to get notified when doors open.
+        </div>
+        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', flexShrink: 0, marginLeft: sz(24) }}>
+          Premium members · 30% off · always
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── SkoolJoinCard ~ segment 08 audience view: premium membership CTA ────────
 const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
 const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
@@ -4969,6 +5110,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
           <>
             <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
