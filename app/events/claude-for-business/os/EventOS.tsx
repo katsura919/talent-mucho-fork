@@ -3672,6 +3672,9 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
 
       {/* Right: details */}
       <div style={{ flex: 1 }}>
+        <div style={{ ...sans, fontSize: sz(13), color: C.muted, fontStyle: 'italic', marginBottom: sz(10) }}>
+          Not ready for the bootcamp? Join for accountability.
+        </div>
         <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: sz(6) }}>
           Premium membership
         </div>
