@@ -5445,7 +5445,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                 <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
                 {samePrompt ? 'Same prompt, two responses' : 'Same prompt, two ways'}
               </div>
-              <div style={{ ...serif, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
+              <div style={{ ...sans, fontSize: 18, color: C.muted, marginBottom: 24, lineHeight: 1.5 }}>
                 {p.scenario}
               </div>
 
@@ -5496,7 +5496,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         }}>{col.tag}</div>
                         <div style={{ ...sans, fontSize: 24, fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 8 }}
                           dangerouslySetInnerHTML={{ __html: col.title.replace(/<em>/g, `<em style="font-family:${(serif.fontFamily as string)};font-weight:400;color:${C.primary}">`) }} />
-                        <div style={{ ...serif, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
+                        <div style={{ ...sans, fontSize: 16, color: C.muted, lineHeight: 1.5 }}>
                           {col.why}
                         </div>
                       </div>
@@ -5516,7 +5516,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>
                           {col.side === 'right' && p.rightDrafts ? 'Step 1 · Claude asks back' : 'The response'}
                         </div>
-                        <div style={{ ...serif, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
+                        <div style={{ ...sans, fontSize: 16, lineHeight: 1.6, color: C.text, whiteSpace: 'pre-wrap' }}>
                           {col.answer}
                         </div>
                       </div>
@@ -5528,7 +5528,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                             Step 2 · Claude offers a selection
                           </div>
                           {p.rightBridge && (
-                            <div style={{ ...serif, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
+                            <div style={{ ...sans, fontSize: 16, lineHeight: 1.55, color: C.text, marginBottom: 14 }}>
                               {p.rightBridge}
                             </div>
                           )}
@@ -5560,7 +5560,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                                     </div>
                                   </div>
                                   {isSelected && (
-                                    <div style={{ ...serif, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                                    <div style={{ ...sans, fontSize: 15, lineHeight: 1.65, color: onDark, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                                       {draft.body}
                                     </div>
                                   )}
@@ -5581,7 +5581,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                         <div style={{ ...mono, fontSize: 10, fontWeight: 700, color: C.primary, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 6 }}>
                           {col.annLbl}
                         </div>
-                        <div style={{ ...serif, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
+                        <div style={{ ...sans, fontSize: 17, color: C.text, lineHeight: 1.5 }}>
                           {col.annTxt}
                         </div>
                       </div>
