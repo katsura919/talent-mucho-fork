@@ -9748,10 +9748,6 @@ function CommunityPulse({
 }) {
   const onDark = "#FAF8F5";
   const sz = (px: number) => Math.round(px * scale);
-  const stats = communityData.stats;
-  const animCount = stats.total;
-  const [activePain, setActivePain] = useState<number | null>(0);
-
   const [revealed, setRevealed] = useState(0);
   const [animCount, setAnimCount] = useState(0);
   const [activePain, setActivePain] = useState<number | null>(null);
@@ -9761,15 +9757,6 @@ function CommunityPulse({
     byPainCategory: Record<string, number>;
     byAILevel: Record<string, number>;
   };
-  const painEntries = (Object.entries(stats.byPainCategory) as [string, number][])
-    .filter(([k]) => k !== 'No Answer' && k !== 'Unspecified')
-    .sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const painMax = Math.max(...painEntries.map(([, v]) => v));
-  const painTotal = painEntries.reduce((s, [, v]) => s + v, 0);
-  const painColors = [C.primary, `${C.primary}CC`, `${C.primary}99`, `${C.primary}77`, `${C.primary}55`, `${C.primary}33`];
-  const aiEntries = (Object.entries(stats.byAILevel) as [string, number][]).sort((a, b) => b[1] - a[1]);
-  const aiTotal = aiEntries.reduce((s, [, v]) => s + v, 0);
-
   const painEntries = Object.entries(stats.byPainCategory)
     .filter(
       ([key, count]) =>
