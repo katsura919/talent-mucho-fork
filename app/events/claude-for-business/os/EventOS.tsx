@@ -416,6 +416,12 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
     if (speakers.includes('MERI') && !speakers.includes('ABIE')) setShowTab('meri');
     else setShowTab('abie');
     prompterRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    // Broadcast to audience live page
+    fetch('/api/events/claude-for-business/state', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_segment: idx, is_live: true }),
+    }).catch(() => {});
   }, []);
 
   const goToBeat = useCallback((idx: number) => {
@@ -1487,9 +1493,9 @@ function ProductsPanel({ C, mono, sans, serif }: { C: Record<string, string>; mo
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {products.map(p => (
-          <div key={p.icon} style={{ padding: '11px 13px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.surface2, display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+          <div key={p.icon} style={{ padding: '11px 13px', borderRadius: 9, border: `1px solid ${p.icon === '03' ? C.primary : C.border}`, background: C.surface2, display: 'flex', gap: 11, alignItems: 'flex-start' }}>
             <div style={{ width: 30, height: 30, flexShrink: 0, borderRadius: 7, background: 'rgba(125,107,90,0.2)', color: C.text, display: 'flex', alignItems: 'center', justifyContent: 'center', ...mono, fontSize: 11, fontWeight: 900 }}>{p.icon}</div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: C.text, textTransform: 'uppercase', letterSpacing: '-0.01em', marginBottom: 2 }}>{p.name}</div>
               <div style={{ ...mono, fontSize: 9, color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 5 }}>{p.tag}</div>
               <div style={{ ...sans, fontSize: 14, lineHeight: 1.5, color: C.text }}>{p.desc}</div>
@@ -1497,6 +1503,15 @@ function ProductsPanel({ C, mono, sans, serif }: { C: Record<string, string>; mo
                 Best for ~ <span style={{ color: C.text, fontWeight: 700 }}>{p.best}</span>
               </div>
             </div>
+            {p.icon === '03' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                <div style={{ background: '#FAF8F5', padding: 6, borderRadius: 8, border: `1.5px solid ${C.primary}` }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={60} height={60} alt="Download Claude Code" style={{ display: 'block' }} />
+                </div>
+                <div style={{ ...mono, fontSize: 8, color: C.primary, letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>Download</div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -1934,11 +1949,11 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
   );
 }
 
-// ── LiveBuildGuide ~ segment 06 audience view: the 3-step process card ────────
-const BUILD_STEPS = [
-  { num: '01', label: 'DEFINE', title: 'Name the problem', desc: 'What goes in, what comes out. One sentence.' },
-  { num: '02', label: 'CONTEXT', title: 'Feed Claude', desc: 'Paste an example. Describe the tone. Set constraints.' },
-  { num: '03', label: 'RUN', title: 'Execute + refine', desc: 'Review the output. Tweak. Run again. Ship it.' },
+// ── LiveBuildGuide ~ segment 06 audience view: hands-on exercise ─────────────
+const HANDS_ON_STEPS = [
+  { num: '01', label: 'Scan', title: 'Get the prompts', desc: 'Go to abiemaxey.com/web-works' },
+  { num: '02', label: 'Build', title: 'Run it with Claude', desc: 'Pick a prompt. Abie runs hers on screen ~ you run yours.' },
+  { num: '03', label: 'Share', title: 'Show the room', desc: 'One person shares what they built.' },
 ];
 
 function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
@@ -1949,85 +1964,97 @@ function LiveBuildGuide({ C, mono, sans, serif, scale = 1 }: {
   scale?: number;
 }) {
   const sz = (px: number) => Math.round(px * scale);
+  const WEB_WORKS_URL = 'https://abiemaxey.com/web-works';
 
   return (
-    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: 28 }}>
+    <div style={{ maxWidth: 1280, margin: '36px auto 0', display: 'flex', flexDirection: 'column', gap: sz(24) }}>
 
-      {/* Call to action */}
-      <div style={{
-        padding: '32px 36px',
-        borderRadius: 18,
-        background: C.text,
-        color: '#FAF8F5',
-        textAlign: 'center',
-      }}>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 10 }}>
-          Your turn
-        </div>
-        <div style={{ ...serif, fontSize: sz(24), color: '#FAF8F5', lineHeight: 1.45, marginBottom: 12 }}>
-          Drop your problem in the chat.
-        </div>
-        <div style={{ ...sans, fontSize: sz(14), color: 'rgba(250,248,245,0.6)', lineHeight: 1.6 }}>
-          One sentence. &quot;I spend 3 hours a week doing X.&quot; We&apos;ll pick one and build it live.
-        </div>
-      </div>
-
-      {/* 3-step process */}
-      <div>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ display: 'inline-block', width: 22, height: 1, background: C.primary }} />
-          The process ~ every time
-        </div>
-        <div style={{ marginBottom: 22 }}>
-          <span style={{ ...sans, fontSize: sz(26), fontWeight: 800, color: C.text }}>3 steps to solve </span>
-          <span style={{ ...serif, fontSize: sz(26), fontWeight: 400, color: C.text }}>any problem with Claude.</span>
+      {/* Hero: your turn */}
+      <div style={{ borderRadius: sz(20), background: C.text, padding: `${sz(36)}px ${sz(40)}px`, display: 'grid', gridTemplateColumns: '1fr auto', gap: sz(40), alignItems: 'center', position: 'relative' as const, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute' as const, top: '-20%', right: '30%', width: '40%', height: '140%', background: `radial-gradient(ellipse, ${C.primary}30 0%, transparent 60%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'relative' as const }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(12) }}>
+            Your turn ~ 10 minutes
+          </div>
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: '#FAF8F5', lineHeight: 1.1, marginBottom: sz(14) }}>
+            We build together.<br />
+            <span style={{ color: C.primary }}>Right now.</span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(15), color: 'rgba(250,248,245,0.65)', lineHeight: 1.65, marginBottom: sz(22) }}>
+            Scan the QR. Pick a prompt from Web Works. Abie shares her screen and runs hers ~ you run yours at the same time.
+            <br /><br />
+            While Claude builds ~ feel free to step away, grab water, stretch. Come back and see what it made. We&apos;ll come back together in 10.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' as const, gap: sz(10) }}>
+            {HANDS_ON_STEPS.map((s) => (
+              <div key={s.num} style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+                <span style={{ ...mono, fontSize: sz(10), fontWeight: 800, color: C.primary, background: 'rgba(196,154,108,0.15)', padding: `${sz(3)}px ${sz(9)}px`, borderRadius: 100, flexShrink: 0 }}>{s.num}</span>
+                <span style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: '#FAF8F5' }}>{s.title}</span>
+                <span style={{ ...sans, fontSize: sz(13), color: 'rgba(250,248,245,0.45)' }}>~ {s.desc}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {BUILD_STEPS.map((step, i) => (
-            <div key={step.num} style={{
-              padding: '28px 24px',
-              borderRadius: 16,
-              background: C.surface,
-              border: `1px solid ${C.border}`,
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              <div style={{ ...serif, fontSize: sz(48), color: C.primary, opacity: 0.12, position: 'absolute', top: 12, right: 18, lineHeight: 1 }}>{step.num}</div>
-              <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 10 }}>{step.label}</div>
-              <div style={{ ...sans, fontSize: sz(18), fontWeight: 700, color: C.text, marginBottom: 8 }}>{step.title}</div>
-              <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.5 }}>{step.desc}</div>
-              {i < BUILD_STEPS.length - 1 && (
-                <div style={{
-                  position: 'absolute', right: -12, top: '50%', transform: 'translateY(-50%)',
-                  ...mono, fontSize: sz(18), color: C.primary, opacity: 0.4, zIndex: 2,
-                }}>
-                  &rarr;
-                </div>
-              )}
+        {/* QR codes ~ guide first, then web-works */}
+        <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(16), flexShrink: 0 }}>
+          {/* Guide QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Tonight&apos;s guide</div>
+            <div style={{ background: '#FAF8F5', padding: sz(8), borderRadius: sz(10), border: `1.5px solid ${C.primary}40` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://talentmucho.com/events/claude-for-business/guide')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(90)}
+                height={sz(90)}
+                alt="Tonight's guide"
+                style={{ display: 'block' }}
+              />
             </div>
-          ))}
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              talentmucho.com/…/guide
+            </div>
+          </div>
+
+          {/* Web-works QR */}
+          <div style={{ display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: sz(6) }}>
+            <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: C.primary }}>Get your prompts</div>
+            <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 24px -8px ${C.primary}50` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(WEB_WORKS_URL)}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                width={sz(110)}
+                height={sz(110)}
+                alt="Scan for Web Works prompts"
+                style={{ display: 'block' }}
+              />
+            </div>
+            <div style={{ ...mono, fontSize: sz(8), color: 'rgba(250,248,245,0.35)', letterSpacing: '0.08em', textAlign: 'center' as const }}>
+              abiemaxey.com/web-works
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Key message */}
-      <div style={{
-        padding: '24px 30px',
-        borderRadius: 16,
-        background: `${C.primary}10`,
-        border: `1px solid ${C.border}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 20,
-      }}>
-        <div style={{ ...serif, fontSize: sz(36), color: C.primary, opacity: 0.3, flexShrink: 0 }}>&#9733;</div>
-        <div>
-          <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
-            No magic. No code. Just a clear problem and a good prompt.
+      {/* Timer + share back + Claude Code */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: sz(16) }}>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}` }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>Timer</div>
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 800, color: C.text, marginBottom: sz(6) }}>10 min</div>
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.55 }}>Build something real. Not perfect ~ real. Claude is doing the heavy lifting. You&apos;re steering.</div>
+        </div>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}` }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary, marginBottom: sz(8) }}>Then</div>
+          <div style={{ ...sans, fontSize: sz(30), fontWeight: 800, color: C.text, marginBottom: sz(6) }}>Share back</div>
+          <div style={{ ...sans, fontSize: sz(13), color: C.muted, lineHeight: 1.55 }}>One person from the room shares their screen or describes what they built. We see it together.</div>
+        </div>
+        <div style={{ padding: `${sz(22)}px ${sz(26)}px`, borderRadius: sz(16), background: C.surface, border: `1px solid ${C.border}`, display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', gap: sz(10) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>Missed the download?</div>
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(10), border: `1.5px solid ${C.primary}` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={sz(80)} height={sz(80)} alt="Download Claude" style={{ display: 'block' }} />
           </div>
-          <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginTop: 4, lineHeight: 1.5 }}>
-            The most annoying repetitive thing in your week? That&apos;s what you build first.
-          </div>
+          <div style={{ ...mono, fontSize: sz(9), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>claude.ai/download</div>
         </div>
       </div>
     </div>
@@ -3184,7 +3211,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
 }
 
 // ── FreeGuideCTA ~ segment 08 closing remark: Skool QR + free guide drop ─────
-const SKOOL_FREE_URL = 'https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7';
+const SKOOL_FREE_URL = 'https://talentmucho.com/events/claude-for-business/guide';
 
 function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
@@ -5881,6 +5908,15 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
                           Best for ~ <span style={{ color: isActive ? onDark : C.text, fontWeight: 700 }}>{p.best}</span>
                         </div>
                       </div>
+                      {p.icon === '03' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                          <div style={{ background: '#FAF8F5', padding: 8, borderRadius: 10, border: `1.5px solid ${C.primary}` }}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent('https://claude.ai/download')}&margin=0&color=2A2520&bgcolor=FAF8F5`} width={80} height={80} alt="Download Claude" style={{ display: 'block' }} />
+                          </div>
+                          <div style={{ ...mono, fontSize: 9, color: isActive ? 'rgba(250,248,245,0.6)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'center' }}>Download</div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Simulation log (only when active) */}

@@ -434,59 +434,53 @@ export const SEGMENTS: Segment[] = [
   // 06 ~ Live build
   {
     id: 6, num: '06', title: 'Live', titleItalic: 'build',
-    subtitle: "7:20~7:35 PM ~ pick a real problem from the audience, solve it with Claude on the spot",
+    subtitle: "7:20~7:35 PM ~ co-build with Abie on screen, 10-min, someone shares back",
     duration: '15 min', speakers: ['ABIE', 'MERI'], panel: 'showcase',
-    audWhatTitle: 'Live build',
-    audWhatBody: "<p>This is hands-on. We pick a real problem from someone in the room and build a solution with Claude ~ right here, right now.</p><p>No prep. No slides. Just a screen share and a problem worth solving.</p>",
-    audTakeaway: "You just watched us build something real in 15 minutes. Imagine what you could do in a week.",
+    audWhatTitle: 'Build it ~ together, right now',
+    audWhatBody: "<p>This is hands-on. Scan the QR, go to abiemaxey.com/web-works, grab a prompt, and run it in Claude ~ at the same time as Abie. Her screen is shared. You follow along and build yours simultaneously.</p><p>While Claude works, step away, take a breath, come back and see what it made. Then one person shares their output with the room.</p>",
+    audTakeaway: "You didn't just watch someone build. You built it ~ side by side.",
     beats: [
       {
-        id: 'lb1', title: 'Set the stage', speaker: 'BOTH', blocks: [
-          { type: 'stage', text: 'Both on cam. Energy up ~ this is the moment they see it click.' },
-          { type: 'scripted', speaker: 'BOTH', text: "Okay ~ this is the part that makes tonight different. We're not showing you another demo. We're going to pick a real problem from one of you and solve it live." },
-          { type: 'scripted', speaker: 'MERI', text: "Drop your problem in the chat. One sentence. \"I spend 3 hours a week doing X.\" We'll pick one and build it on screen." },
-          { type: 'stage', text: 'Meri scans chat. Pick something concrete ~ email drafting, content repurposing, client onboarding, data entry. Avoid anything too niche.' },
+        id: 'lb1', title: 'Launch the co-build', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: 'Abie shares screen. Open Claude. QR for abiemaxey.com/web-works visible on audience screen.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Okay ~ we're switching modes. No more watching. We're all building now. Me and you, at the same time." },
+          { type: 'scripted', speaker: 'ABIE', text: "Scan the QR on your screen or go to abiemaxey.com/web-works. You'll find prompts designed to build you a dashboard in Claude. Pick one ~ any one. I picked mine before the session. Now we both run it." },
+          { type: 'stage', text: 'Give 20 seconds for them to open the page and pick a prompt. Abie has her prompt ready in Claude.' },
+          { type: 'scripted', speaker: 'ABIE', text: "Got one? Good. We go together. Watch my screen ~ and run yours at the same time." },
         ],
       },
       {
-        id: 'lb2', title: 'Pick the problem', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "Alright ~ we've got a good one. Let me read it out." },
-          { type: 'stage', text: 'Read the chosen problem out loud. Acknowledge the person by name.' },
-          { type: 'scripted', speaker: 'MERI', text: "This is exactly the kind of thing we were talking about earlier. Repetitive, time-consuming, and Claude can eat it for breakfast." },
-          { type: 'workbook', text: "WORKBOOK ~ Write down: what's YOUR version of this problem? What's the task you'd want Claude to solve first?" },
-        ],
-      },
-      {
-        id: 'lb3', title: 'Build it live', speaker: 'ABIE', blocks: [
-          { type: 'stage', text: 'Abie shares screen. Open Claude. Walk through the build step by step. Narrate everything.' },
-          { type: 'scripted', speaker: 'ABIE', text: "Watch the screen. I'm going to think out loud so you can follow the process, not just the output." },
+        id: 'lb2', title: 'Build together', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: 'Abie runs her prompt on screen while talking through each step. The audience runs theirs simultaneously. Meri watches chat for questions.' },
+          { type: 'scripted', speaker: 'ABIE', text: "I'm pasting my prompt now. Watch what I put in ~ then adapt it for yours." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            'Step 1 ~ Define the problem in plain language. What goes in, what comes out.',
-            'Step 2 ~ Give Claude context. Paste an example, describe the tone, set constraints.',
-            'Step 3 ~ Run it. Review the output. Tweak. Run again.',
+            'Context first ~ who you are, what the output is for, what good looks like',
+            'Run it. Don\'t overthink the prompt. Just go.',
+            'While Claude builds ~ step away. Grab water. Let it work. Come back.',
           ]},
-          { type: 'stage', text: 'Keep it under 10 minutes. If the first output is good, show a refinement pass. If it\'s rough, show the correction loop ~ that\'s equally valuable.' },
-          { type: 'scripted', speaker: 'ABIE', text: "That took what ~ 8 minutes? This person was spending 3 hours a week on this. That's the compound effect we keep talking about." },
+          { type: 'scripted', speaker: 'ABIE', text: "Here's what I love about this. Claude is building for me right now ~ and it's building for you too. At the same time. That's the whole point of tonight." },
+          { type: 'stage', text: 'Run the full loop on screen ~ paste, run, read output, one tweak, run again. Narrate every decision. Keep Meri watching chat.' },
+          { type: 'scripted', speaker: 'MERI', text: "Drop your prompt or your output in chat if you want eyes on it. We're watching." },
+          { type: 'stage', text: "With 2 min left: 'Finish up ~ we're picking someone to share in a moment.'" },
+        ],
+      },
+      {
+        id: 'lb3', title: 'Someone shares', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "Okay ~ who wants to show us what they got? Drop a 1 in chat." },
+          { type: 'stage', text: 'Pick the first person. Ask them to describe what they built or share screen. 2 min max. React genuinely ~ no over-praising.' },
+          { type: 'scripted', speaker: 'ABIE', text: "That's what 10 minutes with Claude looks like. Side by side ~ you and the AI. You didn't need a developer. You needed a prompt and a browser." },
         ],
       },
       {
         id: 'lb4', title: 'Land it', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "That's what it looks like. No magic. No code. Just a clear problem and a good prompt." },
-          { type: 'scripted', speaker: 'BOTH', text: "Remember the answer you wrote down earlier ~ the most annoying repetitive thing in your week? You just watched us solve someone else's. Yours is next." },
-
-          { type: 'scripted', speaker: 'ABIE', text: "Now ~ I'm going to be straight with you, because honesty is what builds trust. For the simple stuff ~ emails, drafts, daily ops, content ~ you can 100% do this yourself. Tonight, even. That's the whole point of why we're here." },
-          { type: 'scripted', speaker: 'ABIE', text: "But here's the part most people learn the hard way. The complicated projects ~ full AI systems, custom employees, the skills our Architects demoed earlier ~ those don't get built by watching one workshop. They get built by people who've shipped this stuff hundreds of times." },
-          { type: 'scripted', speaker: 'ABIE', text: "Meri and I have an unfair advantage. We're technical. Our team is mostly engineers and AI architects. That's why what you just saw looks effortless ~ because we've already made every mistake you'd be about to make." },
-          { type: 'scripted', speaker: 'MERI', text: "And here's what I've watched happen with smart people for two years now. They watch a workshop like this. They go home pumped. Then they spend three months trying to build the complex thing alone, hit twelve walls, and quietly stop. The people who actually ship? They paired up with someone who's already done it." },
-          { type: 'scripted', speaker: 'MERI', text: "So if you're serious ~ and only if you're serious ~ pair up. That's the move. The easiest way? Pair up with us. We've already built what you're trying to build." },
-          { type: 'bullets', speaker: 'BOTH', items: [
-            "Lane 1 ~ Deploy our people into your team. Embedded AI engineers + VAs running inside your business. (We have a waitlist.)",
-            "Lane 2 ~ Done-for-you build. Hand us the problem, we hand back the system, fully operational. Higher ticket, faster results.",
-            "Lane 3 ~ Premium community. Weekly live sessions with us, full vault access, and the quarterly bootcamps where we walk you through building the complex stuff yourself ~ at a fraction of the price of Lanes 1 or 2.",
-          ]},
-          { type: 'scripted', speaker: 'ABIE', text: "Most people in this room will fit Lane 3. That's the bridge between the workshop and the real builds. Tonight only, we're opening it at the founding-member rate ~ and that price doesn't come back." },
-          { type: 'scripted', speaker: 'BOTH', text: "Whichever lane you pick ~ you're not doing this alone. That's the entire reason we built Talent Mucho. The lane is yours. The decision window is now." },
-          { type: 'poll', text: "POLL ~ After watching that live build, how confident are you that you could do this yourself?\n1 = I need more guidance\n2 = I could try it with some help\n3 = I'm ready to go\n4 = I'm already planning what to build" },
+          { type: 'stage', text: 'Both back on cam. Let the energy settle. This is the exhale after the exercise.' },
+          { type: 'scripted', speaker: 'ABIE', text: "That was 10 minutes. From nothing to something real ~ built by you, not watched by you. That's the difference between tonight and every other AI workshop you've been to." },
+          { type: 'scripted', speaker: 'MERI', text: "And here's what I want you to notice. You didn't wait for permission. You didn't need a developer, a course, or a team. You had a prompt, a browser, and 10 minutes." },
+          { type: 'scripted', speaker: 'ABIE', text: "Now imagine doing that every week. One build session. One new tool inside your business. That's the compound effect. Not the first build ~ the tenth one." },
+          { type: 'scripted', speaker: 'MERI', text: "We've put everything from tonight into the guide kit ~ including four more prompts specifically for building your personal dashboard. Command centre, weekly priority stack, client status board, content week view. All yours, copy-paste ready." },
+          { type: 'scripted', speaker: 'ABIE', text: "The link is in chat. abiemaxey.com/web-works ~ or scan the QR that's been on your screen. Run those tonight and you'll have a real working dashboard before you go to sleep." },
+          { type: 'scripted', speaker: 'BOTH', text: "Q&A is next. Then we close out with what comes after tonight. Stay with us." },
+          { type: 'poll', text: "POLL ~ What did you just build?\n1 = Something for my content\n2 = Something for my clients\n3 = Something for my own workflow\n4 = Still figuring it out ~ but I ran it" },
         ],
       },
     ],
