@@ -1207,7 +1207,7 @@ const THREE_DOORS: DoorOption[] = [
   },
   {
     label: 'Door 3',
-    name: 'Inner Circle',
+    name: 'Bootcamp',
     italic: '€247 ~ tonight only',
     price: '€247',
     pitch: "One month. 9 live sessions. Four deliverables. AI running inside your business by Week 4.",
