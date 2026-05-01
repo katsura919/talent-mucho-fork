@@ -3421,8 +3421,27 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
               <div style={{ ...mono, fontSize: sz(9), color: 'rgba(250,248,245,0.5)', letterSpacing: '0.1em' }}>for the price of €247</div>
             </div>
           </div>
-          <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', marginTop: sz(12) }}>
-            ● Cohort 1 closes tonight at midnight. €247 is the founding price ~ Cohort 2 opens at €397. The VIP upgrade (€397 free tonight) returns to full price after midnight.
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(24), marginTop: sz(16) }}>
+            {/* QR code */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8), flexShrink: 0 }}>
+              <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 8px 20px -6px ${C.primary}50` }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://buy.stripe.com/00wbIV3qm1SzcKBd0973G07')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+                  width={sz(100)}
+                  height={sz(100)}
+                  alt="Scan to join Bootcamp Cohort 1"
+                  style={{ display: 'block' }}
+                />
+              </div>
+              <div style={{ ...mono, fontSize: sz(9), fontWeight: 700, color: C.primary, letterSpacing: '0.14em', textTransform: 'uppercase' as const }}>
+                Scan to join
+              </div>
+            </div>
+            <div style={{ ...sans, fontSize: sz(12), color: 'rgba(250,248,245,0.5)', lineHeight: 1.6 }}>
+              ● Cohort 1 closes tonight at midnight. €247 is the founding price ~ Cohort 2 opens at €397.<br />
+              The VIP upgrade (€397 free tonight) returns to full price after midnight.
+            </div>
           </div>
         </div>
       </div>
