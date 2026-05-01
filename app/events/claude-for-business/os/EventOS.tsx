@@ -9117,9 +9117,9 @@ const HOSTS = [
     flag: "🇵🇭 → 🇪🇸",
     location: "Philippines → Madrid",
     story: [
-      "A decade in tech ~ analyst, architect, engineer, manager. <em>Never picked a lane.</em>",
-      "Tech bought me location freedom ~ digital nomad for years, 1-3 months per country.",
-      "Now in Spain. <em>My build era.</em> AI made breadth my unfair advantage.",
+      "Throughout my tech career I was placed in several roles ~ analyst, architect, engineer, manager. <em>Always adapting.</em>",
+      "Same as a digital nomad ~ country to country, no roots. <em>A chameleon in every sense.</em>",
+      "Then I found my love in AI ~ and finally found a base in Spain. <em>My build era.</em>",
     ],
     links: [
       { handle: "abiemaxey.com", url: "https://abiemaxey.com" },
@@ -9530,6 +9530,28 @@ function OriginIntro({
           })}
         </div>
 
+        {/* How we met card */}
+        <div style={{
+          padding: '22px 26px', borderRadius: 18,
+          background: C.surface, border: `1px solid ${C.border}`,
+          marginBottom: 18,
+          display: 'flex', alignItems: 'flex-start', gap: 18,
+        }}>
+          <div style={{ fontSize: sz(28), lineHeight: 1, flexShrink: 0 }}>🤝</div>
+          <div>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: C.primary, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 8 }}>
+              How we met
+            </div>
+            <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(17), color: C.text, lineHeight: 1.55 }}>
+              Meri found Abie on YouTube. They decided to meet in Barcelona ~ strangers from the internet.
+              Abie&apos;s thread went viral. People thought she was getting trafficked. <em style={{ color: C.primary }}>1 million views.</em>
+            </div>
+            <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginTop: 8 }}>
+              And here we are ~ building Talent Mucho.
+            </div>
+          </div>
+        </div>
+
         {/* Narrative card */}
         <div
           style={{
@@ -9731,6 +9753,22 @@ function CommunityPulse({
   const [activePain, setActivePain] = useState<number | null>(0);
 
   const [revealed, setRevealed] = useState(0);
+  const [animCount, setAnimCount] = useState(0);
+  const [activePain, setActivePain] = useState<number | null>(null);
+
+  const stats = communityData.stats as {
+    total: number; ghlOnly: number; skoolOnly: number; both: number;
+    byPainCategory: Record<string, number>;
+    byAILevel: Record<string, number>;
+  };
+  const painEntries = (Object.entries(stats.byPainCategory) as [string, number][])
+    .filter(([k]) => k !== 'No Answer' && k !== 'Unspecified')
+    .sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const painMax = Math.max(...painEntries.map(([, v]) => v));
+  const painTotal = painEntries.reduce((s, [, v]) => s + v, 0);
+  const painColors = [C.primary, `${C.primary}CC`, `${C.primary}99`, `${C.primary}77`, `${C.primary}55`, `${C.primary}33`];
+  const aiEntries = (Object.entries(stats.byAILevel) as [string, number][]).sort((a, b) => b[1] - a[1]);
+  const aiTotal = aiEntries.reduce((s, [, v]) => s + v, 0);
 
   const painEntries = Object.entries(stats.byPainCategory)
     .filter(
@@ -9754,7 +9792,7 @@ function CommunityPulse({
   ];
 
   useEffect(() => {
-    setRevealed(0);
+    setRevealed(0); setAnimCount(0);
     let i = 0;
     const tick = () => {
       i += 1;
@@ -9762,7 +9800,10 @@ function CommunityPulse({
       if (i < 2) setTimeout(tick, 600);
     };
     setTimeout(tick, 400);
-  }, []);
+    let cur = 0; const target = stats.total; const step = Math.ceil(target / 60);
+    const counter = setInterval(() => { cur = Math.min(cur + step, target); setAnimCount(cur); if (cur >= target) clearInterval(counter); }, 30);
+    return () => clearInterval(counter);
+  }, [stats.total]);
 
   return (
     <div style={{ maxWidth: 1280, margin: "36px auto 0" }}>
