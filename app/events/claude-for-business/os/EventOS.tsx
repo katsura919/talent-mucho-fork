@@ -847,9 +847,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                               <Editable
                                 key={`scr-${segIdx}-${bi}-${bli}`}
                                 tagName="div"
-                                value={(bl.text ?? '').replace(/<em>/g, `<em style="color:${C.primary}">`)}
+                                value={(bl.text ?? '').replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                 editMode={editMode}
-                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em [^>]*>/g, '<em>'))}
+                                onSave={v => saveEdit(`${blPath}.text`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
                                 style={{ ...serif, fontSize, lineHeight: 1.75, fontWeight: 400, color: C.text }}
                               />
                             ) : (
@@ -859,9 +859,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
                                     <span style={{ ...mono, fontSize: 12, color: C.primary, flexShrink: 0, paddingTop: 3 }}>~</span>
                                     <Editable
                                       key={`b-${segIdx}-${bi}-${bli}-${ii}`}
-                                      value={item.replace(/<em>/g, `<em style="color:${C.primary}">`)}
+                                      value={item.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '')}
                                       editMode={editMode}
-                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em [^>]*>/g, '<em>'))}
+                                      onSave={v => saveEdit(`${blPath}.items.${ii}`, v.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, ''))}
                                       style={{ ...serif, fontSize: fontSize - 2, lineHeight: 1.6, color: C.text }}
                                     />
                                   </li>
@@ -1088,7 +1088,7 @@ function ComparePanel({ preset, state, onRun, onReset, C, mono, serif }: {
       {state.step === 3 && (
         <div style={{ borderTop: `1px solid ${C.border}`, padding: '10px 14px', background: C.surface, flexShrink: 0 }}>
           <div style={{ ...serif, fontSize: 13, color: C.text, lineHeight: 1.6, textAlign: 'center' }}
-            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em>/g, `<em style="color:${C.primary};">`) }} />
+            dangerouslySetInnerHTML={{ __html: preset.landing.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }} />
         </div>
       )}
       <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
@@ -4206,7 +4206,7 @@ function OriginIntro({ C, mono, sans, serif, scale = 1 }: {
                 <div
                   key={i}
                   style={{ ...serif, fontSize: sz(17), lineHeight: 1.55, color: C.text }}
-                  dangerouslySetInnerHTML={{ __html: line.replace(/<em>/g, `<em style="color:${C.primary}">`) }}
+                  dangerouslySetInnerHTML={{ __html: line.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '') }}
                 />
               ))}
             </div>
@@ -4392,13 +4392,32 @@ function CommunityPulse({ C, mono, sans, serif, scale = 1 }: {
   const sz = (px: number) => Math.round(px * scale);
 
   const [revealed, setRevealed] = useState(0);
+  const [animCount, setAnimCount] = useState(0);
+  const [activePain, setActivePain] = useState<number | null>(null);
+
+  const stats = communityData.stats as {
+    total: number; ghlOnly: number; skoolOnly: number; both: number;
+    byPainCategory: Record<string, number>;
+    byAILevel: Record<string, number>;
+  };
+  const painEntries = (Object.entries(stats.byPainCategory) as [string, number][])
+    .filter(([k]) => k !== 'No Answer' && k !== 'Unspecified')
+    .sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const painMax = Math.max(...painEntries.map(([, v]) => v));
+  const painTotal = painEntries.reduce((s, [, v]) => s + v, 0);
+  const painColors = [C.primary, `${C.primary}CC`, `${C.primary}99`, `${C.primary}77`, `${C.primary}55`, `${C.primary}33`];
+  const aiEntries = (Object.entries(stats.byAILevel) as [string, number][]).sort((a, b) => b[1] - a[1]);
+  const aiTotal = aiEntries.reduce((s, [, v]) => s + v, 0);
 
   useEffect(() => {
-    setRevealed(0);
+    setRevealed(0); setAnimCount(0);
     let i = 0;
-    const tick = () => { i += 1; setRevealed(i); if (i < 2) setTimeout(tick, 600); };
+    const tick = () => { i += 1; setRevealed(i); if (i < 3) setTimeout(tick, 600); };
     setTimeout(tick, 400);
-  }, []);
+    let cur = 0; const target = stats.total; const step = Math.ceil(target / 60);
+    const counter = setInterval(() => { cur = Math.min(cur + step, target); setAnimCount(cur); if (cur >= target) clearInterval(counter); }, 30);
+    return () => clearInterval(counter);
+  }, [stats.total]);
 
   return (
     <div style={{ maxWidth: 1280, margin: '36px auto 0' }}>
@@ -4964,9 +4983,9 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   const brandSub = 'CLAUDE FOR BUSINESS';
   const footerLink = 'talentmucho.com';
 
-  // Themed em rendering for body copy
-  const emRender = (html: string) => html.replace(/<em>/g, `<em style="color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
-  const emOnDark = (html: string) => html.replace(/<em>/g, `<em style="color:${C.primary};font-family:${(serif.fontFamily as string)}">`);
+  // Strip em tags ~ no italics in slides
+  const emRender = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
+  const emOnDark = (html: string) => html.replace(/<em[^>]*>/g, '').replace(/<\/em>/g, '');
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', background: C.bg, color: C.text, ...sans, position: 'relative' }}>
