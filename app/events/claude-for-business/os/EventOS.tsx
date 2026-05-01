@@ -3196,7 +3196,7 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
 }
 
 // ── FreeGuideCTA ~ segment 08 closing remark: Skool QR + free guide drop ─────
-const SKOOL_FREE_URL = 'https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7';
+const SKOOL_FREE_URL = 'https://talentmucho.com/events/claude-for-business/guide';
 
 function FreeGuideCTA({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: React.CSSProperties; sans: React.CSSProperties;
