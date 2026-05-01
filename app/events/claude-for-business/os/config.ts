@@ -518,7 +518,7 @@ export const SEGMENTS: Segment[] = [
   // 08 ~ Next step
   {
     id: 8, num: '08', title: 'Next', titleItalic: 'step',
-    subtitle: '7:50~8:00 PM ~ recap, VIP, bootcamp waitlist, close',
+    subtitle: '7:50~8:00 PM ~ recap, bootcamp offer, Skool, close',
     duration: '10 min', speakers: ['BOTH'], panel: 'qa',
     audWhatTitle: 'Your next step',
     audWhatBody: "<p>We delivered what we promised. Now here's what comes next ~ whether you go free, grab VIP, or join the Bootcamp.</p>",
@@ -554,56 +554,46 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'ns4', title: 'Stack the value ~ Skool premium', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want to keep going. The Talent Mucho premium community. €49 a month. Here's what that gets you:" },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "Live workshops every month ~ hands-on, with us, not a pre-recorded course you'll never finish",
-            "Full replay vault ~ everything, on demand, including tonight",
-            "Vibe coding sessions ~ we build real things together, live, in the chat",
-            "Early access to every bootcamp ~ before it opens to the public, at member pricing",
-            "Inner circle access ~ direct line to Abie and the team, not a ticketing system",
-          ]},
-          { type: 'scripted', speaker: 'MERI', text: "And our promise: if you join tonight and it's not what we promised, message Abie directly and she'll refund you. No form, no wait." },
-          { type: 'scripted', speaker: 'ABIE', text: "For context ~ a single session with a Claude consultant in Madrid runs €200 to €500 an hour. You're getting us every month for €49. That math only works because we're building this community now and we want early people in it." },
+        id: 'ns4', title: 'Lead with the Bootcamp', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: "This is the offer moment. Lead with the bootcamp ~ it has a hard midnight deadline. Let the urgency breathe." },
+          { type: 'scripted', speaker: 'ABIE', text: "So. Here's what's open right now ~ and I mean right now, tonight only." },
+          { type: 'scripted', speaker: 'ABIE', text: "We're running the AI Business Bootcamp. One month. 9 live sessions. Tuesdays and Thursdays. Small groups ~ capped on purpose because we actually want to mentor you, not talk at you." },
+          { type: 'scripted', speaker: 'ABIE', text: "Four weeks. Four deliverables. By the end you have 3 live Claude Projects loaded with your business context, a named AI employee, a custom dashboard you built yourself, and a daily Claude routine that sticks." },
+          { type: 'scripted', speaker: 'ABIE', text: "That's €197. Which breaks down to €7.30 an hour of live instruction. Less than a Netflix subscription per session." },
+          { type: 'stage', text: "Pause here. Don't fill the silence." },
+          { type: 'scripted', speaker: 'ABIE', text: "Here's the part that matters. Tonight only ~ because you're in the room ~ we're including the VIP package free. That's the €397 upgrade. 1:1 prompt buildout for your business, 90 days in the community instead of 30, priority DM access to us throughout the whole bootcamp." },
+          { type: 'scripted', speaker: 'ABIE', text: "€197 tonight. €594 of value. Midnight the VIP goes back to €397 on top. That window closes the moment you close this tab." },
+          { type: 'stage', text: "QR / link is on screen. Let them see it. Let 5 seconds breathe." },
         ],
       },
       {
-        id: 'ns4b', title: 'Anchor the price + urgency', speaker: 'MERI', blocks: [
-          { type: 'stage', text: "This is the anchor moment. Say the future price first. Let it land. Then reveal current price." },
-          { type: 'scripted', speaker: 'MERI', text: "This membership is going to €97 a month. That's where it's heading ~ and honestly at what's inside, that's still a deal." },
-          { type: 'scripted', speaker: 'MERI', text: "But tonight ~ because you showed up, because you stayed two hours, because you're clearly not the person who watches from the sidelines ~ it's €49." },
-          { type: 'scripted', speaker: 'MERI', text: "That price is locked for as long as you stay. You leave, you come back, it's €97. So the question isn't whether €49 is worth it. The question is whether you'll wish you'd locked it in." },
-          { type: 'stage', text: "QR code is on screen. Let them scan. Don't rush past it." },
+        id: 'ns4b', title: 'Stack Skool ~ the ongoing home', speaker: 'MERI', blocks: [
+          { type: 'stage', text: "After the bootcamp offer lands, Meri brings in Skool as the community that supports everything." },
+          { type: 'scripted', speaker: 'MERI', text: "And if you're not ready for the bootcamp right now ~ or you just want the ongoing support without the intensive ~ this is what we built." },
+          { type: 'scripted', speaker: 'MERI', text: "The Talent Mucho premium community. €49 a month. Live workshops every month, the full replay vault, vibe coding sessions where we build real things together, and 30% off every bootcamp we ever run." },
+          { type: 'scripted', speaker: 'MERI', text: "This is going to €97. That's where it's heading. Tonight ~ because you stayed, because you're clearly not watching from the sidelines ~ it's €49. Locked for as long as you stay. Leave and come back, it's €97." },
+          { type: 'scripted', speaker: 'ABIE', text: "Not happy? Message me directly. I'll refund you. No form, no wait. That's the promise." },
+          { type: 'stage', text: "QR code for Skool on screen. Let them scan." },
         ],
       },
       {
-        id: 'ns4c', title: 'Social proof + identity', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "We already have 390 people in this community. Creators, founders, VAs, freelancers ~ people who a few months ago were exactly where you are tonight." },
+        id: 'ns4c', title: 'Identity mirror + social proof', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: "Don't soften this. The identity mirror is the most effective close in the room." },
+          { type: 'scripted', speaker: 'ABIE', text: "We already have 236 people in this community. Creators, founders, VAs, freelancers ~ people who a few months ago were exactly where you are right now." },
           { type: 'scripted', speaker: 'ABIE', text: "They're not smarter than you. They didn't have more time. They just decided that figuring this out alone wasn't the move." },
-          { type: 'scripted', speaker: 'ABIE', text: "There are two kinds of people watching this right now. The ones who will close this tab and feel motivated for about 48 hours. And the ones who actually change something tonight. I think you know which one you want to be." },
-          { type: 'stage', text: "Don't soften this. Let the identity mirror do the work." },
-        ],
-      },
-      {
-        id: 'ns5', title: 'Bootcamp waitlist', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "One more thing ~ for the people who really want to go deep. We're running an intensive bootcamp in 2 weeks. Hands-on. Small groups. Not one-size-fits-all." },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "If you're a VA ~ we focus on VA workflows + AI employees",
-            "If you're a founder ~ we focus on your business systems + dashboards",
-            "If you're building something ~ we vibe-code it with you live",
-          ]},
-          { type: 'scripted', speaker: 'MERI', text: "VIPs get 50% off the upcoming Bootcamp ~ €147 down to €74. Limited spots ~ small on purpose, because we want to actually mentor you, not teach at you." },
-          { type: 'scripted', speaker: 'ABIE', text: "Drop BOOTCAMP in the chat if you want details. We'll DM you tomorrow." },
+          { type: 'scripted', speaker: 'ABIE', text: "There are two kinds of people in this room right now. The ones who will close this tab and feel motivated for about 48 hours. And the ones who actually change something tonight. I think you already know which one you are." },
+          { type: 'stage', text: "Pause. Don't fill it." },
         ],
       },
       {
         id: 'ns6', title: 'Three doors out', speaker: 'BOTH', blocks: [
-          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight. They map to how we work at Talent Mucho ~ Educate. Build. Operate." },
+          { type: 'scripted', speaker: 'BOTH', text: "Three doors out tonight." },
           { type: 'bullets', speaker: 'BOTH', items: [
-            "Door 1 ~ Free. Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. This is enough for some of you ~ and that's totally fine.",
-            "Door 2 ~ €49 VIP. Replay + transcript, Claude Vault, VIP follow-up call with us, 30 days of Premium Skool, early access to the Bootcamp. This is the one most of you should take ~ especially if you're serious about not being back in this same spot in 6 months.",
-            "Door 3 ~ Custom. Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We only take 4 of these a quarter.",
+            "Door 1 ~ Free. Close this tab. Open Claude tonight. Try one demo. Join the free Skool tier. Totally valid ~ and tonight still moved you forward.",
+            "Door 2 ~ €49 VIP. Replay, Claude Vault, VIP group follow-up, 30 days Premium Skool, 30% off all future bootcamps. Most of you should take this ~ especially if you don't want to be in the same spot in six months.",
+            "Door 3 ~ Custom. Want us to build your AI stack and place a trained VA inside your business? Book a free call at talentmucho.com/booking. We take four of these a quarter.",
           ]},
+          { type: 'scripted', speaker: 'BOTH', text: "And if the bootcamp is calling you ~ the link is in the chat. Midnight. Then the VIP price goes back to €397." },
         ],
       },
       {
