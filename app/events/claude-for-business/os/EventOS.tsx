@@ -3390,6 +3390,36 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
         ))}
       </div>
 
+      {/* ── Schedule ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden', background: C.surface }}>
+        <div style={{ padding: `${sz(14)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>June 2026 Schedule</span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>Tuesdays & Thursdays · 10 AM EDT · 3 hrs each</span>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto auto 1fr auto', gap: `${sz(8)}px ${sz(20)}px`, padding: `${sz(14)}px ${sz(20)}px`, alignItems: 'center' }}>
+          {[
+            { session: 'Kickoff',  date: 'Tue Jun 2',  topic: 'Welcome, orientation, Claude.ai setup' },
+            { session: 'W1 · S1', date: 'Thu Jun 5',  topic: 'The interface, Projects, your first conversation' },
+            { session: 'W1 · S2', date: 'Tue Jun 10', topic: 'Custom instructions, file uploads' },
+            { session: 'W2 · S3', date: 'Thu Jun 12', topic: 'AI employees ~ what Cowork makes real' },
+            { session: 'W2 · S4', date: 'Tue Jun 17', topic: 'Build and test your first AI employee live' },
+            { session: 'W3 · S5', date: 'Thu Jun 19', topic: 'Claude Code ~ your first build' },
+            { session: 'W3 · S6', date: 'Tue Jun 24', topic: 'Build your business dashboard' },
+            { session: 'W4 · S7', date: 'Thu Jun 26', topic: 'Your full Claude stack working together' },
+            { session: 'W4 · S8', date: 'Tue Jul 1',  topic: 'Showcases, Q&A, and graduation' },
+          ].map((r, i) => (
+            <>
+              <div key={`s${i}`} style={{ ...mono, fontSize: sz(10), fontWeight: 700, color: i === 0 ? C.primary : C.muted, letterSpacing: '0.1em', whiteSpace: 'nowrap' as const }}>{r.session}</div>
+              <div key={`d${i}`} style={{ ...sans, fontSize: sz(13), fontWeight: 600, color: C.text, whiteSpace: 'nowrap' as const }}>{r.date}</div>
+              <div key={`t${i}`} style={{ ...sans, fontSize: sz(13), color: C.muted }}>{r.topic}</div>
+              <div key={`tz${i}`} style={{ ...mono, fontSize: sz(10), color: C.muted, whiteSpace: 'nowrap' as const }}>4–7 PM CEST</div>
+            </>
+          ))}
+        </div>
+      </div>
+
       {/* ── Collapsible ROI table ── */}
       <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden' }}>
         <button
@@ -5767,10 +5797,10 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         {/* ── Next step ~ Value Stack + Bootcamp + Three Doors ~ segment 08 ── */}
         {seg.num === '08' && (
           <>
-            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
-            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ValueStack C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <FreeGuideCTA C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
