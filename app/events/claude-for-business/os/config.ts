@@ -530,29 +530,43 @@ export const SEGMENTS: Segment[] = [
         ],
       },
       {
-        id: 'ns3', title: 'Stack the value ~ €47 VIP', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want the map. We call it <em>VIP</em>. <em>One time. €47.</em> Here's exactly what's inside:" },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "<em>Full replay + transcript</em> ~ 30-day access · rewatch any demo, copy any prompt (€97 value)",
-            "<em>The Claude Vault</em> ~ Talent Mucho's <em>premium proprietary skill library</em> · private dashboard setups + Claude skills (€297 value)",
-            "<em>VIP-only group follow-up</em> ~ 45 min private session with Abie & Meri, small group",
-            "<em>30-day Premium Skool access</em> ~ closed mentorship, weekly Vibe Coding. €49/mo after if you stay, cancel anytime (€49 value)",
-            "<em>Early access to the upcoming Bootcamp</em> ~ before it opens to the public",
-          ]},
-          { type: 'scripted', speaker: 'MERI', text: "<em>Total real value: over €700.</em> Tonight only ~ €47." },
-          { type: 'scripted', speaker: 'ABIE', text: "Real talk on what these skills are worth. At our old dev agency we charged <em>€10,000 to €20,000 to build prototypes</em> for clients. Tonight you're getting the skills <em>and</em> the knowledge to build your own ~ for a fraction of one of those." },
+        id: 'ns3', title: 'The real cost of not deciding', speaker: 'ABIE', blocks: [
+          { type: 'stage', text: "Slow down here. This is not a sell ~ it's a reframe. Speak like you're talking to a friend." },
+          { type: 'scripted', speaker: 'ABIE', text: "Before I tell you what's available ~ I want to ask you something honestly." },
+          { type: 'scripted', speaker: 'ABIE', text: "How long have you been telling yourself you'll figure out AI? Be honest. A month? Six months? Since ChatGPT came out?" },
+          { type: 'stage', text: "Pause. Let it sit." },
+          { type: 'scripted', speaker: 'ABIE', text: "The people who are already ahead of you didn't wait until they felt ready. <em>They just got in the room.</em> That's the only difference." },
         ],
       },
       {
-        id: 'ns4', title: 'Why this price, this once', speaker: 'MERI', blocks: [
-          { type: 'scripted', speaker: 'MERI', text: "<em>I want to be honest about the price.</em> €47 isn't because we don't value our work. It's because <em>we want you in the room early.</em>" },
+        id: 'ns4', title: 'Stack the value ~ Skool premium', speaker: 'MERI', blocks: [
+          { type: 'scripted', speaker: 'MERI', text: "So here's what we built for the people who want to keep going. <em>The Talent Mucho premium community.</em> €49 a month. Here's what that gets you:" },
           { type: 'bullets', speaker: 'MERI', items: [
-            "After tonight, premium Skool goes back to <em>€97/month</em>",
-            "We're building this community in front of you ~ early members shape what we build",
-            "You can spend <em>6 months</em> figuring this out alone the way we did ~",
-            "Or you can spend <em>6 weeks inside Skool</em> with two operators in the room",
+            "<em>Live workshops every month</em> ~ hands-on, with us, not a pre-recorded course you'll never finish",
+            "<em>Full replay vault</em> ~ everything, on demand, including tonight",
+            "<em>Vibe coding sessions</em> ~ we build real things together, live, in the chat",
+            "<em>Early access to every bootcamp</em> ~ before it opens to the public, at member pricing",
+            "<em>Inner circle access</em> ~ direct line to Abie and the team, not a ticketing system",
           ]},
-          { type: 'scripted', speaker: 'MERI', text: "<em>€47 isn't a fee. It's compressed time.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "And a <em>7-day free trial.</em> You don't pay anything tonight. You just decide if the room is worth staying in." },
+          { type: 'scripted', speaker: 'ABIE', text: "For context ~ a single session with a Claude consultant in Madrid runs €200 to €500 an hour. You're getting us every month for €49. <em>That math only works because we're building this community now and we want early people in it.</em>" },
+        ],
+      },
+      {
+        id: 'ns4b', title: 'Anchor the price + urgency', speaker: 'MERI', blocks: [
+          { type: 'stage', text: "This is the anchor moment. Say the future price first. Let it land. Then reveal current price." },
+          { type: 'scripted', speaker: 'MERI', text: "This membership is going to <em>€97 a month.</em> That's where it's heading ~ and honestly at what's inside, that's still a deal." },
+          { type: 'scripted', speaker: 'MERI', text: "But tonight ~ because you showed up, because you stayed two hours, because <em>you're clearly not the person who watches from the sidelines</em> ~ it's <em>€49.</em>" },
+          { type: 'scripted', speaker: 'MERI', text: "That price is locked for as long as you stay. <em>You leave, you come back, it's €97.</em> So the question isn't whether €49 is worth it. The question is whether you'll wish you'd locked it in." },
+          { type: 'stage', text: "QR code is on screen. Let them scan. Don't rush past it." },
+        ],
+      },
+      {
+        id: 'ns4c', title: 'Social proof + identity', speaker: 'ABIE', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "We already have <em>390 people</em> in this community. Creators, founders, VAs, freelancers ~ people who a few months ago were exactly where you are tonight." },
+          { type: 'scripted', speaker: 'ABIE', text: "They're not smarter than you. They didn't have more time. They just <em>decided</em> that figuring this out alone wasn't the move." },
+          { type: 'scripted', speaker: 'ABIE', text: "There are two kinds of people watching this right now. The ones who will close this tab and feel motivated for about 48 hours. <em>And the ones who actually change something tonight.</em> I think you know which one you want to be." },
+          { type: 'stage', text: "Don't soften this. Let the identity mirror do the work." },
         ],
       },
       {

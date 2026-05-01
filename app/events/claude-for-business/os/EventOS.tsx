@@ -1136,6 +1136,8 @@ interface DoorOption {
   nextStep: string;
   cta: string;
   ctaUrl: string;
+  secondaryCta?: string;
+  secondaryCtaUrl?: string;
   highlight?: boolean;
 }
 const THREE_DOORS: DoorOption[] = [
@@ -1155,6 +1157,8 @@ const THREE_DOORS: DoorOption[] = [
     nextStep: 'Join our Skool, grab the playbooks, open Claude tonight.',
     cta: 'Join the community',
     ctaUrl: 'https://www.skool.com/future-proof-with-ai-4339',
+    secondaryCta: 'Get the AI Playbooks',
+    secondaryCtaUrl: 'https://abiemaxey.com/playbooks',
   },
   {
     label: 'Door 2',
@@ -3290,10 +3294,33 @@ function ThreeDoorsOut({ C, mono, sans, serif, scale = 1 }: {
                     background: door.highlight ? C.primary : (accentBg === C.text ? C.primary : C.text),
                     color: door.highlight ? onDark : (accentBg === C.text ? C.text : onDark),
                     border: 'none',
+                    marginBottom: door.secondaryCta ? sz(10) : 0,
                   }}
                 >
                   {door.cta} →
                 </a>
+                {door.secondaryCta && door.secondaryCtaUrl && (
+                  <a
+                    href={door.secondaryCtaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                      display: 'block',
+                      padding: `${sz(12)}px ${sz(20)}px`,
+                      borderRadius: 100,
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      ...mono, fontSize: sz(11), fontWeight: 700,
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      background: 'transparent',
+                      color: C.primary,
+                      border: `1.5px solid ${C.primary}`,
+                    }}
+                  >
+                    {door.secondaryCta} →
+                  </a>
+                )}
               </div>
             </div>
           );
