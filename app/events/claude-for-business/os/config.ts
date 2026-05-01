@@ -150,13 +150,13 @@ export const SEGMENTS: Segment[] = [
     beats: [
       {
         id: 'o1', title: "Abie's story", speaker: 'ABIE', blocks: [
-          { type: 'stage', text: 'Abie on cam. Slow down. Trust beat.' },
-          { type: 'scripted', speaker: 'ABIE', text: "Quick about me ~ I'm Filipino, currently living in Madrid. Spent the last decade in tech ~ analyst, architect, engineer, manager. <em>Never picked a lane.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "Tech gave me a real advantage early on. <em>Earning online meant location freedom.</em> I went full digital nomad ~ 1 to 3 months per country, working from wherever. Most of my twenties looked like that." },
-          { type: 'scripted', speaker: 'ABIE', text: "Then I picked Spain. Wanted a base. Wanted depth. <em>This is my build era.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "All those tech roles made me a textbook <em>jack of all trades.</em> Master of none. My LinkedIn is honestly kind of a mess. For years I felt two steps behind the specialists ~ the deep ML person, the senior backend dev. <em>I thought breadth was my problem.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "Then AI showed up and ate the depth problem for breakfast. Turns out <em>knowing a little about everything is exactly what you need to direct AI well.</em> The thing I thought made me unfocused? It's the whole game now." },
-          { type: 'scripted', speaker: 'ABIE', text: "The last few months have been wild. I'm shipping stuff I had no business shipping ~ websites, tools, automations. Things that used to mean a contractor, two weeks, and a budget. <em>Tonight we're showing you how.</em> No paywalls. No five-step framework. Just what we actually do." },
+          { type: 'stage', text: 'Abie on cam. Slow down. Own it.' },
+          { type: 'scripted', speaker: 'ABIE', text: "So. I am what you'd call a <em>tech chameleon.</em> Grew up in Davao, Philippines. Spent a decade in tech ~ analyst, architect, engineer, manager. Every few years, different role, different stack, different industry. My LinkedIn looks like five people had access to it." },
+          { type: 'scripted', speaker: 'ABIE', text: "And then the same thing happened with countries. Tech gave me location freedom so I just... used it. A lot. One to three months per place ~ no roots, no lease longer than a few weeks. <em>A chameleon in every sense.</em> Career. Countries. Everything." },
+          { type: 'scripted', speaker: 'ABIE', text: "For years I genuinely thought that was my flaw. Everyone around me had a lane. A specialty. A title that made sense. <em>I had seventeen browser tabs open and a very confusing resume.</em>" },
+          { type: 'scripted', speaker: 'ABIE', text: "Then I found AI ~ and it completely changed what breadth is worth. Turns out knowing a little about everything is <em>exactly</em> what you need to direct AI well. The chameleon thing? That's the whole game now." },
+          { type: 'scripted', speaker: 'ABIE', text: "And honestly? AI is what finally <em>pieced me together.</em> I built a second brain in Obsidian ~ my website, my playbooks, my entire life's work, all in one place. Used to just sit there. Now with AI I can actually <em>connect and use all of it.</em> Claude plugs in, holds the overview, and activates everything I've built. I'm showing it live tonight." },
+          { type: 'scripted', speaker: 'ABIE', text: "And I finally found a base. Spain. <em>My build era.</em> First time in my adult life I signed a real lease and meant it." },
         ],
       },
       {
