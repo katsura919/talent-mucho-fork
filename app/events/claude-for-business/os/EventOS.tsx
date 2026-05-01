@@ -3313,12 +3313,21 @@ const BOOTCAMP_VIP_PERKS = [
   { title: 'Priority DM support', desc: 'Direct access to the instructor throughout the full bootcamp' },
 ];
 
+const ROI_ROWS = [
+  { task: 'Emails and DM replies',      before: '3 hrs/wk',   after: '45 min/wk',  saved: 'Save 2h 15m' },
+  { task: 'Weekly content creation',    before: '4 hrs/wk',   after: '1 hr/wk',    saved: 'Save 3h' },
+  { task: 'Client proposals & quotes',  before: '2 hrs/wk',   after: '25 min/wk',  saved: 'Save 1h 35m' },
+  { task: 'Customer FAQ and replies',   before: '1.5 hrs/wk', after: '20 min/wk',  saved: 'Save 1h 10m' },
+  { task: 'Research and planning',      before: '2 hrs/wk',   after: '30 min/wk',  saved: 'Save 1h 30m' },
+];
+
 function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
   const dark = '#2A2120';
   const onDark = '#FAF8F5';
+  const [roiOpen, setRoiOpen] = useState(false);
   return (
     <div style={{ marginTop: sz(48) }}>
       {/* Header */}
@@ -3379,6 +3388,63 @@ function BootcampPreview({ C, mono, sans, serif, scale = 1 }: {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── Collapsible ROI table ── */}
+      <div style={{ marginBottom: sz(20), borderRadius: sz(14), border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+        <button
+          onClick={() => setRoiOpen(o => !o)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: `${sz(14)}px ${sz(20)}px`,
+            background: C.surface, border: 'none', cursor: 'pointer',
+            borderBottom: roiOpen ? `1px solid ${C.border}` : 'none',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: sz(12) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: C.primary }}>
+              Where the hours come back
+            </span>
+            <span style={{ ...sans, fontSize: sz(13), color: C.muted }}>~9.5 hrs/week · €1,140/month returned</span>
+          </div>
+          <span style={{ ...mono, fontSize: sz(13), color: C.muted, transition: 'transform 0.2s', display: 'inline-block', transform: roiOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+        </button>
+
+        {roiOpen && (
+          <div style={{ background: C.bg }}>
+            {/* Column headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12), padding: `${sz(10)}px ${sz(20)}px`, borderBottom: `1px solid ${C.border}`, background: C.surface2 }}>
+              {['Task', 'Before Claude', 'With Claude', 'Saved'].map(h => (
+                <div key={h} style={{ ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: C.muted }}>{h}</div>
+              ))}
+            </div>
+            {ROI_ROWS.map((r, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+                padding: `${sz(12)}px ${sz(20)}px`,
+                background: i % 2 === 0 ? C.bg : C.surface,
+                borderBottom: i < ROI_ROWS.length - 1 ? `1px solid ${C.border}` : 'none',
+                alignItems: 'center',
+              }}>
+                <div style={{ ...sans, fontSize: sz(14), color: C.text }}>{r.task}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.muted, whiteSpace: 'nowrap' as const }}>{r.before}</div>
+                <div style={{ ...mono, fontSize: sz(13), color: C.text, whiteSpace: 'nowrap' as const }}>{r.after}</div>
+                <div style={{ ...sans, fontSize: sz(13), fontStyle: 'italic', color: C.primary, whiteSpace: 'nowrap' as const, fontWeight: 600 }}>{r.saved}</div>
+              </div>
+            ))}
+            {/* Total row */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: sz(12),
+              padding: `${sz(14)}px ${sz(20)}px`,
+              background: dark,
+            }}>
+              <div style={{ ...sans, fontSize: sz(14), fontWeight: 700, color: onDark }}>Total saved per week</div>
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...mono, fontSize: sz(13), color: 'rgba(250,248,245,0.5)' }} />
+              <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.primary, fontStyle: 'italic', whiteSpace: 'nowrap' as const }}>~9.5 hrs</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Early bird offer */}
