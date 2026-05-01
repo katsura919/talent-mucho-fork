@@ -3868,46 +3868,81 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
         </div>
       </div>
 
-      {/* ── Skool QR + "Tonight's workshop is built for you" ── */}
+      {/* ── Mentimeter join card ── */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'auto 1fr', gap: sz(36),
-        alignItems: 'center',
+        marginBottom: 26,
         padding: '32px 36px',
-        borderRadius: 22,
+        borderRadius: 18,
         background: C.surface,
         border: `1px solid ${C.border}`,
-        marginBottom: 32,
+        display: 'flex',
+        alignItems: 'center',
+        gap: sz(52),
       }}>
-        {/* QR code */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
-          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
-            Join free
+        {/* Left: QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+            Scan to join
           </div>
-          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 28px -10px ${C.primary}40` }}>
+          <div style={{
+            background: '#FFFFFF',
+            padding: sz(12),
+            borderRadius: sz(16),
+            border: `1px solid ${C.border}`,
+            boxShadow: `0 4px 24px ${C.text}08`,
+          }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(180)}x${sz(180)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
+              alt="QR code to join Mentimeter"
               width={sz(160)}
               height={sz(160)}
-              alt="Scan to join the Skool community"
               style={{ display: 'block' }}
             />
           </div>
-          <div style={{ ...sans, fontSize: sz(11), fontWeight: 600, color: C.text, letterSpacing: '0.02em' }}>
-            Future Proof with AI
+          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
+            {MENTI_URL}
           </div>
         </div>
 
-        {/* Right: built for you message */}
-        <div>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
-            Why we&apos;re here
+        {/* Divider */}
+        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
+
+        {/* Right: code + URL + button */}
+        <div style={{ flex: 1 }}>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
+            Enter code at
           </div>
-          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
-            Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
+          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(14), letterSpacing: '-0.01em' }}>
+            {MENTI_URL}
           </div>
-          <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
-            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: sz(10), padding: `${sz(10)}px ${sz(18)}px`, borderRadius: sz(12), background: `${C.primary}15`, border: `1px dashed ${C.primary}60`, marginBottom: sz(20) }}>
+            <span style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: C.muted }}>
+              Code
+            </span>
+            <span style={{ ...mono, fontSize: sz(22), fontWeight: 800, color: C.primary, letterSpacing: '0.18em' }}>
+              {MENTI_CODE}
+            </span>
+          </div>
+          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
+            Scan to answer live ~ your responses appear on screen
+          </div>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: sz(8),
+            padding: `${sz(13)}px ${sz(32)}px`,
+            borderRadius: 100,
+            background: '#7C6B5A',
+            color: '#FAF8F5',
+            ...sans,
+            fontSize: sz(15),
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            cursor: 'default',
+          }}>
+            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
+            Start Session
           </div>
         </div>
       </div>
@@ -4011,7 +4046,7 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
                   ...mono, fontSize: sz(11), fontWeight: 800,
                 }}>{s.num}</div>
                 <div style={{ ...sans, fontSize: sz(15), fontWeight: 600, color: C.text, letterSpacing: '-0.01em' }}>
-                  {s.title}{s.titleItalic && <> <em style={{ ...serif, fontWeight: 400, color: C.primary }}>{s.titleItalic}</em></>}
+                  {s.title}{s.titleItalic && <> <span style={{ ...sans, fontWeight: 500, color: C.text }}>{s.titleItalic}</span></>}
                 </div>
                 <div style={{ ...mono, fontSize: sz(11), fontWeight: 600, color: C.muted, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                   {s.duration}
@@ -4022,73 +4057,46 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
         </div>
       </div>
 
-      {/* ── Mentimeter join card ── */}
+      {/* ── Skool QR + "Tonight's workshop is built for you" ── */}
       <div style={{
-        marginTop: 26,
+        display: 'grid', gridTemplateColumns: 'auto 1fr', gap: sz(36),
+        alignItems: 'center',
         padding: '32px 36px',
-        borderRadius: 18,
+        borderRadius: 22,
         background: C.surface,
         border: `1px solid ${C.border}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: sz(52),
+        marginTop: 26,
       }}>
-        {/* Left: QR code */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
-            Scan to join
+        {/* QR code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(8) }}>
+          <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary }}>
+            Join free
           </div>
-          <div style={{
-            background: '#FFFFFF',
-            padding: sz(12),
-            borderRadius: sz(16),
-            border: `1px solid ${C.border}`,
-            boxShadow: `0 4px 24px ${C.text}08`,
-          }}>
+          <div style={{ background: '#FAF8F5', padding: sz(10), borderRadius: sz(12), border: `2px solid ${C.primary}`, boxShadow: `0 12px 28px -10px ${C.primary}40` }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://${MENTI_URL}`)}&color=2A2520&bgcolor=ffffff&margin=0`}
-              alt="QR code to join Mentimeter"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=${sz(180)}x${sz(180)}&data=${encodeURIComponent('https://www.skool.com/future-proof-with-ai-4339/about?ref=1d469fcf6dfe460c8c681c23ea85a7a7')}&margin=0&color=2A2520&bgcolor=FAF8F5`}
               width={sz(160)}
               height={sz(160)}
+              alt="Scan to join the Skool community"
               style={{ display: 'block' }}
             />
           </div>
-          <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
-            {MENTI_URL}
+          <div style={{ ...sans, fontSize: sz(11), fontWeight: 600, color: C.text, letterSpacing: '0.02em' }}>
+            Future Proof with AI
           </div>
         </div>
 
-        {/* Divider */}
-        <div style={{ width: 1, alignSelf: 'stretch', background: C.border, flexShrink: 0 }} />
-
-        {/* Right: code + URL + button */}
-        <div style={{ flex: 1 }}>
-          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted, marginBottom: sz(6) }}>
-            Enter code at
+        {/* Right: built for you message */}
+        <div>
+          <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, marginBottom: 12 }}>
+            Why we&apos;re here
           </div>
-          <div style={{ ...sans, fontSize: sz(20), fontWeight: 600, color: C.text, marginBottom: sz(24), letterSpacing: '-0.01em' }}>
-            {MENTI_URL}
+          <div style={{ ...serif, fontSize: sz(40), fontWeight: 300, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 14 }}>
+            Tonight&apos;s workshop is <span style={{ color: C.primary }}>built for you.</span>
           </div>
-          <div style={{ ...sans, fontSize: sz(18), color: C.muted, marginBottom: 16, lineHeight: 1.5 }}>
-            Scan to answer live ~ your responses appear on screen
-          </div>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: sz(8),
-            padding: `${sz(13)}px ${sz(32)}px`,
-            borderRadius: 100,
-            background: '#7C6B5A',
-            color: '#FAF8F5',
-            ...sans,
-            fontSize: sz(15),
-            fontWeight: 600,
-            letterSpacing: '-0.01em',
-            cursor: 'default',
-          }}>
-            <span style={{ fontSize: sz(12), opacity: 0.9 }}>▷</span>
-            Start Session
+          <div style={{ ...sans, fontSize: sz(16), color: C.muted, lineHeight: 1.55, fontWeight: 400, maxWidth: 560 }}>
+            Every demo, every prompt, every framework you see tonight ~ we shaped it around what you told us in your onboarding. This isn&apos;t a generic AI talk. This is the room you asked for.
           </div>
         </div>
       </div>
@@ -4110,7 +4118,6 @@ function WelcomeInteractive({ C, mono, sans, serif, scale = 1, segments, timerSe
             { icon: '🎙', label: 'Mute yourself', desc: 'Stay muted unless we call on you ~ reduces background noise for everyone.' },
             { icon: '💬', label: 'Use the chat', desc: 'Drop questions, reactions, and your city in the chat ~ our Team at Talentmucho is watching.' },
             { icon: '📹', label: 'Camera on if you can', desc: 'We love seeing faces ~ helps us read the room and connect with you.' },
-            { icon: '⏺', label: 'We\'re recording', desc: 'Replay link goes to everyone who registered ~ even if you can\'t stay.' },
             { icon: '📝', label: 'Take notes', desc: 'Open a doc or grab a notebook ~ you\'ll want to capture your ideas as we go.' },
             { icon: '🚽', label: 'Bathroom break', desc: 'We\'ll pause halfway through ~ hold tight until then if you can.' },
             { icon: '🏁', label: 'Stay till the end', desc: 'We save the most actionable stuff for last ~ worth it, we promise.' },
