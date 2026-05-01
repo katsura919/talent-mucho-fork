@@ -3117,33 +3117,46 @@ function ValueStack({ C, mono, sans, serif, scale = 1 }: {
 
 // ── SkoolJoinCard ~ segment 08 audience view: premium membership CTA ────────
 const SKOOL_MONTHLY_URL = 'https://buy.stripe.com/cNifZb3qm7cTdOFf8h73G05';
-const SKOOL_ANNUAL_URL  = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent('https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06') + '&color=2A2520&bgcolor=ffffff&margin=0';
+const SKOOL_ANNUAL_URL  = 'https://buy.stripe.com/14A6oBgd8gNtfWN7FP73G06';
+
+function QRBlock({ url, label, sublabel, size, C, mono, serif }: {
+  url: string; label: string; sublabel: string; size: number;
+  C: Palette; mono: object; serif: object;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: size * 0.08, flexShrink: 0 }}>
+      <div style={{ ...mono, fontSize: size * 0.07, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
+        {label}
+      </div>
+      <div style={{ background: '#FFFFFF', padding: size * 0.075, borderRadius: size * 0.1, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.text}08` }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=2A2520&bgcolor=ffffff&margin=0`}
+          alt={label}
+          width={size}
+          height={size}
+          style={{ display: 'block' }}
+        />
+      </div>
+      <div style={{ ...serif, fontSize: size * 0.07, color: C.primary, fontStyle: 'italic', fontWeight: 600 }}>
+        {sublabel}
+      </div>
+    </div>
+  );
+}
 
 function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
   C: Palette; mono: object; sans: object; serif: object; scale?: number;
 }) {
   const sz = (n: number) => Math.round(n * scale);
+  const qrSize = sz(140);
   return (
-    <div style={{ marginTop: sz(40), padding: `${sz(32)}px ${sz(36)}px`, borderRadius: 18, background: C.surface, border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: sz(52) }}>
+    <div style={{ marginTop: sz(40), padding: `${sz(32)}px ${sz(36)}px`, borderRadius: 18, background: C.surface, border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: sz(40) }}>
 
-      {/* Left: QR code (monthly) */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sz(14), flexShrink: 0 }}>
-        <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.muted }}>
-          Scan to join
-        </div>
-        <div style={{ background: '#FFFFFF', padding: sz(12), borderRadius: sz(16), border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.text}08` }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(SKOOL_MONTHLY_URL)}&color=2A2520&bgcolor=ffffff&margin=0`}
-            alt="QR code to join Skool"
-            width={sz(160)}
-            height={sz(160)}
-            style={{ display: 'block' }}
-          />
-        </div>
-        <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.04em' }}>
-          talentmucho.com/skool
-        </div>
+      {/* QR codes side by side */}
+      <div style={{ display: 'flex', gap: sz(24), flexShrink: 0 }}>
+        <QRBlock url={SKOOL_MONTHLY_URL} label="Monthly · €49/mo" sublabel="€49/mo" size={qrSize} C={C} mono={mono} serif={serif} />
+        <QRBlock url={SKOOL_ANNUAL_URL}  label="Annual · €399/yr" sublabel="Save 32%" size={qrSize} C={C} mono={mono} serif={serif} />
       </div>
 
       {/* Divider */}
@@ -3157,24 +3170,23 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
         <div style={{ ...sans, fontSize: sz(28), fontWeight: 700, color: C.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: sz(6) }}>
           Talent Mucho
         </div>
-        <div style={{ ...serif, fontSize: sz(15), color: C.muted, fontStyle: 'italic', marginBottom: sz(24) }}>
+        <div style={{ ...serif, fontSize: sz(15), color: C.muted, fontStyle: 'italic', marginBottom: sz(20) }}>
           Live workshops · Vault access · Inner circle · Vibe coding sessions
         </div>
 
         {/* Pricing row */}
-        <div style={{ display: 'flex', gap: sz(16), alignItems: 'center', marginBottom: sz(28) }}>
-          <div style={{ padding: `${sz(10)}px ${sz(20)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.bg }}>
-            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.muted, marginBottom: 2 }}>Monthly</div>
-            <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€49 <span style={{ fontSize: sz(13), fontWeight: 400, color: C.muted }}>/mo</span></div>
+        <div style={{ display: 'flex', gap: sz(14), alignItems: 'center', marginBottom: sz(20) }}>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.border}`, background: C.bg }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.muted, marginBottom: 2 }}>Monthly</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€49 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/mo</span></div>
           </div>
           <div style={{ ...mono, fontSize: sz(12), color: C.muted }}>or</div>
-          <div style={{ padding: `${sz(10)}px ${sz(20)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.primary + '15' }}>
-            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 2 }}>Annual · save 32%</div>
-            <div style={{ ...sans, fontSize: sz(22), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€399 <span style={{ fontSize: sz(13), fontWeight: 400, color: C.muted }}>/yr</span></div>
+          <div style={{ padding: `${sz(10)}px ${sz(18)}px`, borderRadius: 100, border: `2px solid ${C.primary}`, background: C.primary + '15' }}>
+            <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.primary, marginBottom: 2 }}>Annual · save 32%</div>
+            <div style={{ ...sans, fontSize: sz(20), fontWeight: 800, color: C.text, letterSpacing: '-0.02em' }}>€399 <span style={{ fontSize: sz(12), fontWeight: 400, color: C.muted }}>/yr</span></div>
           </div>
         </div>
 
-        {/* Price increase note */}
         <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: sz(6) }}>
           ✦ Price goes to €97/mo soon ~ lock in €49 tonight
         </div>
