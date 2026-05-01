@@ -207,6 +207,7 @@ Keep it lean. One piece per day max. I want to execute this, not admire it.`,
 export default function EventGuidePage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [activePrompt, setActivePrompt] = useState<string>('01');
+  const [activeDashPrompt, setActiveDashPrompt] = useState<string>('D1');
 
   function copyPrompt(num: string, text: string) {
     navigator.clipboard.writeText(text);
@@ -355,11 +356,11 @@ export default function EventGuidePage() {
                   </div>
                   <div className="mt-auto">
                     {item.download ? (
-                      <a href={item.href} download={item.download} className="inline-flex items-center gap-1.5 text-xs font-semibold text-clay-400 hover:text-clay-300 transition-colors uppercase tracking-widest">
+                      <a href={item.href} download={item.download} className="inline-flex items-center gap-2 bg-clay-500 hover:bg-clay-600 text-beige-50 font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-200">
                         {item.cta} ↓
                       </a>
                     ) : (
-                      <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} className="inline-flex items-center gap-1.5 text-xs font-semibold text-clay-400 hover:text-clay-300 transition-colors uppercase tracking-widest">
+                      <a href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-beige-100 font-semibold text-xs px-5 py-2.5 rounded-full transition-all duration-200">
                         {item.cta} →
                       </a>
                     )}
@@ -397,22 +398,6 @@ export default function EventGuidePage() {
                   Get your branded prompts at abiemaxey.com/web-works. We turn this landing page into your personalised dashboard ~ styled to your business, ready to run.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center gap-6">
-                  {/* PDF */}
-                  <div className="flex items-center gap-4 bg-clay-500/15 border border-clay-500/30 rounded-xl px-5 py-3 w-full sm:w-auto">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/assets/stickers/ok.png" alt="" className="w-9 h-9 object-contain shrink-0" />
-                    <div className="text-left flex-1">
-                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-clay-500 mb-0.5">Free resource</p>
-                      <p className="text-sm font-medium text-beige-50">Claude AI for Business Owners</p>
-                    </div>
-                    <a
-                      href="/claude-ai-for-business-resource.pdf"
-                      download="Claude_AI_for_Business_Owners.pdf"
-                      className="flex items-center gap-1.5 bg-clay-500 hover:bg-clay-600 text-beige-50 font-semibold text-xs px-4 py-2 rounded-full transition-all duration-200 shrink-0"
-                    >
-                      Download ↓
-                    </a>
-                  </div>
                   {/* QR */}
                   <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-5 py-3 w-full sm:w-auto">
                     <div className="bg-[#FAF8F5] p-2 rounded-lg border border-clay-500/40 shrink-0">
@@ -447,66 +432,65 @@ export default function EventGuidePage() {
                 <p className="text-sm text-beige-300/60 font-light leading-relaxed mb-6">
                   Pick what you want to build first. Each prompt below turns Claude into a specific tool for your week.
                 </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { icon: '🏠', label: 'Business command centre', anchor: 'D1' },
-                    { icon: '📋', label: 'Weekly priority stack', anchor: 'D2' },
-                    { icon: '👥', label: 'Active client status', anchor: 'D3' },
-                    { icon: '📣', label: 'Content week view', anchor: 'D4' },
-                  ].map((item) => (
-                    <a
-                      key={item.anchor}
-                      href={`#prompt-${item.anchor}`}
-                      className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-clay-500/40 rounded-xl px-4 py-3 transition-all duration-150 group"
+                {/* Selector pills */}
+                <div className="flex flex-wrap gap-2">
+                  {DASHBOARD_PROMPTS.map((p) => (
+                    <button
+                      key={p.num}
+                      onClick={() => setActiveDashPrompt(p.num)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all duration-150 ${
+                        activeDashPrompt === p.num
+                          ? 'bg-clay-500 border-clay-500 text-beige-50'
+                          : 'border-white/15 text-beige-300/70 hover:border-clay-500/40 hover:text-beige-100 bg-white/5'
+                      }`}
                     >
-                      <span className="text-lg shrink-0">{item.icon}</span>
-                      <span className="text-sm font-medium text-beige-200 group-hover:text-beige-50 transition-colors leading-snug">{item.label}</span>
-                    </a>
+                      <span className="text-base leading-none">{p.icon}</span>
+                      <span>{p.title}</span>
+                    </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-8">
-              {DASHBOARD_PROMPTS.map((p) => (
-                <div
-                  key={p.num}
-                  id={`prompt-${p.num}`}
-                  className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden scroll-mt-24"
-                >
-                  <div className="p-5 sm:p-7 pb-0">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{p.icon}</span>
-                        <span className="font-semibold text-beige-50 text-base">{p.title}</span>
-                      </div>
-                      <span className="text-xs font-semibold uppercase tracking-widest text-clay-500/60 shrink-0">{p.time}</span>
+            {/* Active dashboard prompt card */}
+            {DASHBOARD_PROMPTS.filter((p) => p.num === activeDashPrompt).map((p) => (
+              <div
+                key={p.num}
+                id={`prompt-${p.num}`}
+                className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden scroll-mt-24"
+              >
+                <div className="p-5 sm:p-7 pb-0">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{p.icon}</span>
+                      <span className="font-semibold text-beige-50 text-base">{p.title}</span>
                     </div>
-                    <p className="text-sm text-beige-300/60 font-light leading-relaxed">{p.why}</p>
+                    <span className="text-xs font-semibold uppercase tracking-widest text-clay-500/60 shrink-0">{p.time}</span>
                   </div>
-
-                  <div className="mx-4 sm:mx-7 my-5 rounded-xl bg-black/30 relative border border-white/10">
-                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
-                      <span className="text-xs font-semibold uppercase tracking-widest text-beige-300/40">Prompt</span>
-                      <button
-                        onClick={() => copyPrompt(p.num, p.prompt)}
-                        className="text-xs font-medium text-clay-400 hover:text-clay-300 transition-colors"
-                      >
-                        {copied === p.num ? '✓ Copied' : 'Copy'}
-                      </button>
-                    </div>
-                    <pre className="p-4 text-xs sm:text-sm text-beige-200 font-light leading-relaxed whitespace-pre-wrap font-mono overflow-x-auto">
-                      {p.prompt}
-                    </pre>
-                  </div>
-
-                  <div className="px-5 sm:px-7 pb-6 flex items-start gap-3">
-                    <span className="text-clay-500 text-sm mt-0.5 shrink-0">→</span>
-                    <p className="text-sm text-beige-300/60 font-light leading-relaxed italic">{p.result}</p>
-                  </div>
+                  <p className="text-sm text-beige-300/60 font-light leading-relaxed">{p.why}</p>
                 </div>
-              ))}
-            </div>
+
+                <div className="mx-4 sm:mx-7 my-5 rounded-xl bg-black/30 relative border border-white/10">
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-beige-300/40">Prompt</span>
+                    <button
+                      onClick={() => copyPrompt(p.num, p.prompt)}
+                      className="text-xs font-medium text-clay-400 hover:text-clay-300 transition-colors"
+                    >
+                      {copied === p.num ? '✓ Copied' : 'Copy'}
+                    </button>
+                  </div>
+                  <pre className="p-4 text-xs sm:text-sm text-beige-200 font-light leading-relaxed whitespace-pre-wrap font-mono overflow-x-auto">
+                    {p.prompt}
+                  </pre>
+                </div>
+
+                <div className="px-5 sm:px-7 pb-6 flex items-start gap-3">
+                  <span className="text-clay-500 text-sm mt-0.5 shrink-0">→</span>
+                  <p className="text-sm text-beige-300/60 font-light leading-relaxed italic">{p.result}</p>
+                </div>
+              </div>
+            ))}
 
           </div>
         </div>
