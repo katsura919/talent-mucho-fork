@@ -62,9 +62,9 @@ const SEGMENTS: SegmentCard[] = [
   {
     id: 6, num: '06', title: 'Live build', titleItalic: 'build', subtitle: '7:20~7:35 PM',
     emoji: '🔨',
-    audWhatTitle: 'Live build',
-    audWhatBody: "We pick a real problem from someone in the room and solve it with Claude on the spot. No script. No safety net. Just a real task and 15 minutes.",
-    audTakeaway: "You just watched us build something real in 15 minutes. Imagine what you could do in a week.",
+    audWhatTitle: 'Build it ~ together, right now',
+    audWhatBody: "Scan the QR or go to abiemaxey.com/web-works. Grab a prompt. Abie shares her screen and runs hers ~ you run yours at the same time. While Claude builds, step away, take a breath, come back and see what it made. Then one person from the room shares their output.",
+    audTakeaway: "You didn't just watch someone build. You built it ~ side by side.",
   },
   {
     id: 7, num: '07', title: 'Open Q&A', titleItalic: 'Q&A', subtitle: '7:35~7:50 PM',
