@@ -1580,28 +1580,24 @@ function QAPanel({ qaList, qaInput, inputRef, onInput, onAdd, onVote, onActive, 
 
 // ── AILandscape ~ segment 02 audience view: what is AI + the major models ─────
 const AI_EXPLAINER = [
-  { label: 'It reads', desc: 'Trained on billions of pages ~ books, websites, conversations' },
-  { label: 'It connects', desc: 'Learns patterns in language ~ what usually follows what' },
-  { label: 'It generates', desc: 'Predicts the best next word, thousands of times per second' },
-  { label: 'The result', desc: 'A well-read colleague who never sleeps and never forgets' },
+  { label: 'You ask', desc: 'Type a question, paste a doc, drop in your email ~ anything' },
+  { label: 'It thinks', desc: 'Reads everything you gave it. Pulls from billions of pages it learned from' },
+  { label: 'It answers', desc: 'Writes back in seconds. In your tone. As long or short as you need' },
+  { label: 'You review', desc: 'Edit, refine, or ask it again. You stay in charge ~ it does the heavy lifting' },
 ];
 
 const AI_WRAPPERS = [
   { tool: 'Notion AI', uses: 'Claude', accent: '#d97706' },
   { tool: 'Canva AI', uses: 'GPT + others', accent: '#10a37f' },
-  { tool: 'Jasper', uses: 'GPT', accent: '#10a37f' },
-  { tool: 'Grammarly AI', uses: 'GPT + others', accent: '#10a37f' },
   { tool: 'Perplexity', uses: 'Claude + GPT', accent: '#d97706' },
   { tool: 'Cursor', uses: 'Claude + GPT', accent: '#d97706' },
-  { tool: 'lovable.dev', uses: 'Claude + GPT', accent: '#d97706' },
-  { tool: 'Replit', uses: 'Claude + GPT', accent: '#d97706' },
-  { tool: 'Poe', uses: 'All of them', accent: '#888' },
 ];
 
 const AI_MODELS = [
   {
     name: 'ChatGPT', maker: 'OpenAI', accent: '#10a37f',
     vibe: 'The one everyone knows',
+    pricing: 'Free · $20/mo Plus',
     superpower: 'Fast, general-purpose, great at brainstorming and creative writing',
     bestFor: 'Quick answers, first drafts, coding help',
     wow: 'Can browse the web, generate images, and analyze data ~ all in one conversation',
@@ -1609,6 +1605,7 @@ const AI_MODELS = [
   {
     name: 'Gemini', maker: 'Google', accent: '#4285f4',
     vibe: 'The Google-connected brain',
+    pricing: 'Free · $20/mo Advanced',
     superpower: 'Deep integration with Gmail, Docs, Calendar, and Search',
     bestFor: 'People who live in Google Workspace',
     wow: 'Can search your entire email history and summarize what matters in seconds',
@@ -1616,6 +1613,7 @@ const AI_MODELS = [
   {
     name: 'Claude', maker: 'Anthropic', accent: '#d97706', highlight: true,
     vibe: 'The thinking partner',
+    pricing: 'Free · $20/mo Pro',
     superpower: 'Asks questions back, reasons carefully, handles long documents',
     bestFor: 'Business writing, strategy, complex tasks that need nuance',
     wow: 'Can read a 200-page PDF in one go ~ and organize your computer while you sleep',
@@ -1623,6 +1621,7 @@ const AI_MODELS = [
   {
     name: 'Copilot', maker: 'Microsoft', accent: '#0078d4',
     vibe: 'The Office assistant',
+    pricing: '$30/mo · M365 add-on',
     superpower: 'Built into Word, Excel, PowerPoint, and Teams',
     bestFor: 'Corporate teams already paying for Microsoft 365',
     wow: 'Can turn a rough email thread into a polished PowerPoint deck in 30 seconds',
@@ -1630,6 +1629,7 @@ const AI_MODELS = [
   {
     name: 'Llama', maker: 'Meta', accent: '#0668E1',
     vibe: 'The open-source one',
+    pricing: 'Free · self-hosted',
     superpower: 'Free, customizable, runs on your own hardware',
     bestFor: 'Developers and companies who want full control',
     wow: 'Powers thousands of apps you use daily ~ without you even knowing',
@@ -1756,8 +1756,17 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
                 <div style={{ ...mono, fontSize: sz(10), fontWeight: 600, color: isActive ? 'rgba(250,248,245,0.5)' : C.muted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
                   {model.maker}
                 </div>
-                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4 }}>
+                <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(12), color: isActive ? 'rgba(250,248,245,0.7)' : C.muted, lineHeight: 1.4, marginBottom: 8 }}>
                   {model.vibe}
+                </div>
+                <div style={{
+                  ...mono, fontSize: sz(9), fontWeight: 700, letterSpacing: '0.08em',
+                  color: isActive ? 'rgba(250,248,245,0.85)' : model.accent,
+                  padding: '3px 8px', borderRadius: 6,
+                  background: isActive ? 'rgba(250,248,245,0.12)' : `${model.accent}12`,
+                  display: 'inline-block',
+                }}>
+                  {model.pricing}
                 </div>
               </div>
             );
@@ -1837,6 +1846,41 @@ function AILandscape({ C, mono, sans, serif, scale = 1 }: {
             </div>
             <div style={{ ...sans, fontSize: sz(14), color: C.text, lineHeight: 1.55, fontWeight: 500 }}>
               When you learn <em style={{ color: C.primary, fontStyle: 'italic' }}>the source</em> directly, you don&apos;t need the wrapper. You get more control, more power, and you stop paying for a pretty interface on top of the same intelligence.
+            </div>
+          </div>
+        )}
+
+        {/* How to start tonight */}
+        {everClicked && (
+          <div style={{
+            marginTop: 22, padding: '22px 26px', borderRadius: 16,
+            background: C.text, color: '#FAF8F5',
+            animation: 'aiLandFadeIn 0.5s ease',
+          }}>
+            <div style={{ ...mono, fontSize: sz(11), fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: 14 }}>
+              How to start tonight ~ literally 60 seconds
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              {[
+                { num: '01', title: 'Open claude.ai', desc: 'On your phone or laptop. No app needed.' },
+                { num: '02', title: 'Sign up free', desc: 'Email or Google. Takes 30 seconds.' },
+                { num: '03', title: 'Ask it anything', desc: 'Your real work. Watch what happens.' },
+              ].map(step => (
+                <div key={step.num} style={{
+                  padding: '14px 16px', borderRadius: 12,
+                  background: 'rgba(250,248,245,0.06)', border: '1px solid rgba(250,248,245,0.12)',
+                }}>
+                  <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.18em', color: C.primary, marginBottom: 6 }}>
+                    {step.num}
+                  </div>
+                  <div style={{ ...sans, fontSize: sz(15), fontWeight: 700, color: '#FAF8F5', marginBottom: 4 }}>
+                    {step.title}
+                  </div>
+                  <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(12), color: 'rgba(250,248,245,0.65)', lineHeight: 1.45 }}>
+                    {step.desc}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
