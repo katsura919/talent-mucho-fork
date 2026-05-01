@@ -233,6 +233,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
   const [notes, setNotes] = useState<Record<number, string>>({});
   const [showNotes, setShowNotes] = useState(false);
   const [showDemoPanel, setShowDemoPanel] = useState(false); // collapsed by default ~ toggle in top bar
+  const [showLiveQA, setShowLiveQA] = useState(true);
   const [compareState, setCompareState] = useState<CompareState>({
     step: 0, running: false, leftText: '', rightText: '', leftDone: false, rightDone: false,
   });
@@ -593,6 +594,9 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           </Btn>
           <Btn onClick={() => setShowDemoPanel(d => !d)} C={C} style={{ color: showDemoPanel ? C.primary : C.muted }}>
             {showDemoPanel ? '◧ HIDE PANEL' : '◨ SHOW PANEL'}
+          </Btn>
+          <Btn onClick={() => setShowLiveQA(q => !q)} C={C} style={{ color: showLiveQA ? C.primary : C.muted }}>
+            {showLiveQA ? '💬 HIDE Q&A' : '💬 SHOW Q&A'}
           </Btn>
           <Btn onClick={() => setEditMode(v => !v)} C={C} primary={editMode} style={!editMode ? { color: C.muted } : undefined}>
             {editMode ? '✓ DONE' : '✎ EDIT'}
@@ -976,6 +980,7 @@ function OSApp({ theme, onThemeChange }: { theme: ThemeKey; onThemeChange: (t: T
           theme={theme}
           editMode={editMode}
           onSaveEdit={saveEdit}
+          showLiveQA={showLiveQA}
         />
       )}
     </div>
@@ -1356,7 +1361,15 @@ const CLAUDE_BUILDING_BLOCKS = [
   },
 ];
 
-// Abie's actual stack ~ used in segment 06 showcase AND the segment 04 spin-the-wheel
+// Live demo options for the segment 04 spin wheel ~ demoed by TM AI Architects
+const LIVE_DEMOS = [
+  { icon: '▣', name: 'Carousel Studio', short: 'Carousel', desc: 'Turn any idea, blog post, or voice note into a ready-to-post Instagram or Threads carousel ~ in your brand voice.' },
+  { icon: '⬛', name: 'Premium Dashboard & Command Centre', short: 'Dashboard', desc: 'Your custom AI home base ~ business metrics, task triage, and daily priorities in one place. No-code. Fully yours.' },
+  { icon: '◉', name: 'Profile Maker', short: 'Profile', desc: 'Drop in your background and let Claude write your LinkedIn, bio link, Instagram, and pitch deck intro ~ all consistent, all on-brand.' },
+  { icon: '▶', name: 'Video Editor', short: 'Video', desc: 'Script, trim, caption, and repurpose your videos with AI ~ from raw footage to polished content ready to post.' },
+];
+
+// Abie's actual stack ~ used in segment 06 showcase
 const ABIE_STACK = [
   { icon: 'CLI', name: 'Email Co-pilot CLI', short: 'Email CLI', desc: 'One command checks, summarises, drafts replies in my voice.' },
   { icon: 'PRP', name: 'Proposal System', short: 'Proposals', desc: 'Messy discovery notes in. Polished proposal out ~ structured by problem, approach, deliverables, timeline, price.' },
@@ -2639,7 +2652,7 @@ function SpinWheel({ items, C, mono, sans, serif }: {
         What we demo live
       </div>
       <div style={{ ...mono, fontSize: 12, color: C.muted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 28, opacity: 0.7 }}>
-        ↓ Pick someone in chat to spin · we demo whatever it lands on
+        ↓ Pick someone in chat to spin · our AI Architects demo whatever it lands on
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1fr) 1.1fr', gap: 40, alignItems: 'center' }}>
@@ -3281,6 +3294,82 @@ function QRBlock({ url, label, sublabel, size, C, mono, serif }: {
       </div>
       <div style={{ ...serif, fontSize: size * 0.07, color: C.primary, fontStyle: 'italic', fontWeight: 600 }}>
         {sublabel}
+      </div>
+    </div>
+  );
+}
+
+const BONUS_NUGGETS = [
+  {
+    icon: '✉️',
+    title: 'The 15-min email trick',
+    desc: 'Paste your last 5 sent emails into Claude. Ask it to write your next 10 in your exact voice. Done.',
+  },
+  {
+    icon: '🃏',
+    title: 'Build your first skill card',
+    desc: 'Pick one task you repeat every week. Describe it to Claude step by step. Ask it to turn it into a reusable skill prompt.',
+  },
+  {
+    icon: '🧠',
+    title: 'The brain dump → action plan',
+    desc: 'Paste your messy notes, voice memo transcript, or scattered ideas. Ask Claude: "Turn this into a structured action plan with priorities."',
+  },
+  {
+    icon: '🪪',
+    title: 'Write your system prompt',
+    desc: 'Tell Claude who you are, what you do, and how you communicate. Ask it to write a system prompt you paste at the start of every session.',
+  },
+  {
+    icon: '📅',
+    title: 'The Friday review ritual',
+    desc: 'Every Friday: give Claude your wins, blocks, and open loops. Ask: "What patterns do you see? What should I prioritize Monday?"',
+  },
+];
+
+function BonusSlide({ C, mono, sans, serif, scale = 1 }: {
+  C: Palette; mono: object; sans: object; serif: object; scale?: number;
+}) {
+  const sz = (n: number) => Math.round(n * scale);
+  return (
+    <div style={{ marginTop: sz(40) }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: sz(14), marginBottom: sz(24) }}>
+        <div style={{ ...mono, fontSize: sz(10), fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: C.primary, padding: `${sz(4)}px ${sz(12)}px`, borderRadius: 100, border: `1px solid ${C.primary}`, background: C.primary + '15' }}>
+          🎁 Bonus
+        </div>
+        <div style={{ flex: 1, height: 1, background: C.border }} />
+      </div>
+
+      <div style={{ ...serif, fontStyle: 'italic', fontSize: sz(26), fontWeight: 400, color: C.text, lineHeight: 1.2, marginBottom: sz(6) }}>
+        Five things to do this week.
+      </div>
+      <div style={{ ...sans, fontSize: sz(13), color: C.muted, marginBottom: sz(24), lineHeight: 1.5 }}>
+        No setup needed. No paid tools. Just Claude and 15 minutes.
+      </div>
+
+      {/* Nugget grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: sz(14) }}>
+        {BONUS_NUGGETS.map((n, i) => (
+          <div
+            key={i}
+            style={{
+              padding: `${sz(20)}px ${sz(22)}px`,
+              borderRadius: 14,
+              background: C.surface,
+              border: `1px solid ${C.border}`,
+              gridColumn: i === 4 ? 'span 2' : undefined,
+            }}
+          >
+            <div style={{ fontSize: sz(22), marginBottom: sz(8) }}>{n.icon}</div>
+            <div style={{ ...sans, fontSize: sz(13), fontWeight: 700, color: C.text, marginBottom: sz(6), letterSpacing: '-0.01em' }}>{n.title}</div>
+            <div style={{ ...sans, fontSize: sz(12), color: C.muted, lineHeight: 1.55 }}>{n.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ ...mono, fontSize: sz(11), color: C.primary, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: sz(20), textAlign: 'center' }}>
+        ✦ These are in your workbook ~ take them home tonight
       </div>
     </div>
   );
@@ -4575,7 +4664,7 @@ function LiveResponses({ segmentNum, C, mono, sans, serif, scale = 1 }: {
 }
 
 // ── Audience View ─────────────────────────────────────────────────────────────
-function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit }: {
+function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, fontSize, segments, C, mono, serif, sans, spkColor, theme, editMode, onSaveEdit, showLiveQA }: {
   seg: Segment; segIdx: number; beat: number;
   totalSegs: number;
   wbBlock: { text?: string } | undefined;
@@ -4588,6 +4677,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
   theme: ThemeKey;
   editMode: boolean;
   onSaveEdit: (path: string, value: string) => void;
+  showLiveQA: boolean;
 }) {
   // Scale factor derived from the top-bar slider ~ 1.0 = normal, ~1.58 = max
   const audScale = fontSize / 19;
@@ -5070,7 +5160,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
 
         {/* ── Spin the wheel ~ shows on segment 04 (live demos) ── */}
         {seg.num === '04' && (
-          <SpinWheel items={ABIE_STACK} C={C} mono={mono} sans={sans} serif={serif} />
+          <SpinWheel items={LIVE_DEMOS} C={C} mono={mono} sans={sans} serif={serif} />
         )}
 
         {/* ── Welcome interactive ~ countdown + agenda + cities + location cloud (segment 00) ── */}
@@ -5101,7 +5191,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
         )}
 
         {/* ── Q&A live feed ~ segment 07 ── */}
-        {seg.num === '07' && (
+        {seg.num === '07' && showLiveQA && (
           <LiveQAFeed C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
         )}
 
@@ -5112,6 +5202,7 @@ function AudienceView({ seg, segIdx, totalSegs, wbBlock, pollBlock, timerSecs, f
             <ThreeDoorsOut C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <BootcampPreview C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
             <SkoolJoinCard C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
+            <BonusSlide C={C} mono={mono} sans={sans} serif={serif} scale={audScale} />
           </>
         )}
 

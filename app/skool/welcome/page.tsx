@@ -189,7 +189,7 @@ export default function SkoolWelcomePage() {
                 { label: 'Full replays', desc: 'Every session on demand, forever' },
                 { label: 'Community chat', desc: 'Ask questions, share wins, get unstuck' },
                 { label: 'Early access to bootcamps', desc: 'First in line before doors open to the public' },
-                { label: 'Inner circle', desc: 'Direct access to Abie and the team' },
+                { label: 'Inner circle', desc: 'Direct line to Abie & Meri and the team ~ not a ticketing system' },
                 { label: 'Vibe coding sessions', desc: 'Build real things with AI ~ no experience needed' },
                 { label: 'Resources & templates', desc: 'Prompts, playbooks, and tools that actually work' },
               ].map(({ label, desc }) => (

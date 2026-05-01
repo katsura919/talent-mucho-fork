@@ -326,60 +326,51 @@ export const SEGMENTS: Segment[] = [
     subtitle: '6:40~7:05 PM ~ three real tasks, on screen',
     duration: '25 min', speakers: ['ABIE', 'MERI'], panel: 'demo', panelUrl: 'https://claude.ai/new',
     audWhatTitle: 'What we <em>demo</em> live',
-    audWhatBody: "<p>This is the part you came for. <em>Real tasks. Live, on screen.</em> Tools we use to run our actual business every day ~ from inbox triage to proposal writing to invoice chasing.</p><p>We brought a <em>spin wheel</em> with seven options. Whoever's most engaged in the chat picks the spinner. <em>Whatever it lands on, we build live.</em></p>",
+    audWhatBody: "<p>This is the part you came for. <em>Real tools. Live, on screen.</em> Our Talent Mucho AI Architects are in the room ~ each one specialised in a different tool.</p><p>We spin the wheel. Whoever's most active in the chat picks the spinner. <em>Whatever it lands on, an AI Architect demos it live.</em></p>",
     audTakeaway: 'Your job tonight: <em>copy one of these prompts</em> and try it tomorrow.',
     beats: [
       {
         id: 'd1', title: 'Frame the demo block', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "<em>Enough theory. Let's show you what this looks like in real life.</em> Three demos. Real tasks. On screen." },
+          { type: 'scripted', speaker: 'ABIE', text: "<em>Enough theory. Let's show you what this looks like in real life.</em> Real tools. On screen. Right now." },
+          { type: 'scripted', speaker: 'ABIE', text: "We have our <em>Talent Mucho AI Architects</em> in the room ~ each one specialised in one of these tools. We're going to spin the wheel, and whoever it lands on, one of our Architects demos it live." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            "Demo 1 ~ Cowork organises my whole Downloads folder (Abie, ~6 min)",
-            "Demo 2 ~ IG Carousel Generator skill ~ blog post → 7 slides (Abie, ~8 min)",
-            "Demo 3 ~ Competitor Analysis tool ~ full intel report in minutes (Meri, ~8 min)",
+            "<em>Carousel Studio</em> ~ turn any idea into a ready-to-post carousel",
+            "<em>Premium Dashboard & Command Centre</em> ~ your AI home base, built live",
+            "<em>Profile Maker</em> ~ bio, LinkedIn, pitch ~ consistent and on-brand",
+            "<em>Video Editor</em> ~ script, caption, repurpose ~ without touching an edit suite",
           ]},
-          { type: 'stage', text: "Meri pinned in chat: drops links + copies prompts as Abie types them." },
+          { type: 'stage', text: "Call out the most active person in chat. Ask them to pick: spin or choose? Hand it to them." },
         ],
       },
       {
-        id: 'd2', title: 'Demo 1 ~ File organization with Cowork', speaker: 'ABIE', blocks: [
-          { type: 'stage', text: "Switch to Claude Cowork desktop app. Pre-recorded backup ready in case live fails." },
-          { type: 'scripted', speaker: 'ABIE', text: "What you're watching is <em>Claude Cowork.</em> I gave it one instruction ~ <em>organise my Downloads folder by category.</em>" },
-          { type: 'stage', text: 'Run the command live. Show files moving into Images, Documents, Spreadsheets, Invoices folders.' },
-          { type: 'scripted', speaker: 'ABIE', text: "Look at that. Images, documents, spreadsheets ~ everything sorted automatically. <em>This used to take me an hour.</em> Now it takes 30 seconds. <em>That's Cowork.</em>" },
-          { type: 'workbook', text: "WORKBOOK ~ What's one folder on your computer that's been a disaster for months? You're going to fix it tonight." },
+        id: 'd2', title: 'Spin + hand to AI Architect', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "Spin the wheel on screen. Announce what it lands on. AI Architect takes over camera + screen share." },
+          { type: 'scripted', speaker: 'ABIE', text: "The wheel has spoken. <em>[Architect name]</em> ~ take it away." },
+          { type: 'stage', text: "AI Architect runs the live demo. Abie + Meri stay on cam, react, answer chat questions while demo runs." },
+          { type: 'scripted', speaker: 'ABIE', text: "Drop your questions in chat as they build ~ our team is watching. <em>Nothing is pre-recorded. This is all live.</em>" },
         ],
       },
       {
-        id: 'd3', title: 'Demo 2 ~ IG Carousel Generator skill', speaker: 'ABIE', blocks: [
-          { type: 'scripted', speaker: 'ABIE', text: "Now watch <em>this.</em> This is one of our proprietary skills ~ the <em>IG Carousel Generator.</em>" },
-          { type: 'scripted', speaker: 'ABIE', text: "I have a blog post. I want to turn it into a carousel for Instagram. <em>I paste the blog. Run the skill.</em>" },
-          { type: 'stage', text: "Live demo: paste a real blog post into Claude. Run the skill. Show the 7 slides materialising." },
-          { type: 'scripted', speaker: 'ABIE', text: "<em>Boom.</em> Seven slides. Properly formatted. Right structure, right tone. <em>I didn't write a single word of copy.</em>" },
+        id: 'd3', title: 'Second spin (if time)', speaker: 'BOTH', blocks: [
+          { type: 'stage', text: "If pace is good, spin again. Pick a second person from chat. Different Architect demos the next tool." },
+          { type: 'scripted', speaker: 'ABIE', text: "One more. Who in chat hasn't had a turn yet ~ drop a number 1 to 4, we'll pick someone." },
+          { type: 'stage', text: "Second Architect demos. Keep it tight ~ 6 to 8 minutes max." },
+        ],
+      },
+      {
+        id: 'd4', title: 'Debrief + pull the insight', speaker: 'BOTH', blocks: [
+          { type: 'scripted', speaker: 'ABIE', text: "What you just watched ~ that's not magic. That's <em>a skill library.</em> Natural language instructions you give Claude once, and it just works ~ every time, forever." },
           { type: 'bullets', speaker: 'ABIE', items: [
-            "<em>Built without the API.</em> No code. No developer.",
-            'A "skill" = a set of natural language instructions I gave Claude <em>once</em>',
-            "Now it just works, every time, <em>forever</em>",
-            "<em>This whole skill library lives inside our paid community.</em>",
+            "<em>No code.</em> No developer. No API.",
+            "Each of those tools was built with Claude ~ by someone who started exactly where you are",
+            "<em>The full skill library lives inside our premium community.</em>",
           ]},
-        ],
-      },
-      {
-        id: 'd4', title: 'Demo 3 ~ Competitor Analysis (Meri)', speaker: 'MERI', blocks: [
-          { type: 'stage', text: "Meri takes the cam. This is the demo for the business owners in the room." },
-          { type: 'scripted', speaker: 'MERI', text: "This one is for the <em>business owners</em>. The Competitor Analysis tool. Also one of our proprietary skills." },
-          { type: 'bullets', speaker: 'MERI', items: [
-            "Step 1 ~ enter your <em>business type</em>",
-            "Step 2 ~ describe your <em>audience</em>",
-            "Step 3 ~ describe your <em>market</em>",
-            "Step 4 ~ <em>Claude builds you a full competitive intelligence report</em>",
-          ]},
-          { type: 'stage', text: "Run live. Show: audience demographics, competitor strengths, market gaps, positioning strategy." },
-          { type: 'scripted', speaker: 'MERI', text: "Audience demographics. Competitor strengths. Market gaps. Your positioning strategy. <em>All of it. In minutes.</em> A consultant would charge thousands for this." },
+          { type: 'workbook', text: "WORKBOOK ~ Which of those tools would save you the most time this week? Write it down." },
         ],
       },
       {
         id: 'd5', title: 'Pause + reset', speaker: 'BOTH', blocks: [
-          { type: 'poll', text: 'POLL ~ "Which demo would save YOU the most hours? Type 1, 2, or 3."' },
+          { type: 'poll', text: 'POLL ~ "Which demo would save YOU the most hours? 1 = Carousel  2 = Dashboard  3 = Profile  4 = Video"' },
           { type: 'stage', text: 'Meri reads top answers from chat. 90 second screen break. Stretch.' },
         ],
       },
