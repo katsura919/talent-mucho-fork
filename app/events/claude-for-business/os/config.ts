@@ -548,7 +548,7 @@ export const SEGMENTS: Segment[] = [
             "<em>Early access to every bootcamp</em> ~ before it opens to the public, at member pricing",
             "<em>Inner circle access</em> ~ direct line to Abie and the team, not a ticketing system",
           ]},
-          { type: 'scripted', speaker: 'MERI', text: "And a <em>7-day free trial.</em> You don't pay anything tonight. You just decide if the room is worth staying in." },
+          { type: 'scripted', speaker: 'MERI', text: "And our promise: <em>if you join tonight and it's not what we promised, message Abie directly and she'll refund you.</em> No form, no wait." },
           { type: 'scripted', speaker: 'ABIE', text: "For context ~ a single session with a Claude consultant in Madrid runs €200 to €500 an hour. You're getting us every month for €49. <em>That math only works because we're building this community now and we want early people in it.</em>" },
         ],
       },

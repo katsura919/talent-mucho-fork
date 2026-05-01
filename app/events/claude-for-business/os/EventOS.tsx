@@ -1171,7 +1171,7 @@ const THREE_DOORS: DoorOption[] = [
       "Full replay + transcript ~ 30-day access (€97)",
       "The Claude Vault ~ Talent Mucho's premium proprietary skills (€297)",
       "VIP-only group follow-up ~ 45 min with Abie + Meri",
-      "30-day Premium Skool · €49/mo after, cancel anytime (€49)",
+      "30-day Premium Skool · €49/mo after, cancel anytime",
       "Early access to the upcoming Bootcamp",
     ],
     nextStep: 'Click VIP link → Stripe → instant access tomorrow morning.',
@@ -3179,7 +3179,7 @@ function SkoolJoinCard({ C, mono, sans, serif, scale = 1 }: {
           ✦ Price goes to €97/mo soon ~ lock in €49 tonight
         </div>
         <div style={{ ...mono, fontSize: sz(11), color: C.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          7-day free trial · cancel anytime
+          Not happy? Message us directly ~ we'll refund you.
         </div>
       </div>
     </div>
